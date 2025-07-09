@@ -98,6 +98,23 @@ jobs:
         name: android-aab
         path: build/app/outputs/bundle/release/app-release.aab
 
+    - name: Upload Android APK to Firebase App Distribution
+      if: github.ref == 'refs/heads/main'
+      uses: wzieba/Firebase-Distribution-Github-Action@v1
+      with:
+        appId: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+        serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        groups: testers
+        file: build/app/outputs/flutter-apk/app-release.apk
+        releaseNotes: |
+          🚀 New Android build from commit ${{ github.sha }}
+          
+          Changes in this build:
+          - ${{ github.event.head_commit.message }}
+          
+          Branch: ${{ github.ref_name }}
+          Commit: ${{ github.sha }}
+
   build-ios:
     name: Build iOS
     runs-on: macos-latest
@@ -140,9 +157,33 @@ jobs:
       
     - name: Build iOS
       run: flutter build ios --release --no-codesign
+    
+    - name: Create iOS IPA
+      run: |
+        cd build/ios/iphoneos
+        mkdir -p Payload
+        cp -r Runner.app Payload/
+        zip -r Runner.ipa Payload/
         
     - name: Upload iOS Build
       uses: actions/upload-artifact@v4
       with:
         name: ios-build
-        path: build/ios/iphoneos/Runner.app
+        path: build/ios/iphoneos/Runner.ipa
+
+    - name: Upload iOS IPA to Firebase App Distribution
+      if: github.ref == 'refs/heads/main'
+      uses: wzieba/Firebase-Distribution-Github-Action@v1
+      with:
+        appId: ${{ secrets.FIREBASE_IOS_APP_ID }}
+        serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        groups: testers
+        file: build/ios/iphoneos/Runner.ipa
+        releaseNotes: |
+          🚀 New iOS build from commit ${{ github.sha }}
+          
+          Changes in this build:
+          - ${{ github.event.head_commit.message }}
+          
+          Branch: ${{ github.ref_name }}
+          Commit: ${{ github.sha }}
