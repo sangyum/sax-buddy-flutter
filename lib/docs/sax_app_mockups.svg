@@ -1,0 +1,315 @@
+<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="800" fill="#FAFAFA"/>
+  
+  <!-- Title -->
+  <text x="600" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#2E5266">SaxAI Coach - UI Mockups</text>
+  
+  <!-- Screen 1: Welcome Screen -->
+  <g transform="translate(50, 60)">
+    <!-- Phone frame -->
+    <rect x="0" y="0" width="250" height="450" rx="20" fill="#000" stroke="#ccc" stroke-width="2"/>
+    <rect x="10" y="10" width="230" height="430" rx="15" fill="#FAFAFA"/>
+    
+    <!-- Status bar -->
+    <rect x="10" y="10" width="230" height="25" fill="#FAFAFA"/>
+    <text x="20" y="28" font-family="Arial" font-size="10" fill="#757575">9:41</text>
+    <circle cx="220" cy="22" r="3" fill="#4CAF50"/>
+    <rect x="200" y="18" width="15" height="8" rx="2" fill="#757575"/>
+    
+    <!-- Content -->
+    <text x="130" y="60" text-anchor="middle" font-family="Arial" font-size="12" font-weight="bold" fill="#2E5266">Welcome Screen</text>
+    
+    <!-- App Icon -->
+    <rect x="95" y="80" width="60" height="60" rx="12" fill="#2E5266"/>
+    <circle cx="125" cy="110" r="15" fill="none" stroke="#fff" stroke-width="3"/>
+    <path d="M115 110 L135 105 L135 115 Z" fill="#fff"/>
+    
+    <!-- App Name -->
+    <text x="130" y="165" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="#2E5266">SaxAI Coach</text>
+    <text x="130" y="185" text-anchor="middle" font-family="Arial" font-size="11" fill="#757575">AI-powered practice routines</text>
+    <text x="130" y="200" text-anchor="middle" font-family="Arial" font-size="11" fill="#757575">for self-taught saxophonists</text>
+    
+    <!-- Feature Cards -->
+    <rect x="25" y="230" width="200" height="40" rx="8" fill="#fff" stroke="#E0E0E0"/>
+    <circle cx="45" cy="250" r="8" fill="#E8F4F8"/>
+    <path d="M41 250 L49 246 L49 254 Z" fill="#2E5266"/>
+    <text x="60" y="248" font-family="Arial" font-size="10" font-weight="600" fill="#212121">Audio Analysis</text>
+    <text x="60" y="258" font-family="Arial" font-size="9" fill="#757575">Real-time feedback</text>
+    
+    <rect x="25" y="280" width="200" height="40" rx="8" fill="#fff" stroke="#E0E0E0"/>
+    <circle cx="45" cy="300" r="8" fill="#E8F4F8"/>
+    <path d="M41 296 L45 300 L49 296 M41 304 L45 300 L49 304" stroke="#2E5266" stroke-width="1.5" fill="none"/>
+    <text x="60" y="298" font-family="Arial" font-size="10" font-weight="600" fill="#212121">AI Routines</text>
+    <text x="60" y="308" font-family="Arial" font-size="9" fill="#757575">Personalized exercises</text>
+    
+    <!-- CTA Button -->
+    <rect x="25" y="370" width="200" height="35" rx="8" fill="#2E5266"/>
+    <text x="125" y="392" text-anchor="middle" font-family="Arial" font-size="12" font-weight="600" fill="#fff">Start Free Trial</text>
+    
+    <text x="125" y="420" text-anchor="middle" font-family="Arial" font-size="10" fill="#2E5266">Already have account? Sign In</text>
+  </g>
+  
+  <!-- Screen 2: Dashboard -->
+  <g transform="translate(350, 60)">
+    <!-- Phone frame -->
+    <rect x="0" y="0" width="250" height="450" rx="20" fill="#000" stroke="#ccc" stroke-width="2"/>
+    <rect x="10" y="10" width="230" height="430" rx="15" fill="#FAFAFA"/>
+    
+    <!-- Status bar -->
+    <rect x="10" y="10" width="230" height="25" fill="#FAFAFA"/>
+    <text x="20" y="28" font-family="Arial" font-size="10" fill="#757575">9:41</text>
+    
+    <!-- Header -->
+    <text x="130" y="60" text-anchor="middle" font-family="Arial" font-size="12" font-weight="bold" fill="#2E5266">Dashboard</text>
+    
+    <text x="25" y="85" font-family="Arial" font-size="9" fill="#757575">Good morning,</text>
+    <text x="25" y="100" font-family="Arial" font-size="16" font-weight="600" fill="#2E5266">Sarah</text>
+    
+    <!-- Profile icon -->
+    <circle cx="210" cy="85" r="15" fill="#4A7C95"/>
+    <path d="M205 80 Q210 75 215 80 Q210 85 205 80 M202 90 Q210 88 218 90" stroke="#fff" stroke-width="1.5" fill="none"/>
+    
+    <!-- Trial Status Card -->
+    <defs>
+      <linearGradient id="trialGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#2E5266"/>
+        <stop offset="100%" style="stop-color:#4A7C95"/>
+      </linearGradient>
+    </defs>
+    <rect x="25" y="120" width="200" height="80" rx="12" fill="url(#trialGradient)"/>
+    
+    <text x="35" y="140" font-family="Arial" font-size="14" font-weight="600" fill="#fff">Free Trial</text>
+    <rect x="170" y="130" width="45" height="15" rx="7" fill="rgba(255,255,255,0.2)"/>
+    <text x="193" y="140" text-anchor="middle" font-family="Arial" font-size="8" fill="#fff">11 days left</text>
+    
+    <text x="35" y="155" font-family="Arial" font-size="10" fill="rgba(255,255,255,0.9)">2 of 5 routines used</text>
+    
+    <!-- Progress bar -->
+    <rect x="35" y="160" width="170" height="4" rx="2" fill="rgba(255,255,255,0.3)"/>
+    <rect x="35" y="160" width="68" height="4" rx="2" fill="#D4AF37"/>
+    
+    <rect x="35" y="175" width="170" height="20" rx="6" fill="#fff"/>
+    <text x="120" y="188" text-anchor="middle" font-family="Arial" font-size="10" font-weight="600" fill="#2E5266">Upgrade to Premium</text>
+    
+    <!-- Quick Actions -->
+    <text x="25" y="225" font-family="Arial" font-size="14" font-weight="600" fill="#212121">Practice</text>
+    
+    <rect x="25" y="235" width="95" height="70" rx="8" fill="#fff" stroke="#E0E0E0"/>
+    <circle cx="50" cy="255" r="12" fill="#E8F4F8"/>
+    <rect x="44" y="249" width="12" height="12" rx="2" fill="none" stroke="#2E5266" stroke-width="1.5"/>
+    <path d="M47 252 L53 255 L47 258" fill="#2E5266"/>
+    <text x="70" y="252" font-family="Arial" font-size="10" font-weight="600" fill="#212121">New</text>
+    <text x="70" y="262" font-family="Arial" font-size="10" font-weight="600" fill="#212121">Assessment</text>
+    <text x="70" y="272" font-family="Arial" font-size="8" fill="#757575">Get routine</text>
+    
+    <rect x="130" y="235" width="95" height="70" rx="8" fill="#fff" stroke="#E0E0E0"/>
+    <circle cx="155" cy="255" r="12" fill="#E8F4F8"/>
+    <circle cx="155" cy="255" r="8" fill="none" stroke="#2E5266" stroke-width="1.5"/>
+    <circle cx="155" cy="251" r="2" fill="#2E5266"/>
+    <text x="175" y="252" font-family="Arial" font-size="10" font-weight="600" fill="#212121">Recent</text>
+    <text x="175" y="262" font-family="Arial" font-size="10" font-weight="600" fill="#212121">Routines</text>
+    <text x="175" y="272" font-family="Arial" font-size="8" fill="#757575">Continue</text>
+    
+    <!-- Recent Activity -->
+    <text x="25" y="330" font-family="Arial" font-size="14" font-weight="600" fill="#212121">Recent Activity</text>
+    
+    <rect x="25" y="340" width="200" height="35" rx="6" fill="#fff" stroke="#E0E0E0"/>
+    <circle cx="45" cy="357" r="8" fill="#4CAF50"/>
+    <path d="M41 357 L44 360 L49 353" stroke="#fff" stroke-width="1.5" fill="none"/>
+    <text x="60" y="355" font-family="Arial" font-size="10" font-weight="600" fill="#212121">Scale Practice - C Major</text>
+    <text x="60" y="365" font-family="Arial" font-size="8" fill="#757575">Completed 2 hours ago</text>
+    
+    <rect x="25" y="380" width="200" height="35" rx="6" fill="#fff" stroke="#E0E0E0"/>
+    <circle cx="45" cy="397" r="8" fill="#FF9800"/>
+    <text x="41" y="401" font-family="Arial" font-size="8" fill="#fff">AI</text>
+    <text x="60" y="395" font-family="Arial" font-size="10" font-weight="600" fill="#212121">New Routine Generated</text>
+    <text x="60" y="405" font-family="Arial" font-size="8" fill="#757575">Focus: Pitch Accuracy</text>
+  </g>
+  
+  <!-- Screen 3: Assessment -->
+  <g transform="translate(650, 60)">
+    <!-- Phone frame -->
+    <rect x="0" y="0" width="250" height="450" rx="20" fill="#000" stroke="#ccc" stroke-width="2"/>
+    <rect x="10" y="10" width="230" height="430" rx="15" fill="#FAFAFA"/>
+    
+    <!-- Status bar -->
+    <rect x="10" y="10" width="230" height="25" fill="#FAFAFA"/>
+    <text x="20" y="28" font-family="Arial" font-size="10" fill="#757575">9:41</text>
+    
+    <!-- Header -->
+    <path d="M25 50 L30 45 L25 40" stroke="#212121" stroke-width="2" fill="none"/>
+    <text x="130" y="60" text-anchor="middle" font-family="Arial" font-size="12" font-weight="bold" fill="#2E5266">Assessment</text>
+    
+    <!-- Progress -->
+    <text x="130" y="85" text-anchor="middle" font-family="Arial" font-size="9" fill="#757575">Exercise 2 of 3</text>
+    <rect x="50" y="90" width="150" height="4" rx="2" fill="#E0E0E0"/>
+    <rect x="50" y="90" width="100" height="4" rx="2" fill="#2E5266"/>
+    
+    <!-- Exercise Card -->
+    <rect x="25" y="120" width="200" height="250" rx="16" fill="#fff" stroke="#E0E0E0"/>
+    
+    <text x="125" y="150" text-anchor="middle" font-family="Arial" font-size="9" font-weight="600" fill="#2E5266">Exercise 2</text>
+    
+    <text x="125" y="180" text-anchor="middle" font-family="Arial" font-size="13" font-weight="600" fill="#212121">Play C Major Arpeggio</text>
+    <text x="125" y="195" text-anchor="middle" font-family="Arial" font-size="13" font-weight="600" fill="#212121">(one octave)</text>
+    
+    <!-- Recording Button -->
+    <circle cx="125" cy="250" r="35" fill="#E53E3E"/>
+    <circle cx="125" cy="250" r="25" fill="#fff"/>
+    <rect x="115" y="240" width="20" height="20" rx="2" fill="#E53E3E"/>
+    
+    <!-- Recording indicator -->
+    <circle cx="40" cy="140" r="4" fill="#E53E3E"/>
+    <text x="50" y="145" font-family="Arial" font-size="8" fill="#E53E3E">REC</text>
+    
+    <text x="125" y="310" text-anchor="middle" font-family="Arial" font-size="11" fill="#757575">Recording... Tap to stop</text>
+    
+    <!-- Waveform visualization -->
+    <g transform="translate(50, 320)">
+      <rect x="0" y="0" width="4" height="15" fill="#2E5266"/>
+      <rect x="8" y="5" width="4" height="5" fill="#2E5266"/>
+      <rect x="16" y="2" width="4" height="11" fill="#2E5266"/>
+      <rect x="24" y="7" width="4" height="3" fill="#2E5266"/>
+      <rect x="32" y="0" width="4" height="18" fill="#2E5266"/>
+      <rect x="40" y="4" width="4" height="7" fill="#2E5266"/>
+      <rect x="48" y="1" width="4" height="13" fill="#2E5266"/>
+      <rect x="56" y="6" width="4" height="4" fill="#2E5266"/>
+      <rect x="64" y="3" width="4" height="9" fill="#4A7C95"/>
+      <rect x="72" y="8" width="4" height="2" fill="#4A7C95"/>
+      <rect x="80" y="5" width="4" height="6" fill="#E0E0E0"/>
+      <rect x="88" y="7" width="4" height="2" fill="#E0E0E0"/>
+      <rect x="96" y="4" width="4" height="7" fill="#E0E0E0"/>
+      <rect x="104" y="6" width="4" height="3" fill="#E0E0E0"/>
+      <rect x="112" y="2" width="4" height="11" fill="#E0E0E0"/>
+      <rect x="120" y="8" width="4" height="1" fill="#E0E0E0"/>
+      <rect x="128" y="5" width="4" height="5" fill="#E0E0E0"/>
+      <rect x="136" y="7" width="4" height="2" fill="#E0E0E0"/>
+      <rect x="144" y="3" width="4" height="9" fill="#E0E0E0"/>
+    </g>
+  </g>
+  
+  <!-- Screen 4: Practice Routine -->
+  <g transform="translate(950, 60)">
+    <!-- Phone frame -->
+    <rect x="0" y="0" width="250" height="450" rx="20" fill="#000" stroke="#ccc" stroke-width="2"/>
+    <rect x="10" y="10" width="230" height="430" rx="15" fill="#FAFAFA"/>
+    
+    <!-- Status bar -->
+    <rect x="10" y="10" width="230" height="25" fill="#FAFAFA"/>
+    <text x="20" y="28" font-family="Arial" font-size="10" fill="#757575">9:41</text>
+    
+    <!-- Header -->
+    <path d="M25 50 L30 45 L25 40" stroke="#212121" stroke-width="2" fill="none"/>
+    <text x="40" y="50" font-family="Arial" font-size="9" fill="#757575">Practice Routine</text>
+    <text x="40" y="65" font-family="Arial" font-size="12" font-weight="600" fill="#2E5266">Focus: PITCH ACCURACY</text>
+    <circle cx="210" cy="52" r="8" fill="#E8F4F8"/>
+    <text x="210" y="56" text-anchor="middle" font-family="Arial" font-size="10" fill="#2E5266">i</text>
+    
+    <!-- Exercise Tabs -->
+    <rect x="25" y="80" width="50" height="25" rx="4" fill="#2E5266"/>
+    <text x="50" y="95" text-anchor="middle" font-family="Arial" font-size="8" fill="#fff">Scale</text>
+    
+    <rect x="80" y="80" width="50" height="25" rx="4" fill="#E0E0E0"/>
+    <text x="105" y="95" text-anchor="middle" font-family="Arial" font-size="8" fill="#757575">Arpeggio</text>
+    
+    <rect x="135" y="80" width="50" height="25" rx="4" fill="#E0E0E0"/>
+    <text x="160" y="95" text-anchor="middle" font-family="Arial" font-size="8" fill="#757575">Intervals</text>
+    
+    <!-- Exercise Info -->
+    <rect x="25" y="115" width="200" height="50" rx="8" fill="#fff" stroke="#E0E0E0"/>
+    <text x="35" y="130" font-family="Arial" font-size="10" font-weight="600" fill="#212121">C Major Scale Variations</text>
+    <text x="35" y="142" font-family="Arial" font-size="8" fill="#757575">Key: C Major • Tempo: 80 BPM</text>
+    <text x="35" y="152" font-family="Arial" font-size="8" fill="#757575">Focus on F and B natural intonation</text>
+    
+    <!-- Staff Notation -->
+    <rect x="25" y="175" width="200" height="120" rx="8" fill="#fff" stroke="#E0E0E0"/>
+    
+    <!-- Staff lines -->
+    <g stroke="#000" stroke-width="0.5">
+      <line x1="35" y1="200" x2="215" y2="200"/>
+      <line x1="35" y1="210" x2="215" y2="210"/>
+      <line x1="35" y1="220" x2="215" y2="220"/>
+      <line x1="35" y1="230" x2="215" y2="230"/>
+      <line x1="35" y1="240" x2="215" y2="240"/>
+    </g>
+    
+    <!-- Treble clef -->
+    <text x="45" y="235" font-family="Arial" font-size="20" fill="#000">𝄞</text>
+    
+    <!-- Notes -->
+    <ellipse cx="70" cy="240" rx="4" ry="3" fill="#E53E3E"/> <!-- Highlighted note -->
+    <line x1="74" y1="240" x2="74" y2="220" stroke="#E53E3E" stroke-width="1"/>
+    
+    <ellipse cx="85" cy="235" rx="4" ry="3" fill="#000"/>
+    <line x1="89" y1="235" x2="89" y2="215" stroke="#000" stroke-width="1"/>
+    
+    <ellipse cx="100" cy="230" rx="4" ry="3" fill="#000"/>
+    <line x1="104" y1="230" x2="104" y2="210" stroke="#000" stroke-width="1"/>
+    
+    <ellipse cx="115" cy="225" rx="4" ry="3" fill="#000"/>
+    <line x1="119" y1="225" x2="119" y2="205" stroke="#000" stroke-width="1"/>
+    
+    <ellipse cx="130" cy="220" rx="4" ry="3" fill="#000"/>
+    <line x1="134" y1="220" x2="134" y2="200" stroke="#000" stroke-width="1"/>
+    
+    <ellipse cx="145" cy="215" rx="4" ry="3" fill="#000"/>
+    <line x1="149" y1="215" x2="149" y2="195" stroke="#000" stroke-width="1"/>
+    
+    <ellipse cx="160" cy="210" rx="4" ry="3" fill="#000"/>
+    <line x1="164" y1="210" x2="164" y2="190" stroke="#000" stroke-width="1"/>
+    
+    <ellipse cx="175" cy="205" rx="4" ry="3" fill="#000"/>
+    <line x1="179" y1="205" x2="179" y2="185" stroke="#000" stroke-width="1"/>
+    
+    <!-- Playback Controls -->
+    <rect x="25" y="305" width="200" height="50" rx="8" fill="#fff" stroke="#E0E0E0"/>
+    
+    <circle cx="80" cy="330" r="15" fill="#2E5266"/>
+    <path d="M75 325 L85 330 L75 335 Z" fill="#fff"/>
+    
+    <circle cx="125" cy="330" r="12" fill="#E0E0E0"/>
+    <rect x="121" y="326" width="8" height="8" rx="1" fill="#757575"/>
+    
+    <circle cx="170" cy="330" r="12" fill="#E0E0E0"/>
+    <path d="M165 325 L170 330 L165 335 M170 325 L175 330 L170 335" stroke="#757575" stroke-width="1.5" fill="none"/>
+    
+    <!-- Progress bar -->
+    <rect x="35" y="345" width="180" height="3" rx="1" fill="#E0E0E0"/>
+    <rect x="35" y="345" width="54" height="3" rx="1" fill="#2E5266"/>
+    <circle cx="89" cy="346" r="4" fill="#2E5266"/>
+    
+    <!-- Bottom Navigation -->
+    <rect x="25" y="370" width="85" height="30" rx="6" fill="none" stroke="#2E5266"/>
+    <text x="67" y="388" text-anchor="middle" font-family="Arial" font-size="10" fill="#2E5266">Previous</text>
+    
+    <rect x="140" y="370" width="85" height="30" rx="6" fill="#2E5266"/>
+    <text x="182" y="388" text-anchor="middle" font-family="Arial" font-size="10" fill="#fff">Next Exercise</text>
+    
+    <rect x="25" y="410" width="200" height="25" rx="6" fill="#4CAF50"/>
+    <text x="125" y="425" text-anchor="middle" font-family="Arial" font-size="10" font-weight="600" fill="#fff">Mark as Complete</text>
+  </g>
+  
+  <!-- Legend -->
+  <g transform="translate(50, 550)">
+    <text x="0" y="20" font-family="Arial" font-size="16" font-weight="bold" fill="#2E5266">Design Features:</text>
+    
+    <circle cx="20" cy="40" r="5" fill="#2E5266"/>
+    <text x="35" y="45" font-family="Arial" font-size="12" fill="#212121">Primary Brand Color (#2E5266) - Navigation, CTAs, Focus Elements</text>
+    
+    <circle cx="20" cy="60" r="5" fill="#D4AF37"/>
+    <text x="35" y="65" font-family="Arial" font-size="12" fill="#212121">Secondary Gold (#D4AF37) - Progress Indicators, Success States</text>
+    
+    <circle cx="20" cy="80" r="5" fill="#E53E3E"/>
+    <text x="35" y="85" font-family="Arial" font-size="12" fill="#212121">Recording Red (#E53E3E) - Active Recording, Highlighted Notes</text>
+    
+    <rect x="15" y="95" width="10" height="10" rx="2" fill="#fff" stroke="#E0E0E0"/>
+    <text x="35" y="105" font-family="Arial" font-size="12" fill="#212121">Card-based Layout - Clean Information Architecture</text>
+    
+    <text x="0" y="135" font-family="Arial" font-size="14" font-weight="600" fill="#2E5266">Key UI Principles:</text>
+    <text x="0" y="155" font-family="Arial" font-size="12" fill="#212121">• Large touch targets for instrument players</text>
+    <text x="0" y="175" font-family="Arial" font-size="12" fill="#212121">• Clear visual hierarchy with consistent spacing</text>
+    <text x="0" y="195" font-family="Arial" font-size="12" fill="#212121">• Progress indicators for guided workflows</text>
+    <text x="0" y="215" font-family="Arial" font-size="12" fill="#212121">• Audio-first design with supporting visuals</text>
+  </g>
+</svg>
