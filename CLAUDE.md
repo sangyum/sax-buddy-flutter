@@ -42,4 +42,6 @@ AI-powered practice routine generation based on real-time analysis of user's pla
   * GEEN - Implement with the least amount of code to make the test pass
   * BLUE - Refactor to cleanup/optimize the code
 
-
+## Project Structure
+- Organize UI by feature/screen. Each screen is mapped to a feature and should be placed under lib/features/<feature name>.
+- Favor creating small widgets and compose them to build more complex widgets/screens
