@@ -2,7 +2,7 @@
 
 ## Changes Made
 
-✅ **Modified GitHub Actions workflow** (`.github/workflows/ci.yaml`) to include Firebase App Distribution for both Android and iOS builds.
+✅ **Modified GitHub Actions workflow** (`.github/workflows/ci.yaml`) to include Firebase App Distribution for both Android and iOS builds using `nickwph/firebase-app-distribution-action@v1`.
 
 ## Key Features Added
 
@@ -31,9 +31,9 @@ Automatically generated release notes include:
 To make this work, you need to configure these secrets in your GitHub repository:
 
 ### New Secrets Needed:
-1. **`FIREBASE_SERVICE_ACCOUNT_JSON`** - Firebase service account JSON for authentication
-2. **`FIREBASE_ANDROID_APP_ID`** - Firebase Android app ID (format: `1:123456789:android:abc123def456`)
-3. **`FIREBASE_IOS_APP_ID`** - Firebase iOS app ID (format: `1:123456789:ios:abc123def456`)
+1. **`FIREBASE_SERVICE_ACCOUNT_JSON`** - Firebase service account JSON for authentication (used as `credentials` parameter)
+2. **`FIREBASE_ANDROID_APP_ID`** - Firebase Android app ID (format: `1:123456789:android:abc123def456`, used as `app` parameter)
+3. **`FIREBASE_IOS_APP_ID`** - Firebase iOS app ID (format: `1:123456789:ios:abc123def456`, used as `app` parameter)
 
 ### Already Configured:
 - ✅ `GOOGLE_SERVICES_BASE64` - Base64 encoded google-services.json for Android
@@ -77,6 +77,15 @@ To make this work, you need to configure these secrets in your GitHub repository
 - **Release Tracking**: Automatic versioning and release notes
 - **Easy Testing**: Testers can install directly from email links
 - **Cost Effective**: Only distributes production-ready builds from `main`
+
+## Action Parameters
+
+The workflow now uses `nickwph/firebase-app-distribution-action@v1` with these parameters:
+- `app`: Firebase App ID (from secrets)
+- `credentials`: Service account JSON (from secrets)
+- `groups`: Distribution groups (set to "testers")
+- `file`: Path to APK/IPA file
+- `release-notes`: Auto-generated release notes with commit info
 
 ## Next Steps
 
