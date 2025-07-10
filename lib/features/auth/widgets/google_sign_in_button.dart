@@ -27,7 +27,7 @@ class GoogleSignInButton extends StatelessWidget {
             backgroundColor: Colors.white,
             foregroundColor: Colors.grey[800],
             elevation: 2,
-            shadowColor: Colors.grey.withOpacity(0.5),
+            shadowColor: Colors.grey.withValues(alpha: 0.5),
             side: BorderSide(color: Colors.grey.shade300),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),

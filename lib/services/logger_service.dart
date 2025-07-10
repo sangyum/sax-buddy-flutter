@@ -232,7 +232,7 @@ class _CustomLogOutput extends LogOutput {
     for (final line in event.lines) {
       // In development, use print. In production, you might want to 
       // send to a logging service like Firebase Crashlytics or Sentry
-      print(line);
+      debugPrint(line);
     }
   }
 }
