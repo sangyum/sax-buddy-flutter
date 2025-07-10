@@ -46,6 +46,7 @@ jobs:
         file: coverage/lcov.info
 
   build-android:
+    if: github.event_name == 'push'
     name: Build Android
     runs-on: ubuntu-latest
     needs: test
@@ -67,6 +68,9 @@ jobs:
         channel: 'stable'
         cache: true
         
+    - name: Setup yq
+      uses: mikefarah/yq@v4.44.2
+
     - name: Get dependencies
       run: flutter pub get
 
@@ -81,22 +85,22 @@ jobs:
         echo "$GOOGLE_SERVICES_BASE64" | base64 --decode > android/app/google-services.json
 
     - name: Build Android APK
-      run: flutter build apk --release
+      run: flutter build apk --debug --build-name=$(yq -r .version pubspec.yaml | cut -d'+' -f1).${{ github.run_number }} --build-number=${{ github.run_number }}
       
     - name: Build Android App Bundle
-      run: flutter build appbundle --release
+      run: flutter build appbundle --debug --build-name=$(yq -r .version pubspec.yaml | cut -d'+' -f1).${{ github.run_number }} --build-number=${{ github.run_number }}
         
     - name: Upload Android APK
       uses: actions/upload-artifact@v4
       with:
         name: android-apk
-        path: build/app/outputs/flutter-apk/app-release.apk
+        path: build/app/outputs/flutter-apk/app-debug.apk
         
     - name: Upload Android App Bundle
       uses: actions/upload-artifact@v4
       with:
         name: android-aab
-        path: build/app/outputs/bundle/release/app-release.aab
+        path: build/app/outputs/bundle/debug/app-debug.aab
 
     - name: Upload Android APK to Firebase App Distribution
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
@@ -105,7 +109,7 @@ jobs:
         app: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
         credentials: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
         groups: testers
-        file: build/app/outputs/flutter-apk/app-release.apk
+        file: build/app/outputs/flutter-apk/app-debug.apk
         release-notes: |
           🚀 New Android build from commit ${{ github.sha }}
           
@@ -142,6 +146,9 @@ jobs:
       uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: latest-stable
+
+    - name: Setup yq
+      uses: mikefarah/yq@v4.44.2
         
     - name: Get dependencies
       run: flutter pub get
@@ -157,7 +164,7 @@ jobs:
         echo "$PLIST_BASE64" | base64 --decode > ios/Runner/GoogleService-Info.plist
       
     - name: Build iOS
-      run: flutter build ios --release --no-codesign
+      run: flutter build ios --debug --no-codesign --build-name=$(yq -r .version pubspec.yaml | cut -d'+' -f1).${{ github.run_number }} --build-number=${{ github.run_number }}
     
     - name: Create iOS IPA
       run: |
