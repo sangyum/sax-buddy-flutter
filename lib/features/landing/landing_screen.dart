@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'widgets/portrait_layout.dart';
 import 'widgets/landscape_layout.dart';
+import '../auth/providers/auth_provider.dart';
+import '../../services/logger_service.dart';
 
 class LandingScreen extends StatelessWidget {
   const LandingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final logger = LoggerService.instance;
+    final authProvider = Provider.of<AuthProvider>(context);
+    
+    void handleSignIn() {
+      logger.info('User pressed sign-in button on landing screen', extra: {
+        'screen': 'landing',
+        'action': 'google_signin_initiated',
+      });
+      authProvider.signInWithGoogle();
+    }
+    
     return Scaffold(
       backgroundColor: const Color(0xFFFAFAFA),
       body: SafeArea(
@@ -45,23 +59,15 @@ class LandingScreen extends StatelessWidget {
                           logoSize: logoSize,
                           titleFontSize: titleFontSize,
                           subtitleFontSize: subtitleFontSize,
-                          onStartTrialPressed: () {
-                            // TODO: Navigate to assessment or signup
-                          },
-                          onSignInPressed: () {
-                            // TODO: Navigate to sign in
-                          },
+                          onStartTrialPressed: handleSignIn,
+                          onSignInPressed: handleSignIn,
                         )
                       : PortraitLayout(
                           logoSize: logoSize,
                           titleFontSize: titleFontSize,
                           subtitleFontSize: subtitleFontSize,
-                          onStartTrialPressed: () {
-                            // TODO: Navigate to assessment or signup
-                          },
-                          onSignInPressed: () {
-                            // TODO: Navigate to sign in
-                          },
+                          onStartTrialPressed: handleSignIn,
+                          onSignInPressed: handleSignIn,
                         ),
                 ),
               ),

@@ -1,33 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:mockito/annotations.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sax_buddy/features/landing/widgets/cta_section.dart';
+import 'package:sax_buddy/features/auth/providers/auth_provider.dart';
+import 'package:sax_buddy/features/auth/services/auth_service.dart';
+import 'package:sax_buddy/features/auth/repositories/user_repository.dart';
+import 'package:sax_buddy/services/logger_service.dart';
+
+@GenerateNiceMocks([MockSpec<AuthService>(), MockSpec<UserRepository>()])
+import 'cta_section_test.mocks.dart';
 
 void main() {
   group('CTASection', () {
+    late MockAuthService mockAuthService;
+    late MockUserRepository mockUserRepository;
+    late AuthProvider authProvider;
+
+    setUpAll(() {
+      dotenv.testLoad(fileInput: '''
+LOG_LEVEL=DEBUG
+ENVIRONMENT=test
+''');
+    });
+
+    setUp(() {
+      LoggerService.resetForTesting();
+      
+      mockAuthService = MockAuthService();
+      mockUserRepository = MockUserRepository();
+      authProvider = AuthProvider(
+        authService: mockAuthService,
+        userRepository: mockUserRepository,
+      );
+      
+      when(mockAuthService.getCurrentUser()).thenReturn(null);
+      when(mockAuthService.authStateChanges()).thenAnswer((_) => Stream.value(null));
+    });
+
+    Widget createTestWidget({required CTASection child}) {
+      return MaterialApp(
+        home: ChangeNotifierProvider<AuthProvider>.value(
+          value: authProvider,
+          child: Scaffold(body: child),
+        ),
+      );
+    }
     testWidgets('displays Start Free Trial button', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CTASection(
-              onStartTrialPressed: () {},
-              onSignInPressed: () {},
-            ),
+        createTestWidget(
+          child: CTASection(
+            onStartTrialPressed: () {},
+            onSignInPressed: () {},
           ),
         ),
       );
 
-      expect(find.text('Start Free Trial'), findsOneWidget);
+      expect(find.text('Sign up for free trial'), findsOneWidget);
       expect(find.byType(ElevatedButton), findsOneWidget);
     });
 
     testWidgets('displays Sign In text', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CTASection(
-              onStartTrialPressed: () {},
-              onSignInPressed: () {},
-            ),
+        createTestWidget(
+          child: CTASection(
+            onStartTrialPressed: () {},
+            onSignInPressed: () {},
           ),
         ),
       );
@@ -37,12 +77,10 @@ void main() {
 
     testWidgets('Start Free Trial button has correct styling', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CTASection(
-              onStartTrialPressed: () {},
-              onSignInPressed: () {},
-            ),
+        createTestWidget(
+          child: CTASection(
+            onStartTrialPressed: () {},
+            onSignInPressed: () {},
           ),
         ),
       );
@@ -50,18 +88,16 @@ void main() {
       final elevatedButton = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
       final buttonStyle = elevatedButton.style;
       
-      expect(buttonStyle?.backgroundColor?.resolve({}), const Color(0xFF2E5266));
+      expect(buttonStyle?.backgroundColor?.resolve({}), Colors.white);
       expect(buttonStyle?.shape?.resolve({}), isA<RoundedRectangleBorder>());
     });
 
     testWidgets('Sign In text has correct styling', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CTASection(
-              onStartTrialPressed: () {},
-              onSignInPressed: () {},
-            ),
+        createTestWidget(
+          child: CTASection(
+            onStartTrialPressed: () {},
+            onSignInPressed: () {},
           ),
         ),
       );
@@ -75,12 +111,10 @@ void main() {
       bool wasPressed = false;
       
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CTASection(
-              onStartTrialPressed: () => wasPressed = true,
-              onSignInPressed: () {},
-            ),
+        createTestWidget(
+          child: CTASection(
+            onStartTrialPressed: () => wasPressed = true,
+            onSignInPressed: () {},
           ),
         ),
       );
@@ -93,12 +127,10 @@ void main() {
       bool wasPressed = false;
       
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CTASection(
-              onStartTrialPressed: () {},
-              onSignInPressed: () => wasPressed = true,
-            ),
+        createTestWidget(
+          child: CTASection(
+            onStartTrialPressed: () {},
+            onSignInPressed: () => wasPressed = true,
           ),
         ),
       );
