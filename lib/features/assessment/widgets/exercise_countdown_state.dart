@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import '../models/assessment_exercise.dart';
 import '../providers/assessment_provider.dart';
 import 'exercise_card.dart';
-import 'recording_button.dart';
+import 'countdown_overlay_button.dart';
 
-class ExerciseSetupState extends StatelessWidget {
+class ExerciseCountdownState extends StatelessWidget {
   final AssessmentProvider provider;
   final AssessmentExercise exercise;
 
-  const ExerciseSetupState({
+  const ExerciseCountdownState({
     super.key,
     required this.provider,
     required this.exercise,
@@ -23,22 +23,16 @@ class ExerciseSetupState extends StatelessWidget {
             child: Column(
               children: [
                 const SizedBox(height: 24),
+                // Exercise card remains visible during countdown
                 ExerciseCard(
                   exercise: exercise,
                   exerciseNumber: provider.currentExerciseNumber,
                 ),
                 const SizedBox(height: 48),
-                RecordingButton(
-                  isRecording: false,
-                  onPressed: provider.startCountdown,
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Tap microphone to start recording',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF757575),
-                  ),
+                // Countdown overlay over the recording button
+                CountdownOverlayButton(
+                  countdownValue: provider.countdownValue,
+                  onCancel: provider.cancelCountdown,
                 ),
               ],
             ),

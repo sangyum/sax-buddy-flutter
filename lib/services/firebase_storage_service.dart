@@ -155,7 +155,7 @@ class FirebaseStorageService {
     final extension = path.extension(originalName);
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     
-    return 'exercise_${exerciseId}_${timestamp}$extension';
+    return 'exercise_${exerciseId}_$timestamp$extension';
   }
 
   /// Check if file exists in storage

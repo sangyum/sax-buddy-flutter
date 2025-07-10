@@ -47,7 +47,7 @@ class RecordingButton extends StatelessWidget {
                       ),
                     )
                   : const Icon(
-                      Icons.play_arrow,
+                      Icons.mic,
                       size: 36,
                       color: Color(0xFFE53E3E),
                     ),

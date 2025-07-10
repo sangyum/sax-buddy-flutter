@@ -4,7 +4,7 @@ import '../providers/assessment_provider.dart';
 import 'exercise_setup_state.dart';
 import 'exercise_recording_state.dart';
 import 'exercise_completed_state.dart';
-import 'countdown.dart';
+import 'exercise_countdown_state.dart';
 
 class ExerciseContent extends StatelessWidget {
   final AssessmentProvider provider;
@@ -22,9 +22,9 @@ class ExerciseContent extends StatelessWidget {
       case ExerciseState.setup:
         return ExerciseSetupState(provider: provider, exercise: exercise);
       case ExerciseState.countdown:
-        return Countdown(
-          countdownValue: provider.countdownValue,
-          onCancel: provider.cancelCountdown,
+        return ExerciseCountdownState(
+          provider: provider,
+          exercise: exercise,
         );
       case ExerciseState.recording:
         return ExerciseRecordingState(provider: provider, exercise: exercise);
