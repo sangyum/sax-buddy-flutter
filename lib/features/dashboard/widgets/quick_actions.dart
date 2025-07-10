@@ -25,7 +25,7 @@ class QuickActions extends StatelessWidget {
                   icon: Icons.play_arrow,
                   title: 'New\nAssessment',
                   subtitle: 'Get routine',
-                  onTap: () {},
+                  onTap: () => Navigator.of(context).pushNamed('/assessment'),
                 ),
               ),
               const SizedBox(width: 16),

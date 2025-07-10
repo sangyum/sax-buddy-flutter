@@ -5,9 +5,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sax_buddy/firebase_options.dart';
 import 'features/landing/landing_screen.dart';
 import 'features/dashboard/dashboard_screen.dart';
+import 'features/assessment/screens/exercise_screen.dart';
+import 'features/assessment/screens/assessment_complete_screen.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/auth/services/auth_service.dart';
 import 'features/auth/repositories/user_repository.dart';
+import 'features/assessment/providers/assessment_provider.dart';
 import 'services/logger_service.dart';
 
 void main() async {
@@ -68,6 +71,12 @@ class MyApp extends StatelessWidget {
             );
           },
         ),
+        ChangeNotifierProvider<AssessmentProvider>(
+          create: (context) {
+            logger.info('Creating AssessmentProvider');
+            return AssessmentProvider();
+          },
+        ),
       ],
       child: MaterialApp(
         title: 'SaxAI Coach',
@@ -76,6 +85,10 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         home: const AuthWrapper(),
+        routes: {
+          '/assessment': (context) => const AssessmentFlow(),
+          '/assessment/complete': (context) => const AssessmentCompleteScreen(),
+        },
       ),
     );
   }
@@ -99,6 +112,26 @@ class AuthWrapper extends StatelessWidget {
           logger.debug('AuthWrapper: User not authenticated, showing landing');
           return const LandingScreen();
         }
+      },
+    );
+  }
+}
+
+class AssessmentFlow extends StatelessWidget {
+  const AssessmentFlow({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AssessmentProvider>(
+      builder: (context, assessmentProvider, child) {
+        // Start the assessment when the flow is first accessed
+        if (assessmentProvider.currentSession == null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            assessmentProvider.startAssessment();
+          });
+        }
+        
+        return const ExerciseScreen();
       },
     );
   }

@@ -1,0 +1,38 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:storybook_flutter/storybook_flutter.dart';
+import 'dashboard/dashboard_stories.dart';
+import 'assessment/assessment_stories.dart';
+
+Future<void> main() async {
+  // Initialize environment for storybook
+  await dotenv.load(fileName: '.env');
+  
+  runApp(const StorybookApp());
+}
+
+class StorybookApp extends StatelessWidget {
+  const StorybookApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Storybook(
+      initialStory: 'Dashboard',
+      stories: [
+        ...dashboardStories,
+        ...assessmentStories,
+      ],
+      wrapperBuilder: (context, child) => MaterialApp(
+        title: 'Sax Buddy Storybook',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E5266)),
+          useMaterial3: true,
+        ),
+        home: Scaffold(
+          body: Center(child: child),
+        ),
+        debugShowCheckedModeBanner: false,
+      ),
+    );
+  }
+}

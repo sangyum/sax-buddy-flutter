@@ -45,3 +45,8 @@ AI-powered practice routine generation based on real-time analysis of user's pla
 ## Project Structure
 - Organize UI by feature/screen. Each screen is mapped to a feature and should be placed under lib/features/<feature name>.
 - Favor creating small widgets and compose them to build more complex widgets/screens
+- Storybook stories are organized in stories/ directory for component development and testing
+
+## Development Tools
+- **Storybook**: Run `./scripts/run-storybook.sh` or `flutter run -t stories/main.dart` for component development
+- **Testing**: Use `flutter test` to run unit tests (not `uv run`)
