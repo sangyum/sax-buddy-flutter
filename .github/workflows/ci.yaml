@@ -99,7 +99,7 @@ jobs:
         path: build/app/outputs/bundle/release/app-release.aab
 
     - name: Upload Android APK to Firebase App Distribution
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
       uses: nickwph/firebase-app-distribution-action@v1
       with:
         app: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
@@ -116,6 +116,7 @@ jobs:
           Commit: ${{ github.sha }}
 
   build-ios:
+    if: github.event_name == 'push'
     name: Build iOS
     runs-on: macos-latest
     needs: test
@@ -172,7 +173,7 @@ jobs:
         path: build/ios/iphoneos/Runner.ipa
 
     - name: Upload iOS IPA to Firebase App Distribution
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
       uses: nickwph/firebase-app-distribution-action@v1
       with:
         app: ${{ secrets.FIREBASE_IOS_APP_ID }}
