@@ -4,6 +4,7 @@ import '../auth/providers/auth_provider.dart';
 import 'widgets/welcome_section.dart';
 import 'widgets/subscription_status.dart';
 import 'widgets/quick_actions.dart';
+import 'widgets/recent_activity.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -11,10 +12,12 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
       appBar: AppBar(
-        title: const Text('SaxAI Coach'),
+        title: const Text('Dashboard'),
         backgroundColor: const Color(0xFF2E5266),
         foregroundColor: Colors.white,
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -33,15 +36,17 @@ class DashboardScreen extends StatelessWidget {
           }
           
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 WelcomeSection(user: user),
-                const SizedBox(height: 32),
+                const SizedBox(height: 24),
                 SubscriptionStatus(user: user),
                 const SizedBox(height: 32),
                 const QuickActions(),
+                const SizedBox(height: 32),
+                const RecentActivity(),
+                const SizedBox(height: 24),
               ],
             ),
           );
