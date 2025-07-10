@@ -3,7 +3,7 @@ import '../models/assessment_exercise.dart';
 import '../providers/assessment_provider.dart';
 import 'exercise_card.dart';
 import 'recording_button.dart';
-import 'waveform_placeholder.dart';
+import 'real_time_waveform.dart';
 
 class ExerciseRecordingState extends StatelessWidget {
   final AssessmentProvider provider;
@@ -38,7 +38,32 @@ class ExerciseRecordingState extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        const WaveformPlaceholder(isActive: true),
+        // Audio visualization with error handling
+        StreamBuilder<Object>(
+          stream: provider.audioService.stateStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Container(
+                height: 40,
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                child: const Center(
+                  child: Text(
+                    'Audio visualization unavailable',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF757575),
+                    ),
+                  ),
+                ),
+              );
+            }
+            
+            return RealTimeWaveform(
+              audioService: provider.audioService,
+              isActive: true,
+            );
+          },
+        ),
         const Spacer(),
       ],
     );

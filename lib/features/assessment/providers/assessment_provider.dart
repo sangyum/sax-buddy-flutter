@@ -5,6 +5,9 @@ import '../models/assessment_session.dart';
 import '../models/exercise_result.dart';
 import '../data/initial_exercises.dart';
 import '../../../services/logger_service.dart';
+import '../../../services/audio_recording_service.dart';
+import '../../../services/audio_analysis_service.dart';
+import '../../../services/firebase_storage_service.dart';
 
 enum ExerciseState {
   setup,
@@ -15,6 +18,9 @@ enum ExerciseState {
 
 class AssessmentProvider extends ChangeNotifier {
   final LoggerService _logger = LoggerService.instance;
+  final AudioRecordingService _audioService = AudioRecordingService();
+  final AudioAnalysisService _analysisService = AudioAnalysisService();
+  final FirebaseStorageService _storageService = FirebaseStorageService();
 
   AssessmentSession? _currentSession;
   ExerciseState _exerciseState = ExerciseState.setup;
@@ -22,6 +28,8 @@ class AssessmentProvider extends ChangeNotifier {
   Timer? _countdownTimer;
   Timer? _recordingTimer;
   DateTime? _exerciseStartTime;
+  String? _currentRecordingPath;
+  String? _lastError;
 
   AssessmentSession? get currentSession => _currentSession;
   ExerciseState get exerciseState => _exerciseState;
@@ -44,8 +52,29 @@ class AssessmentProvider extends ChangeNotifier {
   bool get canGoToPreviousExercise => 
       _currentSession?.canGoToPrevious ?? false;
 
-  void startAssessment() {
+  // Audio service getter for widgets to access waveform data
+  AudioRecordingService get audioService => _audioService;
+  
+  // Error state getter
+  String? get lastError => _lastError;
+
+  Future<void> startAssessment() async {
     _logger.info('Starting initial assessment');
+    
+    // Initialize audio service
+    await _audioService.initialize();
+    
+    // Check permissions
+    final hasPermission = await _audioService.checkPermissions();
+    if (!hasPermission) {
+      _logger.error('Microphone permission denied');
+      _lastError = 'Microphone permission is required for audio recording';
+      notifyListeners();
+      return;
+    }
+    
+    // Clear any previous errors
+    _lastError = null;
     
     _currentSession = AssessmentSession(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -92,11 +121,22 @@ class AssessmentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _startRecording() {
+  Future<void> _startRecording() async {
     _logger.info('Starting recording for exercise $currentExerciseNumber');
     
     _exerciseState = ExerciseState.recording;
     _exerciseStartTime = DateTime.now();
+    
+    // Start actual audio recording
+    try {
+      _currentRecordingPath = await _audioService.startRecording();
+      _logger.info('Audio recording started: $_currentRecordingPath');
+      _lastError = null; // Clear any previous errors
+    } catch (e) {
+      _logger.error('Failed to start audio recording: $e');
+      _lastError = 'Failed to start audio recording: ${e.toString()}';
+      notifyListeners();
+    }
     
     final exerciseDuration = currentExercise?.duration ?? const Duration(seconds: 45);
     
@@ -107,30 +147,61 @@ class AssessmentProvider extends ChangeNotifier {
     });
   }
 
-  void stopRecording() {
+  Future<void> stopRecording() async {
     _logger.info('Recording stopped manually');
-    _stopRecording();
+    await _stopRecording();
   }
 
-  void _stopRecording() {
+  Future<void> _stopRecording() async {
     _recordingTimer?.cancel();
     _recordingTimer = null;
 
     if (_currentSession == null || _exerciseStartTime == null) return;
 
+    // Stop actual audio recording
+    String? recordingPath;
+    try {
+      recordingPath = await _audioService.stopRecording();
+      _logger.info('Audio recording stopped: $recordingPath');
+    } catch (e) {
+      _logger.error('Failed to stop audio recording: $e');
+    }
+
     final exercise = currentExercise!;
     final actualDuration = DateTime.now().difference(_exerciseStartTime!);
+
+    // Perform audio analysis if recording exists
+    Map<String, dynamic> analysisData = {
+      'exercise_title': exercise.title,
+      'target_duration': exercise.duration.inSeconds,
+      'actual_duration': actualDuration.inSeconds,
+      'recording_path': recordingPath,
+      'recording_file_size': recordingPath != null ? await _audioService.getRecordingSize(recordingPath) : null,
+    };
+
+    if (recordingPath != null) {
+      try {
+        // Perform audio analysis
+        final analysis = await _analysisService.analyzeRecording(recordingPath);
+        analysisData.addAll(analysis.toJson());
+        _logger.info('Audio analysis completed for exercise ${exercise.id}');
+        
+        // Upload to Firebase Storage in background
+        _storageService.uploadAudioFileInBackground(recordingPath, exercise.id.toString());
+        _logger.info('Audio upload initiated for exercise ${exercise.id}');
+        
+      } catch (e) {
+        _logger.error('Audio analysis failed: $e');
+        analysisData['analysis_error'] = e.toString();
+      }
+    }
 
     final result = ExerciseResult(
       exerciseId: exercise.id,
       completedAt: DateTime.now(),
       actualDuration: actualDuration,
       wasCompleted: true,
-      analysisData: {
-        'exercise_title': exercise.title,
-        'target_duration': exercise.duration.inSeconds,
-        'actual_duration': actualDuration.inSeconds,
-      },
+      analysisData: analysisData,
     );
 
     final updatedResults = List<ExerciseResult>.from(_currentSession!.completedExercises)
@@ -142,10 +213,12 @@ class AssessmentProvider extends ChangeNotifier {
 
     _exerciseState = ExerciseState.completed;
     _exerciseStartTime = null;
+    _currentRecordingPath = null;
 
     _logger.info('Exercise $currentExerciseNumber completed', extra: {
       'exerciseId': exercise.id,
       'duration': actualDuration.inSeconds,
+      'recordingPath': recordingPath,
     });
 
     notifyListeners();
@@ -219,14 +292,30 @@ class AssessmentProvider extends ChangeNotifier {
     _exerciseState = ExerciseState.setup;
     _countdownValue = 5;
     _exerciseStartTime = null;
+    _lastError = null;
     
     notifyListeners();
   }
+
+  /// Clear last error and retry
+  Future<void> retryAfterError() async {
+    _lastError = null;
+    notifyListeners();
+    
+    // If we're not in an assessment, try to start one
+    if (_currentSession == null) {
+      await startAssessment();
+    }
+  }
+
+  /// Check if we have an active error
+  bool get hasError => _lastError != null;
 
   @override
   void dispose() {
     _countdownTimer?.cancel();
     _recordingTimer?.cancel();
+    _audioService.dispose();
     super.dispose();
   }
 }
