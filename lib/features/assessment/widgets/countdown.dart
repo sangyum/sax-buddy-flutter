@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 
-class CountdownWidget extends StatelessWidget {
+class Countdown extends StatelessWidget {
   final int countdownValue;
   final VoidCallback? onCancel;
 
-  const CountdownWidget({
-    super.key,
-    required this.countdownValue,
-    this.onCancel,
-  });
+  const Countdown({super.key, required this.countdownValue, this.onCancel});
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +19,7 @@ class CountdownWidget extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: const Color(0xFF2E5266).withValues(alpha: 0.1),
-              border: Border.all(
-                color: const Color(0xFF2E5266),
-                width: 3,
-              ),
+              border: Border.all(color: const Color(0xFF2E5266), width: 3),
             ),
             child: Center(
               child: Text(
@@ -42,9 +35,9 @@ class CountdownWidget extends StatelessWidget {
           const SizedBox(height: 24),
           Text(
             'Get ready to play...',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
           ),
           const SizedBox(height: 24),
           if (onCancel != null)
@@ -52,10 +45,7 @@ class CountdownWidget extends StatelessWidget {
               onPressed: onCancel,
               child: const Text(
                 'Cancel',
-                style: TextStyle(
-                  color: Color(0xFF2E5266),
-                  fontSize: 16,
-                ),
+                style: TextStyle(color: Color(0xFF2E5266), fontSize: 16),
               ),
             ),
         ],
