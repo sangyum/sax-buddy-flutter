@@ -84,23 +84,36 @@ jobs:
         # Decode the Base64 string and write it to the google-services.json file
         echo "$GOOGLE_SERVICES_BASE64" | base64 --decode > android/app/google-services.json
 
+    - name: Decode Keystore
+      id: android_keystore
+      uses: timheuer/base64-to-file@v1.0.3
+      with:
+        fileName: upload-keystore.jks
+        encodedString: ${{ secrets.KEYSTORE_BASE64 }}
+    - name: Create key.properties
+      run: |
+        echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > android/key.properties
+        echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
+        echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+        echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+
     - name: Build Android APK
-      run: flutter build apk --debug --build-name=$(yq -r .version pubspec.yaml | cut -d'+' -f1).${{ github.run_number }} --build-number=${{ github.run_number }}
+      run: flutter build apk --release --build-name=$(yq -r .version pubspec.yaml | cut -d'+' -f1).${{ github.run_number }} --build-number=${{ github.run_number }}
       
     - name: Build Android App Bundle
-      run: flutter build appbundle --debug --build-name=$(yq -r .version pubspec.yaml | cut -d'+' -f1).${{ github.run_number }} --build-number=${{ github.run_number }}
+      run: flutter build appbundle --release --build-name=$(yq -r .version pubspec.yaml | cut -d'+' -f1).${{ github.run_number }} --build-number=${{ github.run_number }}
         
     - name: Upload Android APK
       uses: actions/upload-artifact@v4
       with:
         name: android-apk
-        path: build/app/outputs/flutter-apk/app-debug.apk
+        path: build/app/outputs/flutter-apk/app-release.apk
         
     - name: Upload Android App Bundle
       uses: actions/upload-artifact@v4
       with:
         name: android-aab
-        path: build/app/outputs/bundle/debug/app-debug.aab
+        path: build/app/outputs/bundle/release/app-release.aab
 
     - name: Upload Android APK to Firebase App Distribution
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
@@ -109,7 +122,7 @@ jobs:
         app: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
         credentials: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
         groups: testers
-        file: build/app/outputs/flutter-apk/app-debug.apk
+        file: build/app/outputs/flutter-apk/app-release.apk
         release-notes: |
           🚀 New Android build from commit ${{ github.sha }}
           
@@ -164,7 +177,7 @@ jobs:
         echo "$PLIST_BASE64" | base64 --decode > ios/Runner/GoogleService-Info.plist
       
     - name: Build iOS
-      run: flutter build ios --debug --no-codesign --build-name=$(yq -r .version pubspec.yaml | cut -d'+' -f1).${{ github.run_number }} --build-number=${{ github.run_number }}
+      run: flutter build ios --release --no-codesign --build-name=$(yq -r .version pubspec.yaml | cut -d'+' -f1).${{ github.run_number }} --build-number=${{ github.run_number }}
     
     - name: Create iOS IPA
       run: |
