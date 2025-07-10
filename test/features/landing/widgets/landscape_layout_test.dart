@@ -1,45 +1,85 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:mockito/annotations.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sax_buddy/features/landing/widgets/landscape_layout.dart';
+import 'package:sax_buddy/features/auth/providers/auth_provider.dart';
+import 'package:sax_buddy/features/auth/services/auth_service.dart';
+import 'package:sax_buddy/features/auth/repositories/user_repository.dart';
+import 'package:sax_buddy/services/logger_service.dart';
+
+@GenerateNiceMocks([MockSpec<AuthService>(), MockSpec<UserRepository>()])
+import 'landscape_layout_test.mocks.dart';
 
 void main() {
   group('LandscapeLayout', () {
+    late MockAuthService mockAuthService;
+    late MockUserRepository mockUserRepository;
+    late AuthProvider authProvider;
+
+    setUpAll(() {
+      dotenv.testLoad(fileInput: '''
+LOG_LEVEL=DEBUG
+ENVIRONMENT=test
+''');
+    });
+
+    setUp(() {
+      LoggerService.resetForTesting();
+      
+      mockAuthService = MockAuthService();
+      mockUserRepository = MockUserRepository();
+      authProvider = AuthProvider(
+        authService: mockAuthService,
+        userRepository: mockUserRepository,
+      );
+      
+      when(mockAuthService.getCurrentUser()).thenReturn(null);
+      when(mockAuthService.authStateChanges()).thenAnswer((_) => Stream.value(null));
+    });
+
+    Widget createTestWidget({required LandscapeLayout child}) {
+      return MaterialApp(
+        home: ChangeNotifierProvider<AuthProvider>.value(
+          value: authProvider,
+          child: Scaffold(body: child),
+        ),
+      );
+    }
     testWidgets('displays all components in landscape layout', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LandscapeLayout(
-              logoSize: 100,
-              titleFontSize: 28,
-              subtitleFontSize: 16,
-              onStartTrialPressed: () {},
-              onSignInPressed: () {},
-            ),
+        createTestWidget(
+          child: LandscapeLayout(
+            logoSize: 100,
+            titleFontSize: 28,
+            subtitleFontSize: 16,
+            onStartTrialPressed: () {},
+            onSignInPressed: () {},
           ),
         ),
       );
 
       // Verify all components are present
-      expect(find.byType(Image), findsOneWidget); // Logo
+      expect(find.byType(Image), findsWidgets); // Logo and Google button image
       expect(find.text('SaxAI Coach'), findsOneWidget); // Title
       expect(find.text('AI-powered practice routines'), findsOneWidget); // Subtitle
       expect(find.text('Audio Analysis'), findsOneWidget); // Feature card
       expect(find.text('AI Routines'), findsOneWidget); // Feature card
-      expect(find.text('Start Free Trial'), findsOneWidget); // CTA button
+      expect(find.text('Sign up for free trial'), findsOneWidget); // CTA button
       expect(find.text('Already have account? Sign In'), findsOneWidget); // Sign in
     });
 
     testWidgets('uses Row layout for landscape mode', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LandscapeLayout(
-              logoSize: 100,
-              titleFontSize: 28,
-              subtitleFontSize: 16,
-              onStartTrialPressed: () {},
-              onSignInPressed: () {},
-            ),
+        createTestWidget(
+          child: LandscapeLayout(
+            logoSize: 100,
+            titleFontSize: 28,
+            subtitleFontSize: 16,
+            onStartTrialPressed: () {},
+            onSignInPressed: () {},
           ),
         ),
       );
@@ -51,15 +91,13 @@ void main() {
 
     testWidgets('separates logo/title from features/CTA in landscape', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LandscapeLayout(
-              logoSize: 100,
-              titleFontSize: 28,
-              subtitleFontSize: 16,
-              onStartTrialPressed: () {},
-              onSignInPressed: () {},
-            ),
+        createTestWidget(
+          child: LandscapeLayout(
+            logoSize: 100,
+            titleFontSize: 28,
+            subtitleFontSize: 16,
+            onStartTrialPressed: () {},
+            onSignInPressed: () {},
           ),
         ),
       );
@@ -74,15 +112,13 @@ void main() {
 
     testWidgets('passes correct parameters to child widgets', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LandscapeLayout(
-              logoSize: 140,
-              titleFontSize: 36,
-              subtitleFontSize: 20,
-              onStartTrialPressed: () {},
-              onSignInPressed: () {},
-            ),
+        createTestWidget(
+          child: LandscapeLayout(
+            logoSize: 140,
+            titleFontSize: 36,
+            subtitleFontSize: 20,
+            onStartTrialPressed: () {},
+            onSignInPressed: () {},
           ),
         ),
       );
@@ -100,15 +136,13 @@ void main() {
       bool signInPressed = false;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LandscapeLayout(
-              logoSize: 100,
-              titleFontSize: 28,
-              subtitleFontSize: 16,
-              onStartTrialPressed: () => startTrialPressed = true,
-              onSignInPressed: () => signInPressed = true,
-            ),
+        createTestWidget(
+          child: LandscapeLayout(
+            logoSize: 100,
+            titleFontSize: 28,
+            subtitleFontSize: 16,
+            onStartTrialPressed: () => startTrialPressed = true,
+            onSignInPressed: () => signInPressed = true,
           ),
         ),
       );

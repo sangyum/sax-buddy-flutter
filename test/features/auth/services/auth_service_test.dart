@@ -2,8 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sax_buddy/features/auth/services/auth_service.dart';
 import 'package:sax_buddy/features/auth/models/user.dart' as app_user;
+import 'package:sax_buddy/services/logger_service.dart';
 
 @GenerateMocks([
   FirebaseAuth,
@@ -19,7 +21,18 @@ void main() {
     late MockUser mockFirebaseUser;
     late MockUserCredential mockUserCredential;
 
+    setUpAll(() {
+      // Initialize environment for logger
+      dotenv.testLoad(fileInput: '''
+LOG_LEVEL=DEBUG
+ENVIRONMENT=test
+''');
+    });
+
     setUp(() {
+      // Reset logger singleton for each test
+      LoggerService.resetForTesting();
+      
       mockFirebaseAuth = MockFirebaseAuth();
       mockFirebaseUser = MockUser();
       mockUserCredential = MockUserCredential();

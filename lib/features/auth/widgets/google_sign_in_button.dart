@@ -36,7 +36,7 @@ class GoogleSignInButton extends StatelessWidget {
               horizontal: 24,
               vertical: 12,
             ),
-            minimumSize: const Size(200, 48),
+            minimumSize: const Size(0, 48),
           ),
           child: isLoading
               ? const SizedBox(
@@ -49,6 +49,7 @@ class GoogleSignInButton extends StatelessWidget {
                 )
               : Row(
                   mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.network(
                       'https://developers.google.com/identity/images/g-logo.png',
@@ -71,11 +72,15 @@ class GoogleSignInButton extends StatelessWidget {
                       },
                     ),
                     const SizedBox(width: 12),
-                    Text(
-                      text,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                    Flexible(
+                      child: Text(
+                        text,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ),
                   ],

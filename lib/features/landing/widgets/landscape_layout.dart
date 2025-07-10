@@ -27,16 +27,19 @@ class LandscapeLayout extends StatelessWidget {
         // Left side - Logo and title
         Expanded(
           flex: 1,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Logo(size: logoSize),
-              const SizedBox(height: 24),
-              TitleSection(
-                titleFontSize: titleFontSize,
-                subtitleFontSize: subtitleFontSize,
-              ),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Logo(size: logoSize),
+                const SizedBox(height: 24),
+                TitleSection(
+                  titleFontSize: titleFontSize,
+                  subtitleFontSize: subtitleFontSize,
+                ),
+              ],
+            ),
           ),
         ),
         
@@ -45,16 +48,19 @@ class LandscapeLayout extends StatelessWidget {
         // Right side - Features and CTAs
         Expanded(
           flex: 1,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const FeatureCards(),
-              const SizedBox(height: 40),
-              CTASection(
-                onStartTrialPressed: onStartTrialPressed,
-                onSignInPressed: onSignInPressed,
-              ),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const FeatureCards(),
+                const SizedBox(height: 40),
+                CTASection(
+                  onStartTrialPressed: onStartTrialPressed,
+                  onSignInPressed: onSignInPressed,
+                ),
+              ],
+            ),
           ),
         ),
       ],

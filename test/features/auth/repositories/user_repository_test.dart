@@ -2,8 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sax_buddy/features/auth/repositories/user_repository.dart';
 import 'package:sax_buddy/features/auth/models/user.dart';
+import 'package:sax_buddy/services/logger_service.dart';
 
 @GenerateMocks([
   FirebaseFirestore,
@@ -21,7 +23,18 @@ void main() {
     late MockDocumentReference<Map<String, dynamic>> mockDocument;
     late MockDocumentSnapshot<Map<String, dynamic>> mockDocumentSnapshot;
 
+    setUpAll(() {
+      // Initialize environment for logger
+      dotenv.testLoad(fileInput: '''
+LOG_LEVEL=DEBUG
+ENVIRONMENT=test
+''');
+    });
+
     setUp(() {
+      // Reset logger singleton for each test
+      LoggerService.resetForTesting();
+      
       mockFirestore = MockFirebaseFirestore();
       mockCollection = MockCollectionReference<Map<String, dynamic>>();
       mockDocument = MockDocumentReference<Map<String, dynamic>>();

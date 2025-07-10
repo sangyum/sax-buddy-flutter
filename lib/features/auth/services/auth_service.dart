@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user.dart' as app_user;
+import '../../../services/logger_service.dart';
 
 class AuthException implements Exception {
   final String message;
@@ -13,13 +14,18 @@ class AuthException implements Exception {
 
 class AuthService {
   final FirebaseAuth _firebaseAuth;
+  final LoggerService _logger = LoggerService.instance;
 
   AuthService({
     FirebaseAuth? firebaseAuth,
   }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   Future<app_user.User?> signInWithGoogle() async {
+    final stopwatch = Stopwatch()..start();
+    
     try {
+      _logger.logAuthEvent('google_signin_attempt');
+      
       final GoogleAuthProvider googleProvider = GoogleAuthProvider();
       googleProvider.addScope('email');
       googleProvider.addScope('profile');
@@ -28,36 +34,90 @@ class AuthService {
       final User? firebaseUser = userCredential.user;
 
       if (firebaseUser == null) {
+        _logger.logAuthEvent('google_signin_failed', extra: {'reason': 'null_user'});
         throw const AuthException('Failed to sign in with Firebase');
       }
 
-      return _convertFirebaseUserToAppUser(firebaseUser);
+      final appUser = _convertFirebaseUserToAppUser(firebaseUser);
+      stopwatch.stop();
+      
+      _logger.logAuthEvent('google_signin_success', 
+        userId: appUser.id,
+        extra: {
+          'email': appUser.email,
+          'displayName': appUser.displayName,
+          'durationMs': stopwatch.elapsedMilliseconds,
+        }
+      );
+      
+      _logger.logPerformance('google_signin', stopwatch.elapsed);
+      
+      return appUser;
     } on FirebaseAuthException catch (e) {
+      stopwatch.stop();
+      _logger.logError('google_signin', e, 
+        extra: {
+          'code': e.code,
+          'message': e.message,
+          'durationMs': stopwatch.elapsedMilliseconds,
+        }
+      );
       throw AuthException('Firebase authentication failed: ${e.message}', code: e.code);
     } catch (e) {
+      stopwatch.stop();
+      _logger.logError('google_signin', e,
+        extra: {'durationMs': stopwatch.elapsedMilliseconds}
+      );
       throw AuthException('Google sign-in failed: $e');
     }
   }
 
   Future<void> signOut() async {
     try {
+      _logger.logAuthEvent('signout_attempt');
       await _firebaseAuth.signOut();
+      _logger.logAuthEvent('signout_success');
     } catch (e) {
+      _logger.logError('signout', e);
       throw AuthException('Sign out failed: $e');
     }
   }
 
   app_user.User? getCurrentUser() {
-    final User? firebaseUser = _firebaseAuth.currentUser;
-    if (firebaseUser == null) return null;
-    
-    return _convertFirebaseUserToAppUser(firebaseUser);
+    try {
+      final User? firebaseUser = _firebaseAuth.currentUser;
+      if (firebaseUser == null) {
+        _logger.debug('getCurrentUser: No current user');
+        return null;
+      }
+      
+      final appUser = _convertFirebaseUserToAppUser(firebaseUser);
+      _logger.debug('getCurrentUser: Retrieved current user', 
+        extra: {'userId': appUser.id, 'email': appUser.email});
+      
+      return appUser;
+    } catch (e) {
+      _logger.logError('get_current_user', e);
+      return null;
+    }
   }
 
   Stream<app_user.User?> authStateChanges() {
+    _logger.debug('Setting up auth state change listener');
+    
     return _firebaseAuth.authStateChanges().map((User? firebaseUser) {
-      if (firebaseUser == null) return null;
-      return _convertFirebaseUserToAppUser(firebaseUser);
+      if (firebaseUser == null) {
+        _logger.logAuthEvent('auth_state_change', extra: {'state': 'signed_out'});
+        return null;
+      }
+      
+      final appUser = _convertFirebaseUserToAppUser(firebaseUser);
+      _logger.logAuthEvent('auth_state_change', 
+        userId: appUser.id,
+        extra: {'state': 'signed_in', 'email': appUser.email}
+      );
+      
+      return appUser;
     });
   }
 
