@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../auth/widgets/google_sign_in_button.dart';
 
 class CTASection extends StatelessWidget {
   const CTASection({
@@ -14,26 +15,9 @@ class CTASection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(
-          width: double.infinity,
-          height: 48,
-          child: ElevatedButton(
-            onPressed: onStartTrialPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2E5266),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: const Text(
-              'Start Free Trial',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
+        GoogleSignInButton(
+          text: 'Sign up for free trial',
+          onPressed: onStartTrialPressed,
         ),
         
         const SizedBox(height: 16),
