@@ -17,10 +17,20 @@ enum ExerciseState {
 }
 
 class AssessmentProvider extends ChangeNotifier {
-  final LoggerService _logger = LoggerService.instance;
-  final AudioRecordingService _audioService = AudioRecordingService();
-  final AudioAnalysisService _analysisService = AudioAnalysisService();
-  final FirebaseStorageService _storageService = FirebaseStorageService();
+  final LoggerService _logger;
+  final AudioRecordingService _audioService;
+  final AudioAnalysisService _analysisService;
+  final FirebaseStorageService _storageService;
+
+  AssessmentProvider({
+    LoggerService? logger,
+    AudioRecordingService? audioService,
+    AudioAnalysisService? analysisService,
+    FirebaseStorageService? storageService,
+  }) : _logger = logger ?? LoggerService.instance,
+       _audioService = audioService ?? AudioRecordingService(),
+       _analysisService = analysisService ?? AudioAnalysisService(),
+       _storageService = storageService ?? FirebaseStorageService();
 
   AssessmentSession? _currentSession;
   ExerciseState _exerciseState = ExerciseState.setup;
@@ -105,7 +115,7 @@ class AssessmentProvider extends ChangeNotifier {
 
         if (_countdownValue <= 0) {
           timer.cancel();
-          _startRecording();
+          startRecording();
         }
       },
     );
@@ -121,7 +131,7 @@ class AssessmentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _startRecording() async {
+  Future<void> startRecording() async {
     _logger.info('Starting recording for exercise $currentExerciseNumber');
     
     _exerciseState = ExerciseState.recording;

@@ -54,6 +54,9 @@ class ExercisePresentation extends StatelessWidget {
                   child: ExerciseContent(
                     provider: assessmentProvider,
                     exercise: exercise,
+                    exerciseNumber: assessmentProvider.currentExerciseNumber,
+                    onStartRecording: assessmentProvider.startRecording,
+                    onStopRecording: assessmentProvider.stopRecording,
                   ),
                 ),
                 ExerciseNavigationButtons(

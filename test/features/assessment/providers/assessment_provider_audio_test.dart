@@ -5,26 +5,35 @@ import 'package:sax_buddy/features/assessment/providers/assessment_provider.dart
 import 'package:sax_buddy/services/audio_recording_service.dart';
 import 'package:sax_buddy/services/audio_analysis_service.dart';
 import 'package:sax_buddy/services/firebase_storage_service.dart';
+import 'package:sax_buddy/services/logger_service.dart';
 
 // Generate mocks for dependencies
-@GenerateMocks([AudioRecordingService, AudioAnalysisService, FirebaseStorageService])
+@GenerateMocks([AudioRecordingService, AudioAnalysisService, FirebaseStorageService, LoggerService])
 import 'assessment_provider_audio_test.mocks.dart';
 
 void main() {
+
   group('AssessmentProvider Audio Integration', () {
     late AssessmentProvider provider;
     late MockAudioRecordingService mockAudioService;
     late MockAudioAnalysisService mockAnalysisService;
     late MockFirebaseStorageService mockStorageService;
+    late MockLoggerService mockLoggerService;
 
     setUp(() {
       // Create mock services
       mockAudioService = MockAudioRecordingService();
       mockAnalysisService = MockAudioAnalysisService();
       mockStorageService = MockFirebaseStorageService();
+      mockLoggerService = MockLoggerService();
       
-      // Create provider
-      provider = AssessmentProvider();
+      // Create provider with mocked dependencies
+      provider = AssessmentProvider(
+        logger: mockLoggerService,
+        audioService: mockAudioService,
+        analysisService: mockAnalysisService,
+        storageService: mockStorageService,
+      );
       
       // Set up default mock responses
       when(mockAudioService.initialize()).thenAnswer((_) async => {});
@@ -56,7 +65,12 @@ void main() {
     });
 
     tearDown(() {
-      provider.dispose();
+      // Dispose if not already disposed
+      try {
+        provider.dispose();
+      } catch (e) {
+        // Already disposed - ignore
+      }
     });
 
     group('Audio Service Integration', () {
@@ -208,11 +222,11 @@ void main() {
       test('should dispose audio service on provider dispose', () async {
         await provider.startAssessment();
         
-        // Dispose the provider
-        provider.dispose();
-        
-        // Verify disposal completes without error
+        // Verify that the session was created before disposal
         expect(provider.currentSession, isNotNull);
+        
+        // Test that disposal works without error (tearDown will handle second dispose)
+        expect(() => provider.dispose(), returnsNormally);
       });
 
       test('should handle cleanup errors gracefully', () async {

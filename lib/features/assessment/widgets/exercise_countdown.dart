@@ -4,11 +4,11 @@ import '../providers/assessment_provider.dart';
 import 'exercise_card.dart';
 import 'countdown_overlay_button.dart';
 
-class ExerciseCountdownState extends StatelessWidget {
+class ExerciseCountdown extends StatelessWidget {
   final AssessmentProvider provider;
   final AssessmentExercise exercise;
 
-  const ExerciseCountdownState({
+  const ExerciseCountdown({
     super.key,
     required this.provider,
     required this.exercise,

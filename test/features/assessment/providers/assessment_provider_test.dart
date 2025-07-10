@@ -1,26 +1,95 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:sax_buddy/features/assessment/providers/assessment_provider.dart';
 import 'package:sax_buddy/features/assessment/models/assessment_session.dart';
+import 'package:sax_buddy/services/audio_analysis_service.dart';
+import 'package:sax_buddy/services/audio_recording_service.dart';
+import 'package:sax_buddy/services/firebase_storage_service.dart';
+import 'package:sax_buddy/services/logger_service.dart';
+
+// Generate mocks for dependencies
+@GenerateMocks([
+  AudioRecordingService,
+  AudioAnalysisService,
+  FirebaseStorageService,
+  LoggerService,
+])
+import 'assessment_provider_audio_test.mocks.dart';
 
 void main() {
   group('AssessmentProvider', () {
     late AssessmentProvider provider;
-
-    setUpAll(() {
-      // Initialize environment for logger
-      dotenv.testLoad(fileInput: '''
-LOG_LEVEL=DEBUG
-ENVIRONMENT=test
-''');
-    });
+    late MockAudioRecordingService mockAudioService;
+    late MockAudioAnalysisService mockAnalysisService;
+    late MockFirebaseStorageService mockStorageService;
+    late MockLoggerService mockLoggerService;
 
     setUp(() {
-      provider = AssessmentProvider();
+      // Create mock services
+      mockAudioService = MockAudioRecordingService();
+      mockAnalysisService = MockAudioAnalysisService();
+      mockStorageService = MockFirebaseStorageService();
+      mockLoggerService = MockLoggerService();
+
+      // Create provider with mocked dependencies
+      provider = AssessmentProvider(
+        logger: mockLoggerService,
+        audioService: mockAudioService,
+        analysisService: mockAnalysisService,
+        storageService: mockStorageService,
+      );
+
+      // Set up default mock responses
+      when(mockAudioService.initialize()).thenAnswer((_) async => {});
+      when(mockAudioService.checkPermissions()).thenAnswer((_) async => true);
+      when(
+        mockAudioService.startRecording(),
+      ).thenAnswer((_) async => '/path/to/recording.aac');
+      when(
+        mockAudioService.stopRecording(),
+      ).thenAnswer((_) async => '/path/to/recording.aac');
+      when(
+        mockAudioService.getRecordingSize(any),
+      ).thenAnswer((_) async => 1024);
+      when(mockAudioService.currentState).thenReturn(AudioRecordingState.idle);
+      when(
+        mockAudioService.stateStream,
+      ).thenAnswer((_) => const Stream.empty());
+      when(
+        mockAudioService.durationStream,
+      ).thenAnswer((_) => const Stream.empty());
+      when(
+        mockAudioService.waveformStream,
+      ).thenAnswer((_) => const Stream.empty());
+      when(mockAudioService.dispose()).thenAnswer((_) async => {});
+
+      // Mock analysis service
+      when(mockAnalysisService.analyzeRecording(any)).thenAnswer(
+        (_) async => AudioAnalysisResult(
+          pitchData: [440.0, 441.0, 442.0],
+          timingData: [0.0, 0.5, 1.0],
+          avgPitch: 441.0,
+          pitchStability: 1.0,
+          rhythmAccuracy: 0.9,
+          totalNotes: 3,
+          detailedAnalysis: {'test': 'data'},
+        ),
+      );
+
+      // Mock storage service
+      when(
+        mockStorageService.uploadAudioFileInBackground(any, any),
+      ).thenAnswer((_) async => {});
     });
 
     tearDown(() {
-      provider.dispose();
+      // Dispose if not already disposed
+      try {
+        provider.dispose();
+      } catch (e) {
+        // Already disposed - ignore
+      }
     });
 
     group('Initial state', () {
@@ -44,23 +113,26 @@ ENVIRONMENT=test
     });
 
     group('Starting assessment', () {
-      test('should create new assessment session', () {
-        provider.startAssessment();
+      test('should create new assessment session', () async {
+        await provider.startAssessment();
 
         expect(provider.currentSession, isNotNull);
-        expect(provider.currentSession!.state, equals(AssessmentSessionState.inProgress));
+        expect(
+          provider.currentSession!.state,
+          equals(AssessmentSessionState.inProgress),
+        );
         expect(provider.currentSession!.currentExerciseIndex, equals(0));
         expect(provider.currentSession!.completedExercises, isEmpty);
       });
 
-      test('should set exercise state to setup', () {
-        provider.startAssessment();
+      test('should set exercise state to setup', () async {
+        await provider.startAssessment();
 
         expect(provider.exerciseState, equals(ExerciseState.setup));
       });
 
-      test('should provide current exercise information', () {
-        provider.startAssessment();
+      test('should provide current exercise information', () async {
+        await provider.startAssessment();
 
         expect(provider.currentExercise, isNotNull);
         expect(provider.currentExercise!.id, equals(1));
@@ -70,8 +142,8 @@ ENVIRONMENT=test
     });
 
     group('Countdown functionality', () {
-      setUp(() {
-        provider.startAssessment();
+      setUp(() async {
+        await provider.startAssessment();
       });
 
       test('should start countdown when requested', () {
@@ -92,8 +164,8 @@ ENVIRONMENT=test
     });
 
     group('Exercise navigation', () {
-      setUp(() {
-        provider.startAssessment();
+      setUp(() async {
+        await provider.startAssessment();
       });
 
       test('should indicate navigation capabilities correctly', () {
@@ -106,30 +178,36 @@ ENVIRONMENT=test
         // Test navigation logic - we're just testing that the provider
         // can move between exercises regardless of completion state
         final initialExercise = provider.currentExerciseNumber;
-        
+
         provider.goToNextExercise();
-        
+
         expect(provider.currentExerciseNumber, equals(initialExercise + 1));
         expect(provider.exerciseState, equals(ExerciseState.setup));
       });
 
       test('should complete assessment after all exercises', () {
         expect(provider.currentSession!.isCompleted, isFalse);
-        
+
         provider.completeAssessment();
-        expect(provider.currentSession!.state, equals(AssessmentSessionState.completed));
+        expect(
+          provider.currentSession!.state,
+          equals(AssessmentSessionState.completed),
+        );
       });
     });
 
     group('Assessment cancellation', () {
-      setUp(() {
-        provider.startAssessment();
+      setUp(() async {
+        await provider.startAssessment();
       });
 
       test('should cancel assessment', () {
         provider.cancelAssessment();
 
-        expect(provider.currentSession!.state, equals(AssessmentSessionState.cancelled));
+        expect(
+          provider.currentSession!.state,
+          equals(AssessmentSessionState.cancelled),
+        );
         expect(provider.exerciseState, equals(ExerciseState.setup));
       });
 
@@ -143,15 +221,15 @@ ENVIRONMENT=test
     });
 
     group('Recording state', () {
-      setUp(() {
-        provider.startAssessment();
+      setUp(() async {
+        await provider.startAssessment();
       });
 
-      test('should stop recording manually', () {
+      test('should stop recording manually', () async {
         provider.startCountdown();
-        
+
         // Test that stopRecording method can be called
-        provider.stopRecording();
+        await provider.stopRecording();
 
         // The state might not change if not actually recording, which is fine for this test
         expect(provider.isRecording, isFalse);

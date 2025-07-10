@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sax_buddy/features/assessment/widgets/excercise_info.dart';
-import 'package:sax_buddy/features/assessment/widgets/focus_area_chip.dart';
 import 'package:sax_buddy/features/assessment/widgets/focus_areas.dart';
-import 'package:sax_buddy/features/assessment/widgets/info_chip.dart';
 import '../models/assessment_exercise.dart';
 
 class ExerciseCard extends StatelessWidget {

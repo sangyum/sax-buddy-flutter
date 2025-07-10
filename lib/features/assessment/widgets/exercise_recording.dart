@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import '../models/assessment_exercise.dart';
-import '../providers/assessment_provider.dart';
+import '../../../services/audio_recording_service.dart';
 import 'exercise_card.dart';
 import 'recording_button.dart';
 import 'real_time_waveform.dart';
 
-class ExerciseRecordingState extends StatelessWidget {
-  final AssessmentProvider provider;
+class ExerciseRecording extends StatelessWidget {
   final AssessmentExercise exercise;
+  final int exerciseNumber;
+  final VoidCallback onStopRecording;
+  final AudioRecordingService audioService;
 
-  const ExerciseRecordingState({
+  const ExerciseRecording({
     super.key,
-    required this.provider,
     required this.exercise,
+    required this.exerciseNumber,
+    required this.onStopRecording,
+    required this.audioService,
   });
 
   @override
@@ -22,25 +26,19 @@ class ExerciseRecordingState extends StatelessWidget {
         const SizedBox(height: 24),
         ExerciseCard(
           exercise: exercise,
-          exerciseNumber: provider.currentExerciseNumber,
+          exerciseNumber: exerciseNumber,
         ),
         const Spacer(),
-        RecordingButton(
-          isRecording: true,
-          onPressed: provider.stopRecording,
-        ),
+        RecordingButton(isRecording: true, onPressed: onStopRecording),
         const SizedBox(height: 16),
         const Text(
           'Recording... Tap to stop',
-          style: TextStyle(
-            fontSize: 14,
-            color: Color(0xFF757575),
-          ),
+          style: TextStyle(fontSize: 14, color: Color(0xFF757575)),
         ),
         const SizedBox(height: 24),
         // Audio visualization with error handling
         StreamBuilder<Object>(
-          stream: provider.audioService.stateStream,
+          stream: audioService.stateStream,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Container(
@@ -49,17 +47,14 @@ class ExerciseRecordingState extends StatelessWidget {
                 child: const Center(
                   child: Text(
                     'Audio visualization unavailable',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFF757575),
-                    ),
+                    style: TextStyle(fontSize: 12, color: Color(0xFF757575)),
                   ),
                 ),
               );
             }
-            
+
             return RealTimeWaveform(
-              audioService: provider.audioService,
+              audioService: audioService,
               isActive: true,
             );
           },
