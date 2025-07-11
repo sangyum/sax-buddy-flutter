@@ -9,6 +9,17 @@ class WelcomeSection extends StatelessWidget {
     required this.user,
   });
 
+  String _getTimeBasedGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Good morning,';
+    } else if (hour < 17) {
+      return 'Good afternoon,';
+    } else {
+      return 'Good evening,';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -20,7 +31,7 @@ class WelcomeSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Good morning,',
+                _getTimeBasedGreeting(),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.grey[600],
                   fontSize: 12,
