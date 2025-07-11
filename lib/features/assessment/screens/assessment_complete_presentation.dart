@@ -9,6 +9,7 @@ import 'package:sax_buddy/features/assessment/widgets/title_widget.dart';
 class AssessmentCompletePresentation extends StatelessWidget {
   final AssessmentSession? session;
   final int totalExcercises;
+  final bool isGeneratingRoutines;
   final VoidCallback onGeneratePracticeRoutine;
   final VoidCallback onReturnToDashboard;
 
@@ -16,6 +17,7 @@ class AssessmentCompletePresentation extends StatelessWidget {
     super.key,
     required this.session,
     required this.totalExcercises,
+    this.isGeneratingRoutines = false,
     required this.onGeneratePracticeRoutine,
     required this.onReturnToDashboard,
   });
@@ -51,7 +53,8 @@ class AssessmentCompletePresentation extends StatelessWidget {
 
               ActionButtons(
                 onGeneratePracticeRoutine: onGeneratePracticeRoutine, 
-                onReturnToDashboard: onReturnToDashboard
+                onReturnToDashboard: onReturnToDashboard,
+                isGeneratingRoutines: isGeneratingRoutines,
               ),
             ],
           ),
