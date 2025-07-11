@@ -1,10 +1,14 @@
-import 'package:logger/logger.dart';
 import 'package:sax_buddy/features/assessment/models/assessment_dataset.dart';
 import 'package:sax_buddy/features/assessment/models/assessment_result.dart';
 import 'package:sax_buddy/services/audio_analysis_service.dart';
+import 'package:sax_buddy/services/logger_service.dart';
+import 'package:injectable/injectable.dart';
 
+@lazySingleton
 class AudioAnalysisDatasetService {
-  final Logger _logger = Logger();
+  final LoggerService _logger;
+
+  AudioAnalysisDatasetService(this._logger);
 
   /// Creates a structured dataset from assessment and audio analysis results
   Future<AssessmentDataset> createDataset(
@@ -12,18 +16,18 @@ class AudioAnalysisDatasetService {
     List<AudioAnalysisResult> audioAnalysisResults,
   ) async {
     try {
-      _logger.d('Creating dataset from assessment results');
+      _logger.debug('Creating dataset from assessment results');
       
       final dataset = AssessmentDataset.fromAssessmentData(
         assessmentResult,
         audioAnalysisResults,
       );
       
-      _logger.d('Dataset created successfully: ${dataset.exercises.length} exercises');
+      _logger.debug('Dataset created successfully: ${dataset.exercises.length} exercises');
       return dataset;
       
     } catch (e) {
-      _logger.e('Failed to create dataset: $e');
+      _logger.error('Failed to create dataset: $e');
       rethrow;
     }
   }
@@ -31,7 +35,7 @@ class AudioAnalysisDatasetService {
   /// Prepares dataset for LLM consumption by converting to JSON
   Map<String, dynamic> prepareForLLM(AssessmentDataset dataset) {
     try {
-      _logger.d('Preparing dataset for LLM consumption');
+      _logger.debug('Preparing dataset for LLM consumption');
       
       final json = dataset.toJson();
       
@@ -48,7 +52,7 @@ class AudioAnalysisDatasetService {
       return json;
       
     } catch (e) {
-      _logger.e('Failed to prepare dataset for LLM: $e');
+      _logger.error('Failed to prepare dataset for LLM: $e');
       rethrow;
     }
   }
@@ -56,7 +60,7 @@ class AudioAnalysisDatasetService {
   /// Generates a structured prompt context for LLM
   String generateLLMPromptContext(AssessmentDataset dataset) {
     try {
-      _logger.d('Generating LLM prompt context');
+      _logger.debug('Generating LLM prompt context');
       
       final buffer = StringBuffer();
       
@@ -110,7 +114,7 @@ class AudioAnalysisDatasetService {
       return buffer.toString();
       
     } catch (e) {
-      _logger.e('Failed to generate LLM prompt context: $e');
+      _logger.error('Failed to generate LLM prompt context: $e');
       rethrow;
     }
   }
@@ -170,38 +174,38 @@ class AudioAnalysisDatasetService {
     try {
       // Check required fields
       if (dataset.sessionId.isEmpty) {
-        _logger.w('Dataset validation failed: empty session ID');
+        _logger.warning('Dataset validation failed: empty session ID');
         return false;
       }
       
       if (dataset.exercises.isEmpty) {
-        _logger.w('Dataset validation failed: no exercises');
+        _logger.warning('Dataset validation failed: no exercises');
         return false;
       }
       
       // Check exercise data quality
       for (final exercise in dataset.exercises) {
         if (exercise.exerciseType.isEmpty) {
-          _logger.w('Dataset validation failed: empty exercise type');
+          _logger.warning('Dataset validation failed: empty exercise type');
           return false;
         }
         
         if (exercise.pitchAccuracy < 0 || exercise.pitchAccuracy > 1) {
-          _logger.w('Dataset validation failed: invalid pitch accuracy');
+          _logger.warning('Dataset validation failed: invalid pitch accuracy');
           return false;
         }
         
         if (exercise.timingAccuracy < 0 || exercise.timingAccuracy > 1) {
-          _logger.w('Dataset validation failed: invalid timing accuracy');
+          _logger.warning('Dataset validation failed: invalid timing accuracy');
           return false;
         }
       }
       
-      _logger.d('Dataset validation passed');
+      _logger.debug('Dataset validation passed');
       return true;
       
     } catch (e) {
-      _logger.e('Dataset validation error: $e');
+      _logger.error('Dataset validation error: $e');
       return false;
     }
   }

@@ -8,6 +8,7 @@ import '../../../services/logger_service.dart';
 import '../../../services/audio_recording_service.dart';
 import '../../../services/audio_analysis_service.dart';
 import '../../../services/firebase_storage_service.dart';
+import 'package:injectable/injectable.dart';
 
 enum ExerciseState {
   setup,
@@ -16,21 +17,19 @@ enum ExerciseState {
   completed,
 }
 
+@injectable
 class AssessmentProvider extends ChangeNotifier {
   final LoggerService _logger;
   final AudioRecordingService _audioService;
   final AudioAnalysisService _analysisService;
   final FirebaseStorageService _storageService;
 
-  AssessmentProvider({
-    LoggerService? logger,
-    AudioRecordingService? audioService,
-    AudioAnalysisService? analysisService,
-    FirebaseStorageService? storageService,
-  }) : _logger = logger ?? LoggerService.instance,
-       _audioService = audioService ?? AudioRecordingService(),
-       _analysisService = analysisService ?? AudioAnalysisService(),
-       _storageService = storageService ?? FirebaseStorageService();
+  AssessmentProvider(
+    this._logger,
+    this._audioService,
+    this._analysisService,
+    this._storageService,
+  );
 
   AssessmentSession? _currentSession;
   ExerciseState _exerciseState = ExerciseState.setup;

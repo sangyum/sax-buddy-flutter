@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user.dart';
 import '../../../services/logger_service.dart';
+import 'package:injectable/injectable.dart';
 
 class RepositoryException implements Exception {
   final String message;
@@ -12,14 +13,13 @@ class RepositoryException implements Exception {
   String toString() => 'RepositoryException: $message';
 }
 
+@injectable
 class UserRepository {
   final FirebaseFirestore _firestore;
-  final LoggerService _logger = LoggerService.instance;
+  final LoggerService _logger;
   static const String _collection = 'users';
 
-  UserRepository({
-    FirebaseFirestore? firestore,
-  }) : _firestore = firestore ?? FirebaseFirestore.instance;
+  UserRepository(this._firestore, this._logger);
 
   Future<void> createUser(User user) async {
     final stopwatch = Stopwatch()..start();

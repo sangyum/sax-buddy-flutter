@@ -1,23 +1,31 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:sax_buddy/services/openai_service.dart';
+import 'package:sax_buddy/services/logger_service.dart';
 import 'package:sax_buddy/features/assessment/models/assessment_dataset.dart';
+
+// Mock classes
+class MockLoggerService extends Mock implements LoggerService {}
 
 void main() {
   group('OpenAIService', () {
     late OpenAIService service;
+    late MockLoggerService mockLogger;
     late AssessmentDataset mockDataset;
 
     setUp(() {
-
       // Load test environment variables
       dotenv.testLoad(fileInput: '''
 LOG_LEVEL=DEBUG
 ENVIRONMENT=test
 ''');
-      // Note: For testing, we'll need to mock the OpenAI API calls
-      // In a real implementation, you would set up proper API mocking
-      service = OpenAIService();
+      
+      // Create mocks
+      mockLogger = MockLoggerService();
+      
+      // Create service with mock dependencies
+      service = OpenAIService(mockLogger);
 
       mockDataset = AssessmentDataset(
         sessionId: 'test-session-123',

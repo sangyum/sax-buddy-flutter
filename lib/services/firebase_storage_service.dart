@@ -1,13 +1,17 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:logger/logger.dart';
+import 'package:sax_buddy/services/logger_service.dart';
+import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as path;
 
+@injectable
 class FirebaseStorageService {
-  final Logger _logger = Logger();
+  final LoggerService _logger;
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  FirebaseStorageService(this._logger);
 
   /// Upload audio file to Firebase Storage
   Future<String?> uploadAudioFile(String localFilePath, String exerciseId) async {
@@ -26,7 +30,7 @@ class FirebaseStorageService {
       final fileName = _generateFileName(localFilePath, exerciseId);
       final storageRef = _storage.ref().child('audio_recordings/${user.uid}/$fileName');
 
-      _logger.d('Uploading audio file: $localFilePath to $fileName');
+      _logger.debug('Uploading audio file: $localFilePath to $fileName');
 
       // Upload file with metadata
       final metadata = SettableMetadata(
@@ -43,18 +47,18 @@ class FirebaseStorageService {
       // Monitor upload progress
       uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
         final progress = snapshot.bytesTransferred / snapshot.totalBytes;
-        _logger.d('Upload progress: ${(progress * 100).toStringAsFixed(1)}%');
+        _logger.debug('Upload progress: ${(progress * 100).toStringAsFixed(1)}%');
       });
 
       // Wait for upload to complete
       final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
-      _logger.i('Audio file uploaded successfully: $downloadUrl');
+      _logger.info('Audio file uploaded successfully: $downloadUrl');
       return downloadUrl;
 
     } catch (e) {
-      _logger.e('Failed to upload audio file: $e');
+      _logger.error('Failed to upload audio file: $e');
       rethrow;
     }
   }
@@ -65,7 +69,7 @@ class FirebaseStorageService {
       // Run upload in background without blocking the UI
       _uploadAudioFileWithRetry(localFilePath, exerciseId).unawaited;
     } catch (e) {
-      _logger.e('Background upload failed: $e');
+      _logger.error('Background upload failed: $e');
     }
   }
 
@@ -78,11 +82,11 @@ class FirebaseStorageService {
       return await uploadAudioFile(localFilePath, exerciseId);
     } catch (e) {
       if (retryCount < maxRetries) {
-        _logger.w('Upload failed, retrying in ${retryDelay.inSeconds}s... (${retryCount + 1}/$maxRetries)');
+        _logger.warning('Upload failed, retrying in ${retryDelay.inSeconds}s... (${retryCount + 1}/$maxRetries)');
         await Future.delayed(retryDelay);
         return _uploadAudioFileWithRetry(localFilePath, exerciseId, retryCount + 1);
       } else {
-        _logger.e('Upload failed after $maxRetries attempts: $e');
+        _logger.error('Upload failed after $maxRetries attempts: $e');
         rethrow;
       }
     }
@@ -93,10 +97,10 @@ class FirebaseStorageService {
     try {
       final ref = _storage.refFromURL(downloadUrl);
       await ref.delete();
-      _logger.i('Audio file deleted successfully: $downloadUrl');
+      _logger.info('Audio file deleted successfully: $downloadUrl');
       return true;
     } catch (e) {
-      _logger.e('Failed to delete audio file: $e');
+      _logger.error('Failed to delete audio file: $e');
       return false;
     }
   }
@@ -116,7 +120,7 @@ class FirebaseStorageService {
         'customMetadata': metadata.customMetadata,
       };
     } catch (e) {
-      _logger.e('Failed to get audio file metadata: $e');
+      _logger.error('Failed to get audio file metadata: $e');
       return null;
     }
   }
@@ -134,7 +138,7 @@ class FirebaseStorageService {
       
       return result.items;
     } catch (e) {
-      _logger.e('Failed to list audio files: $e');
+      _logger.error('Failed to list audio files: $e');
       return [];
     }
   }
@@ -144,7 +148,7 @@ class FirebaseStorageService {
     try {
       return await ref.getDownloadURL();
     } catch (e) {
-      _logger.e('Failed to get download URL: $e');
+      _logger.error('Failed to get download URL: $e');
       rethrow;
     }
   }
@@ -176,7 +180,7 @@ class FirebaseStorageService {
       final metadata = await ref.getMetadata();
       return metadata.size;
     } catch (e) {
-      _logger.e('Failed to get file size: $e');
+      _logger.error('Failed to get file size: $e');
       return null;
     }
   }

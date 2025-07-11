@@ -6,11 +6,15 @@ import '../../services/logger_service.dart';
 import 'landing_presentation.dart';
 
 class LandingContainer extends StatelessWidget {
-  const LandingContainer({super.key});
+  final LoggerService logger;
+  
+  const LandingContainer({
+    super.key,
+    required this.logger,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final logger = LoggerService.instance;
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     void handleSignIn() {

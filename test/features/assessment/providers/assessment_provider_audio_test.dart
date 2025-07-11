@@ -29,10 +29,10 @@ void main() {
       
       // Create provider with mocked dependencies
       provider = AssessmentProvider(
-        logger: mockLoggerService,
-        audioService: mockAudioService,
-        analysisService: mockAnalysisService,
-        storageService: mockStorageService,
+        mockLoggerService,
+        mockAudioService,
+        mockAnalysisService,
+        mockStorageService,
       );
       
       // Set up default mock responses

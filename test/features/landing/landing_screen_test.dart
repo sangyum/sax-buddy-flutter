@@ -4,19 +4,24 @@ import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:sax_buddy/features/landing/landing_screen.dart';
+import 'package:sax_buddy/features/landing/landing_presentation.dart';
 import 'package:sax_buddy/features/auth/providers/auth_provider.dart';
 import 'package:sax_buddy/features/auth/services/auth_service.dart';
 import 'package:sax_buddy/features/auth/repositories/user_repository.dart';
 import 'package:sax_buddy/services/logger_service.dart';
 
-@GenerateNiceMocks([MockSpec<AuthService>(), MockSpec<UserRepository>()])
+@GenerateNiceMocks([
+  MockSpec<AuthService>(), 
+  MockSpec<UserRepository>(), 
+  MockSpec<LoggerService>()
+])
 import 'landing_screen_test.mocks.dart';
 
 void main() {
-  group('LandingScreen', () {
+  group('LandingPresentation', () {
     late MockAuthService mockAuthService;
     late MockUserRepository mockUserRepository;
+    late MockLoggerService mockLogger;
     late AuthProvider authProvider;
 
     setUpAll(() {
@@ -27,24 +32,27 @@ ENVIRONMENT=test
     });
 
     setUp(() {
-      LoggerService.resetForTesting();
-      
       mockAuthService = MockAuthService();
       mockUserRepository = MockUserRepository();
+      mockLogger = MockLoggerService();
+      
       authProvider = AuthProvider(
-        authService: mockAuthService,
-        userRepository: mockUserRepository,
+        mockAuthService,
+        mockUserRepository,
+        mockLogger,
       );
       
       when(mockAuthService.getCurrentUser()).thenReturn(null);
       when(mockAuthService.authStateChanges()).thenAnswer((_) => Stream.value(null));
     });
 
-    Widget createTestWidget() {
+    Widget createTestWidget({VoidCallback? onSignIn}) {
       return MaterialApp(
         home: ChangeNotifierProvider<AuthProvider>.value(
           value: authProvider,
-          child: const LandingScreen(),
+          child: LandingPresentation(
+            onSignIn: onSignIn ?? () {},
+          ),
         ),
       );
     }
@@ -71,13 +79,15 @@ ENVIRONMENT=test
       expect(find.text('Already have account? Sign In'), findsOneWidget);
     });
 
-    testWidgets('Start Free Trial button triggers Google sign-in', (WidgetTester tester) async {
-      when(mockAuthService.signInWithGoogle()).thenAnswer((_) async => null);
+    testWidgets('Start Free Trial button triggers callback', (WidgetTester tester) async {
+      bool callbackTriggered = false;
 
       // Set larger viewport to fit all content
       await tester.binding.setSurfaceSize(const Size(800, 1000));
       
-      await tester.pumpWidget(createTestWidget());
+      await tester.pumpWidget(createTestWidget(
+        onSignIn: () => callbackTriggered = true,
+      ));
 
       final startTrialButton = find.text('Sign up for free trial');
       expect(startTrialButton, findsOneWidget);
@@ -87,19 +97,21 @@ ENVIRONMENT=test
       await tester.tap(startTrialButton);
       await tester.pumpAndSettle();
       
-      verify(mockAuthService.signInWithGoogle()).called(1);
+      expect(callbackTriggered, isTrue);
       
       // Reset to default size
       await tester.binding.setSurfaceSize(null);
     });
 
-    testWidgets('Sign In text triggers Google sign-in', (WidgetTester tester) async {
-      when(mockAuthService.signInWithGoogle()).thenAnswer((_) async => null);
+    testWidgets('Sign In text triggers callback', (WidgetTester tester) async {
+      bool callbackTriggered = false;
 
       // Set larger viewport to fit all content
       await tester.binding.setSurfaceSize(const Size(800, 1000));
       
-      await tester.pumpWidget(createTestWidget());
+      await tester.pumpWidget(createTestWidget(
+        onSignIn: () => callbackTriggered = true,
+      ));
 
       final signInText = find.text('Already have account? Sign In');
       expect(signInText, findsOneWidget);
@@ -109,7 +121,7 @@ ENVIRONMENT=test
       await tester.tap(signInText);
       await tester.pumpAndSettle();
       
-      verify(mockAuthService.signInWithGoogle()).called(1);
+      expect(callbackTriggered, isTrue);
       
       // Reset to default size
       await tester.binding.setSurfaceSize(null);

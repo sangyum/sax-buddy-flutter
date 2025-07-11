@@ -3,6 +3,7 @@ import '../models/user.dart';
 import '../services/auth_service.dart';
 import '../repositories/user_repository.dart';
 import '../../../services/logger_service.dart';
+import 'package:injectable/injectable.dart';
 
 enum AuthState {
   initial,
@@ -12,20 +13,21 @@ enum AuthState {
   error,
 }
 
+@injectable
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService;
   final UserRepository _userRepository;
-  final LoggerService _logger = LoggerService.instance;
+  final LoggerService _logger;
 
   AuthState _state = AuthState.initial;
   User? _user;
   String? _errorMessage;
 
-  AuthProvider({
-    required AuthService authService,
-    required UserRepository userRepository,
-  })  : _authService = authService,
-        _userRepository = userRepository {
+  AuthProvider(
+    this._authService,
+    this._userRepository,
+    this._logger,
+  ) {
     _logger.info('Initializing AuthProvider');
     _initializeAuth();
   }

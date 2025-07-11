@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:logger/logger.dart';
+import 'package:sax_buddy/services/logger_service.dart';
+import 'package:injectable/injectable.dart';
 import 'dart:math' as math;
 
 class AudioAnalysisResult {
@@ -34,13 +35,16 @@ class AudioAnalysisResult {
   }
 }
 
+@lazySingleton
 class AudioAnalysisService {
-  final Logger _logger = Logger();
+  final LoggerService _logger;
+
+  AudioAnalysisService(this._logger);
 
   /// Analyze recorded audio file for pitch and timing accuracy
   Future<AudioAnalysisResult> analyzeRecording(String filePath) async {
     try {
-      _logger.d('Starting audio analysis for: $filePath');
+      _logger.debug('Starting audio analysis for: $filePath');
       
       final file = File(filePath);
       if (!await file.exists()) {
@@ -52,11 +56,11 @@ class AudioAnalysisService {
       // In a real implementation, you would decode the audio file and process it
       final mockAnalysis = await _createMockAnalysis();
       
-      _logger.d('Audio analysis completed');
+      _logger.debug('Audio analysis completed');
       return mockAnalysis;
       
     } catch (e) {
-      _logger.e('Audio analysis failed: $e');
+      _logger.error('Audio analysis failed: $e');
       rethrow;
     }
   }
@@ -84,7 +88,7 @@ class AudioAnalysisService {
       };
       
     } catch (e) {
-      _logger.e('Real-time analysis failed: $e');
+      _logger.error('Real-time analysis failed: $e');
       return {'pitch': 0.0, 'amplitude': 0.0, 'confidence': 0.0};
     }
   }

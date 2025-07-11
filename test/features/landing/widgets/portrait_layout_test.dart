@@ -10,13 +10,14 @@ import 'package:sax_buddy/features/auth/services/auth_service.dart';
 import 'package:sax_buddy/features/auth/repositories/user_repository.dart';
 import 'package:sax_buddy/services/logger_service.dart';
 
-@GenerateNiceMocks([MockSpec<AuthService>(), MockSpec<UserRepository>()])
+@GenerateNiceMocks([MockSpec<AuthService>(), MockSpec<UserRepository>(), MockSpec<LoggerService>()])
 import 'portrait_layout_test.mocks.dart';
 
 void main() {
   group('PortraitLayout', () {
     late MockAuthService mockAuthService;
     late MockUserRepository mockUserRepository;
+    late MockLoggerService mockLogger;
     late AuthProvider authProvider;
 
     setUpAll(() {
@@ -27,13 +28,15 @@ ENVIRONMENT=test
     });
 
     setUp(() {
-      LoggerService.resetForTesting();
+      
       
       mockAuthService = MockAuthService();
       mockUserRepository = MockUserRepository();
+      mockLogger = MockLoggerService();
       authProvider = AuthProvider(
-        authService: mockAuthService,
-        userRepository: mockUserRepository,
+        mockAuthService,
+        mockUserRepository,
+        mockLogger,
       );
       
       when(mockAuthService.getCurrentUser()).thenReturn(null);

@@ -1,11 +1,17 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mockito/mockito.dart';
 import 'package:sax_buddy/features/routines/providers/routines_provider.dart';
 import 'package:sax_buddy/features/practice/models/practice_routine.dart';
+import 'package:sax_buddy/services/logger_service.dart';
+
+// Mock class
+class MockLoggerService extends Mock implements LoggerService {}
 
 void main() {
   group('RoutinesProvider', () {
     late RoutinesProvider provider;
+    late MockLoggerService mockLogger;
     late List<PracticeRoutine> mockRoutines;
     
     setUpAll(() async {
@@ -14,7 +20,8 @@ void main() {
     });
     
     setUp(() {
-      provider = RoutinesProvider();
+      mockLogger = MockLoggerService();
+      provider = RoutinesProvider(mockLogger);
       
       mockRoutines = [
         PracticeRoutine(

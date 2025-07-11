@@ -16,6 +16,7 @@ import 'package:sax_buddy/features/assessment/services/audio_analysis_dataset_se
 import 'package:sax_buddy/features/practice/models/practice_routine.dart'
     as _i5;
 import 'package:sax_buddy/services/audio_analysis_service.dart' as _i9;
+import 'package:sax_buddy/services/logger_service.dart' as _i10;
 import 'package:sax_buddy/services/openai_service.dart' as _i3;
 
 // ignore_for_file: type=lint
@@ -162,4 +163,157 @@ class MockAudioAnalysisDatasetService extends _i1.Mock
             returnValue: false,
           )
           as bool);
+}
+
+/// A class which mocks [LoggerService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockLoggerService extends _i1.Mock implements _i10.LoggerService {
+  MockLoggerService() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i10.LogLevel get currentLevel =>
+      (super.noSuchMethod(
+            Invocation.getter(#currentLevel),
+            returnValue: _i10.LogLevel.trace,
+          )
+          as _i10.LogLevel);
+
+  @override
+  void trace(
+    String? message, {
+    Map<String, dynamic>? extra,
+    Object? error,
+    StackTrace? stackTrace,
+  }) => super.noSuchMethod(
+    Invocation.method(
+      #trace,
+      [message],
+      {#extra: extra, #error: error, #stackTrace: stackTrace},
+    ),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void debug(
+    String? message, {
+    Map<String, dynamic>? extra,
+    Object? error,
+    StackTrace? stackTrace,
+  }) => super.noSuchMethod(
+    Invocation.method(
+      #debug,
+      [message],
+      {#extra: extra, #error: error, #stackTrace: stackTrace},
+    ),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void info(
+    String? message, {
+    Map<String, dynamic>? extra,
+    Object? error,
+    StackTrace? stackTrace,
+  }) => super.noSuchMethod(
+    Invocation.method(
+      #info,
+      [message],
+      {#extra: extra, #error: error, #stackTrace: stackTrace},
+    ),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void warning(
+    String? message, {
+    Map<String, dynamic>? extra,
+    Object? error,
+    StackTrace? stackTrace,
+  }) => super.noSuchMethod(
+    Invocation.method(
+      #warning,
+      [message],
+      {#extra: extra, #error: error, #stackTrace: stackTrace},
+    ),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void error(
+    String? message, {
+    Map<String, dynamic>? extra,
+    Object? error,
+    StackTrace? stackTrace,
+  }) => super.noSuchMethod(
+    Invocation.method(
+      #error,
+      [message],
+      {#extra: extra, #error: error, #stackTrace: stackTrace},
+    ),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void logAuthEvent(
+    String? event, {
+    String? userId,
+    Map<String, dynamic>? extra,
+  }) => super.noSuchMethod(
+    Invocation.method(#logAuthEvent, [event], {#userId: userId, #extra: extra}),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void logUserAction(
+    String? action,
+    String? userId, {
+    Map<String, dynamic>? extra,
+  }) => super.noSuchMethod(
+    Invocation.method(#logUserAction, [action, userId], {#extra: extra}),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void logApiCall(
+    String? endpoint,
+    String? method, {
+    int? statusCode,
+    Duration? duration,
+    Map<String, dynamic>? extra,
+  }) => super.noSuchMethod(
+    Invocation.method(
+      #logApiCall,
+      [endpoint, method],
+      {#statusCode: statusCode, #duration: duration, #extra: extra},
+    ),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void logError(
+    String? operation,
+    Object? error, {
+    StackTrace? stackTrace,
+    Map<String, dynamic>? extra,
+  }) => super.noSuchMethod(
+    Invocation.method(
+      #logError,
+      [operation, error],
+      {#stackTrace: stackTrace, #extra: extra},
+    ),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void logPerformance(
+    String? operation,
+    Duration? duration, {
+    Map<String, dynamic>? extra,
+  }) => super.noSuchMethod(
+    Invocation.method(#logPerformance, [operation, duration], {#extra: extra}),
+    returnValueForMissingStub: null,
+  );
 }

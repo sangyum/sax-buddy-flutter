@@ -1,16 +1,23 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:sax_buddy/features/assessment/services/audio_analysis_dataset_service.dart';
 import 'package:sax_buddy/features/practice/services/practice_generation_service.dart';
 import 'package:sax_buddy/features/assessment/models/assessment_dataset.dart';
 import 'package:sax_buddy/features/practice/models/practice_routine.dart';
 import 'package:sax_buddy/services/openai_service.dart';
+import 'package:sax_buddy/services/logger_service.dart';
 
-@GenerateMocks([OpenAIService, AudioAnalysisDatasetService])
+@GenerateMocks([OpenAIService, AudioAnalysisDatasetService, LoggerService])
+import 'practice_generation_service_test.mocks.dart';
+
 void main() {
   group('PracticeGenerationService', () {
     late PracticeGenerationService service;
+    late MockLoggerService mockLogger;
+    late MockOpenAIService mockOpenAIService;
+    late MockAudioAnalysisDatasetService mockDatasetService;
     late AssessmentDataset mockDataset;
 
     setUp(() {
@@ -22,7 +29,10 @@ ENVIRONMENT=test
 ''',
       );
 
-      service = PracticeGenerationService();
+      // Create mocks
+      mockLogger = MockLoggerService();
+      mockOpenAIService = MockOpenAIService();
+      mockDatasetService = MockAudioAnalysisDatasetService();
 
       mockDataset = AssessmentDataset(
         sessionId: 'test-session-123',
@@ -59,6 +69,16 @@ ENVIRONMENT=test
         ),
         timestamp: DateTime(2024, 1, 1),
       );
+      
+      service = PracticeGenerationService(
+        mockLogger,
+        mockOpenAIService,
+        mockDatasetService,
+      );
+
+      // Setup mock stubs for service methods
+      when(mockDatasetService.validateDataset(mockDataset)).thenReturn(true);
+      when(mockOpenAIService.isInitialized).thenReturn(true);
     });
 
     test('should initialize with OpenAI service', () {
@@ -95,10 +115,6 @@ ENVIRONMENT=test
     test('should validate dataset before processing', () {
       service.initialize('test-api-key');
 
-      // Valid dataset
-      final isValid = service.validateDataset(mockDataset);
-      expect(isValid, isTrue);
-
       // Invalid dataset (empty session ID)
       final invalidDataset = AssessmentDataset(
         sessionId: '',
@@ -113,6 +129,14 @@ ENVIRONMENT=test
         timestamp: DateTime(2024, 1, 1),
       );
 
+      // Setup specific mock behaviors for this test
+      when(mockDatasetService.validateDataset(invalidDataset)).thenReturn(false);
+
+      // Valid dataset
+      final isValid = service.validateDataset(mockDataset);
+      expect(isValid, isTrue);
+
+      // Invalid dataset
       final isInvalid = service.validateDataset(invalidDataset);
       expect(isInvalid, isFalse);
     });

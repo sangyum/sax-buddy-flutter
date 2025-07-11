@@ -3,10 +3,14 @@ import 'package:dart_openai/dart_openai.dart';
 import 'package:sax_buddy/features/assessment/models/assessment_dataset.dart';
 import 'package:sax_buddy/features/practice/models/practice_routine.dart';
 import 'package:sax_buddy/services/logger_service.dart';
+import 'package:injectable/injectable.dart';
 
+@singleton
 class OpenAIService {
-  final LoggerService _logger = LoggerService.instance;
+  final LoggerService _logger;
   bool _isInitialized = false;
+
+  OpenAIService(this._logger);
 
   bool get isInitialized => _isInitialized;
 
