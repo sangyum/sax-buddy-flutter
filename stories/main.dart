@@ -4,6 +4,7 @@ import 'package:storybook_flutter/storybook_flutter.dart';
 import 'dashboard/dashboard_stories.dart';
 import 'assessment/assessment_stories.dart';
 import 'assessment/real_time_waveform_stories.dart';
+import 'routines/routines_stories.dart';
 
 Future<void> main() async {
   // Initialize environment for storybook
@@ -23,6 +24,7 @@ class StorybookApp extends StatelessWidget {
         ...dashboardStories,
         ...assessmentStories,
         ...realTimeWaveformStories,
+        ...routinesStories,
       ],
       wrapperBuilder: (context, child) => MaterialApp(
         title: 'Sax Buddy Storybook',

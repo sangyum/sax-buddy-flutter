@@ -80,22 +80,17 @@ class MockAudioRecordingService implements AudioRecordingService {
   }
 
   @override
-  // TODO: implement currentRecordingPath
   String? get currentRecordingPath => throw UnimplementedError();
 
   @override
-  // TODO: implement currentState
   AudioRecordingState get currentState => throw UnimplementedError();
 
   @override
-  // TODO: implement isPaused
   bool get isPaused => throw UnimplementedError();
 
   @override
-  // TODO: implement isRecording
   bool get isRecording => throw UnimplementedError();
 
   @override
-  // TODO: implement recordedDuration
   Duration? get recordedDuration => throw UnimplementedError();
 }

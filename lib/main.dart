@@ -7,11 +7,14 @@ import 'features/landing/landing_screen.dart';
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/assessment/screens/exercise_screen.dart';
 import 'features/assessment/screens/assessment_complete_screen.dart';
+import 'features/routines/screens/routines_screen.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/auth/services/auth_service.dart';
 import 'features/auth/repositories/user_repository.dart';
 import 'features/assessment/providers/assessment_provider.dart';
+import 'features/routines/providers/routines_provider.dart';
 import 'services/logger_service.dart';
+import 'services/service_locator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,6 +51,27 @@ void main() async {
     rethrow;
   }
   
+  // Initialize service locator
+  logger.info('Initializing service locator');
+  final serviceStopwatch = Stopwatch()..start();
+  
+  try {
+    await ServiceLocator.instance.initialize();
+    serviceStopwatch.stop();
+    
+    logger.info('Service locator initialized successfully', extra: {
+      'durationMs': serviceStopwatch.elapsedMilliseconds,
+    });
+    logger.logPerformance('service_locator_initialization', serviceStopwatch.elapsed);
+  } catch (e) {
+    serviceStopwatch.stop();
+    logger.logError('service_locator_initialization', e, extra: {
+      'durationMs': serviceStopwatch.elapsedMilliseconds,
+    });
+    // Don't rethrow here - app should continue even if AI services fail
+    logger.warning('App will continue without AI services');
+  }
+  
   logger.info('Starting Flutter app');
   runApp(const MyApp());
 }
@@ -77,6 +101,12 @@ class MyApp extends StatelessWidget {
             return AssessmentProvider();
           },
         ),
+        ChangeNotifierProvider<RoutinesProvider>(
+          create: (context) {
+            logger.info('Creating RoutinesProvider');
+            return RoutinesProvider();
+          },
+        ),
       ],
       child: MaterialApp(
         title: 'SaxAI Coach',
@@ -88,6 +118,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/assessment': (context) => const AssessmentFlow(),
           '/assessment/complete': (context) => const AssessmentCompleteScreen(),
+          '/routines': (context) => const RoutinesScreen(),
         },
       ),
     );

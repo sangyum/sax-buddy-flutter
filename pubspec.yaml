@@ -57,6 +57,9 @@ dependencies:
   
   # Audio analysis (for future implementation)
   pitch_detector_dart: ^0.0.7
+  
+  # OpenAI integration for LLM-based practice generation
+  dart_openai: ^5.1.0
 
 dev_dependencies:
   flutter_test:
