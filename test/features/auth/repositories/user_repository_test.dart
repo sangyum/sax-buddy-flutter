@@ -12,6 +12,7 @@ import 'package:sax_buddy/services/logger_service.dart';
   CollectionReference,
   DocumentReference,
   DocumentSnapshot,
+  LoggerService,
 ])
 import 'user_repository_test.mocks.dart';
 
@@ -22,6 +23,7 @@ void main() {
     late MockCollectionReference<Map<String, dynamic>> mockCollection;
     late MockDocumentReference<Map<String, dynamic>> mockDocument;
     late MockDocumentSnapshot<Map<String, dynamic>> mockDocumentSnapshot;
+    late MockLoggerService mockLogger;
 
     setUpAll(() {
       // Initialize environment for logger
@@ -32,15 +34,13 @@ ENVIRONMENT=test
     });
 
     setUp(() {
-      // Reset logger singleton for each test
-      LoggerService.resetForTesting();
-      
       mockFirestore = MockFirebaseFirestore();
       mockCollection = MockCollectionReference<Map<String, dynamic>>();
       mockDocument = MockDocumentReference<Map<String, dynamic>>();
       mockDocumentSnapshot = MockDocumentSnapshot<Map<String, dynamic>>();
+      mockLogger = MockLoggerService();
       
-      userRepository = UserRepository(firestore: mockFirestore);
+      userRepository = UserRepository(mockFirestore, mockLogger);
       
       when(mockFirestore.collection('users')).thenReturn(mockCollection);
     });

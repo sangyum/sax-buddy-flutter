@@ -3,23 +3,27 @@ import 'package:sax_buddy/features/assessment/services/audio_analysis_dataset_se
 import 'package:sax_buddy/features/practice/models/practice_routine.dart';
 import 'package:sax_buddy/services/openai_service.dart';
 import 'package:sax_buddy/services/logger_service.dart';
+import 'package:injectable/injectable.dart';
 
+@lazySingleton
 class PracticeGenerationService {
-  final LoggerService _logger = LoggerService.instance;
-  late OpenAIService _openAIService;
-  late AudioAnalysisDatasetService _datasetService;
+  final LoggerService _logger;
+  final OpenAIService _openAIService;
+  final AudioAnalysisDatasetService _datasetService;
   bool _isInitialized = false;
+
+  PracticeGenerationService(
+    this._logger,
+    this._openAIService,
+    this._datasetService,
+  );
 
   bool get isInitialized => _isInitialized;
 
   /// Initialize the practice generation service
   void initialize(String openAIApiKey) {
     try {
-      _openAIService = OpenAIService();
       _openAIService.initialize(openAIApiKey);
-      
-      _datasetService = AudioAnalysisDatasetService();
-      
       _isInitialized = true;
       _logger.debug('Practice generation service initialized successfully');
     } catch (e) {

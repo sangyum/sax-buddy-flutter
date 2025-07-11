@@ -4,13 +4,17 @@ import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:sax_buddy/features/landing/landing_screen.dart';
+import 'package:sax_buddy/features/landing/landing_container.dart';
 import 'package:sax_buddy/features/auth/providers/auth_provider.dart';
 import 'package:sax_buddy/features/auth/services/auth_service.dart';
 import 'package:sax_buddy/features/auth/repositories/user_repository.dart';
 import 'package:sax_buddy/services/logger_service.dart';
 
-@GenerateNiceMocks([MockSpec<AuthService>(), MockSpec<UserRepository>()])
+@GenerateNiceMocks([
+  MockSpec<AuthService>(),
+  MockSpec<UserRepository>(),
+  MockSpec<LoggerService>(),
+])
 import 'widget_test.mocks.dart';
 
 void main() {
@@ -21,13 +25,10 @@ ENVIRONMENT=test
 ''');
   });
 
-  setUp(() {
-    LoggerService.resetForTesting();
-  });
-
   testWidgets('App starts with landing screen', (WidgetTester tester) async {
     final mockAuthService = MockAuthService();
     final mockUserRepository = MockUserRepository();
+    final mockLogger = MockLoggerService();
     
     when(mockAuthService.getCurrentUser()).thenReturn(null);
     when(mockAuthService.authStateChanges()).thenAnswer((_) => Stream.value(null));
@@ -37,13 +38,14 @@ ENVIRONMENT=test
         providers: [
           ChangeNotifierProvider<AuthProvider>(
             create: (context) => AuthProvider(
-              authService: mockAuthService,
-              userRepository: mockUserRepository,
+              mockAuthService,
+              mockUserRepository,
+              mockLogger,
             ),
           ),
         ],
-        child: const MaterialApp(
-          home: LandingScreen(),
+        child: MaterialApp(
+          home: LandingContainer(logger: mockLogger),
         ),
       ),
     );

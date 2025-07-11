@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user.dart' as app_user;
 import '../../../services/logger_service.dart';
+import 'package:injectable/injectable.dart';
 
 class AuthException implements Exception {
   final String message;
@@ -12,13 +13,12 @@ class AuthException implements Exception {
   String toString() => 'AuthException: $message';
 }
 
+@singleton
 class AuthService {
   final FirebaseAuth _firebaseAuth;
-  final LoggerService _logger = LoggerService.instance;
+  final LoggerService _logger;
 
-  AuthService({
-    FirebaseAuth? firebaseAuth,
-  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+  AuthService(this._firebaseAuth, this._logger);
 
   Future<app_user.User?> signInWithGoogle() async {
     final stopwatch = Stopwatch()..start();

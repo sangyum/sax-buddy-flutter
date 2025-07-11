@@ -1,17 +1,24 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:sax_buddy/features/assessment/models/assessment_result.dart';
 import 'package:sax_buddy/features/assessment/models/exercise_result.dart';
 import 'package:sax_buddy/features/assessment/services/audio_analysis_dataset_service.dart';
 import 'package:sax_buddy/services/audio_analysis_service.dart';
+import 'package:sax_buddy/services/logger_service.dart';
+
+// Mock class
+class MockLoggerService extends Mock implements LoggerService {}
 
 void main() {
   group('AudioAnalysisDatasetService', () {
     late AudioAnalysisDatasetService service;
+    late MockLoggerService mockLogger;
     late AssessmentResult mockAssessmentResult;
     late List<AudioAnalysisResult> mockAudioAnalysisResults;
     
     setUp(() {
-      service = AudioAnalysisDatasetService();
+      mockLogger = MockLoggerService();
+      service = AudioAnalysisDatasetService(mockLogger);
       
       mockAssessmentResult = AssessmentResult(
         sessionId: 'test-session-123',

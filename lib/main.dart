@@ -9,12 +9,12 @@ import 'features/assessment/screens/exercise_screen.dart';
 import 'features/assessment/screens/assessment_complete_screen.dart';
 import 'features/routines/screens/routines_screen.dart';
 import 'features/auth/providers/auth_provider.dart';
-import 'features/auth/services/auth_service.dart';
-import 'features/auth/repositories/user_repository.dart';
 import 'features/assessment/providers/assessment_provider.dart';
 import 'features/routines/providers/routines_provider.dart';
 import 'services/logger_service.dart';
-import 'services/service_locator.dart';
+import 'services/openai_service.dart';
+import 'features/practice/services/practice_generation_service.dart';
+import 'injection.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,15 +22,7 @@ void main() async {
   // Load environment variables
   await dotenv.load(fileName: ".env");
   
-  // Initialize logger (this will read LOG_LEVEL from .env)
-  final logger = LoggerService.instance;
-  logger.info('SaxBuddy app starting up', extra: {
-    'environment': dotenv.env['ENVIRONMENT'] ?? 'unknown',
-    'logLevel': dotenv.env['LOG_LEVEL'] ?? 'INFO',
-  });
-  
   // Initialize Firebase
-  logger.info('Initializing Firebase');
   final stopwatch = Stopwatch()..start();
   
   try {
@@ -38,34 +30,45 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform
     );
     stopwatch.stop();
-    
-    logger.info('Firebase initialized successfully', extra: {
-      'durationMs': stopwatch.elapsedMilliseconds,
-    });
-    logger.logPerformance('firebase_initialization', stopwatch.elapsed);
   } catch (e) {
     stopwatch.stop();
-    logger.logError('firebase_initialization', e, extra: {
-      'durationMs': stopwatch.elapsedMilliseconds,
-    });
     rethrow;
   }
   
-  // Initialize service locator
-  logger.info('Initializing service locator');
+  // Initialize dependency injection
+  configureDependencies();
+  
+  // Initialize logger after DI is configured
+  final logger = getIt<LoggerService>();
+  logger.info('SaxBuddy app starting up', extra: {
+    'environment': dotenv.env['ENVIRONMENT'] ?? 'unknown',
+    'logLevel': dotenv.env['LOG_LEVEL'] ?? 'INFO',
+  });
+  
+  // Initialize AI services
+  logger.info('Initializing AI services');
   final serviceStopwatch = Stopwatch()..start();
   
   try {
-    await ServiceLocator.instance.initialize();
-    serviceStopwatch.stop();
-    
-    logger.info('Service locator initialized successfully', extra: {
-      'durationMs': serviceStopwatch.elapsedMilliseconds,
-    });
-    logger.logPerformance('service_locator_initialization', serviceStopwatch.elapsed);
+    final openAIApiKey = dotenv.env['OPENAI_API_KEY'];
+    if (openAIApiKey != null) {
+      final openAIService = getIt<OpenAIService>();
+      openAIService.initialize(openAIApiKey);
+      
+      final practiceService = getIt<PracticeGenerationService>();
+      practiceService.initialize(openAIApiKey);
+      
+      serviceStopwatch.stop();
+      logger.info('AI services initialized successfully', extra: {
+        'durationMs': serviceStopwatch.elapsedMilliseconds,
+      });
+      logger.logPerformance('ai_services_initialization', serviceStopwatch.elapsed);
+    } else {
+      logger.warning('OpenAI API key not found, AI services will not be available');
+    }
   } catch (e) {
     serviceStopwatch.stop();
-    logger.logError('service_locator_initialization', e, extra: {
+    logger.logError('ai_services_initialization', e, extra: {
       'durationMs': serviceStopwatch.elapsedMilliseconds,
     });
     // Don't rethrow here - app should continue even if AI services fail
@@ -81,7 +84,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final logger = LoggerService.instance;
+    final logger = getIt<LoggerService>();
     logger.info('Building MyApp widget');
     
     return MultiProvider(
@@ -89,22 +92,19 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<AuthProvider>(
           create: (context) {
             logger.info('Creating AuthProvider');
-            return AuthProvider(
-              authService: AuthService(),
-              userRepository: UserRepository(),
-            );
+            return getIt<AuthProvider>();
           },
         ),
         ChangeNotifierProvider<AssessmentProvider>(
           create: (context) {
             logger.info('Creating AssessmentProvider');
-            return AssessmentProvider();
+            return getIt<AssessmentProvider>();
           },
         ),
         ChangeNotifierProvider<RoutinesProvider>(
           create: (context) {
             logger.info('Creating RoutinesProvider');
-            return RoutinesProvider();
+            return getIt<RoutinesProvider>();
           },
         ),
       ],
@@ -130,7 +130,7 @@ class AuthWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final logger = LoggerService.instance;
+    final logger = getIt<LoggerService>();
     
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {

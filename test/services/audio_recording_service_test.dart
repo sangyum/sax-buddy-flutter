@@ -2,18 +2,23 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:sax_buddy/services/audio_recording_service.dart';
+import 'package:sax_buddy/services/logger_service.dart';
 import 'dart:io';
 
 // Generate mocks for dependencies
-@GenerateMocks([])
+@GenerateMocks([LoggerService])
+import 'audio_recording_service_test.mocks.dart';
+
 class MockDirectory extends Mock implements Directory {}
 
 void main() {
   group('AudioRecordingService', () {
     late AudioRecordingService service;
+    late MockLoggerService mockLogger;
 
     setUp(() {
-      service = AudioRecordingService();
+      mockLogger = MockLoggerService();
+      service = AudioRecordingService(mockLogger);
     });
 
     tearDown(() {

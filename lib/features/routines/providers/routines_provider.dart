@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:sax_buddy/features/practice/models/practice_routine.dart';
 import 'package:sax_buddy/services/logger_service.dart';
+import 'package:injectable/injectable.dart';
 
+@injectable
 class RoutinesProvider extends ChangeNotifier {
   final LoggerService _logger;
   final List<PracticeRoutine> _recentRoutines = [];
@@ -10,9 +12,7 @@ class RoutinesProvider extends ChangeNotifier {
   String? _error;
   static const int _maxRecentRoutines = 10;
 
-  RoutinesProvider({
-    LoggerService? logger,
-  }) : _logger = logger ?? LoggerService.instance;
+  RoutinesProvider(this._logger);
 
   List<PracticeRoutine> get recentRoutines => List.unmodifiable(_recentRoutines);
   bool get isLoading => _isLoading;

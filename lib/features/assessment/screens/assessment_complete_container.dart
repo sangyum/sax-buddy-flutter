@@ -7,8 +7,8 @@ import '../models/assessment_session.dart';
 import '../models/assessment_dataset.dart';
 import '../models/assessment_result.dart';
 import '../../practice/services/practice_generation_service.dart';
-import '../../../services/service_locator.dart';
 import '../../../services/logger_service.dart';
+import '../../../injection.dart';
 import 'assessment_complete_presentation.dart';
 
 class AssessmentCompleteContainer extends StatelessWidget {
@@ -40,7 +40,7 @@ class AssessmentCompleteContainer extends StatelessWidget {
     AssessmentProvider assessmentProvider,
     RoutinesProvider routinesProvider,
   ) async {
-    final logger = LoggerService.instance;
+    final logger = getIt<LoggerService>();
     
     try {
       // Show loading indicator
@@ -59,18 +59,15 @@ class AssessmentCompleteContainer extends StatelessWidget {
         
         try {
           // Try to use AI generation first
-          if (ServiceLocator.instance.isInitialized && 
-              ServiceLocator.instance.isRegistered<PracticeGenerationService>()) {
-            
-            final practiceService = ServiceLocator.instance.get<PracticeGenerationService>();
-            
+          final practiceService = getIt<PracticeGenerationService>();
+          
+          if (practiceService.isInitialized) {
             // Convert assessment session to dataset
             final dataset = await _createAssessmentDataset(session);
             
             // Generate routines using AI
             routines = await practiceService.generatePracticePlans(dataset);
             logger.info('Successfully generated ${routines.length} AI-powered routines');
-            
           } else {
             logger.warning('AI services not available, falling back to sample routines');
             routines = await _generateSampleRoutines(session);
@@ -134,7 +131,7 @@ class AssessmentCompleteContainer extends StatelessWidget {
 
   /// Create assessment dataset from session for AI processing
   Future<AssessmentDataset> _createAssessmentDataset(AssessmentSession session) async {
-    final logger = LoggerService.instance;
+    final logger = getIt<LoggerService>();
     
     try {
       // Use the completed exercises from the session

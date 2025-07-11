@@ -60,6 +60,10 @@ dependencies:
   
   # OpenAI integration for LLM-based practice generation
   dart_openai: ^5.1.0
+  
+  # Dependency injection
+  get_it: ^7.6.7
+  injectable: ^2.3.2
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +79,9 @@ dev_dependencies:
   # Testing dependencies
   mockito: ^5.4.4
   build_runner: ^2.4.13
+  
+  # Dependency injection code generation
+  injectable_generator: ^2.4.1
   
   # Storybook for development
   storybook_flutter: ^0.14.1

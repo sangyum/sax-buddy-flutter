@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../injection.dart';
+import '../../services/logger_service.dart';
 import 'landing_container.dart';
 
 class LandingScreen extends StatelessWidget {
@@ -6,6 +8,7 @@ class LandingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const LandingContainer();
+    final logger = getIt<LoggerService>();
+    return LandingContainer(logger: logger);
   }
 }

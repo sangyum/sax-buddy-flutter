@@ -11,6 +11,7 @@ import 'package:sax_buddy/services/logger_service.dart';
   FirebaseAuth,
   User,
   UserCredential,
+  LoggerService,
 ])
 import 'auth_service_test.mocks.dart';
 
@@ -20,6 +21,7 @@ void main() {
     late MockFirebaseAuth mockFirebaseAuth;
     late MockUser mockFirebaseUser;
     late MockUserCredential mockUserCredential;
+    late MockLoggerService mockLogger;
 
     setUpAll(() {
       // Initialize environment for logger
@@ -30,16 +32,12 @@ ENVIRONMENT=test
     });
 
     setUp(() {
-      // Reset logger singleton for each test
-      LoggerService.resetForTesting();
-      
       mockFirebaseAuth = MockFirebaseAuth();
       mockFirebaseUser = MockUser();
       mockUserCredential = MockUserCredential();
+      mockLogger = MockLoggerService();
       
-      authService = AuthService(
-        firebaseAuth: mockFirebaseAuth,
-      );
+      authService = AuthService(mockFirebaseAuth, mockLogger);
     });
 
     group('signInWithGoogle', () {

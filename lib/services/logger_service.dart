@@ -1,21 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:injectable/injectable.dart';
 
 enum LogLevel { trace, debug, info, warning, error, off }
 
+@singleton
 class LoggerService {
-  static LoggerService? _instance;
   late Logger _logger;
   late LogLevel _currentLevel;
 
-  LoggerService._internal() {
+  LoggerService() {
     _initializeLogger();
-  }
-
-  static LoggerService get instance {
-    _instance ??= LoggerService._internal();
-    return _instance!;
   }
 
   void _initializeLogger() {
@@ -154,12 +150,6 @@ class LoggerService {
 
   // Getter for current log level
   LogLevel get currentLevel => _currentLevel;
-
-  // Reset singleton for testing
-  @visibleForTesting
-  static void resetForTesting() {
-    _instance = null;
-  }
 }
 
 class _CustomLogFilter extends LogFilter {
