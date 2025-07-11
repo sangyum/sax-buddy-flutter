@@ -68,44 +68,4 @@ final List<Story> dashboardStories = [
       onSignOut: () => debugPrint('Sign out tapped'),
     ),
   ),
-  Story(
-    name: 'Dashboard/Mobile View',
-    description: 'Dashboard optimized for mobile devices',
-    builder: (context) => SizedBox(
-      width: 375,
-      height: 812,
-      child: DashboardPresentation(
-        user: User(
-          id: 'mobile_user_222',
-          email: 'mobile@saxbuddy.com',
-          displayName: 'Mobile User',
-          photoURL: null,
-          createdAt: DateTime.now().subtract(const Duration(days: 7)),
-          hasActiveSubscription: false,
-          trialEndsAt: DateTime.now().add(const Duration(days: 7)),
-        ),
-        onSignOut: () => debugPrint('Sign out tapped'),
-      ),
-    ),
-  ),
-  Story(
-    name: 'Dashboard/Tablet View',
-    description: 'Dashboard optimized for tablet devices',
-    builder: (context) => SizedBox(
-      width: 768,
-      height: 1024,
-      child: DashboardPresentation(
-        user: User(
-          id: 'tablet_user_333',
-          email: 'tablet@saxbuddy.com',
-          displayName: 'Tablet User',
-          photoURL: null,
-          createdAt: DateTime.now().subtract(const Duration(days: 30)),
-          hasActiveSubscription: true,
-          trialEndsAt: null,
-        ),
-        onSignOut: () => debugPrint('Sign out tapped'),
-      ),
-    ),
-  ),
 ];

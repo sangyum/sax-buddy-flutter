@@ -31,6 +31,13 @@ jobs:
     - name: Get dependencies
       run: flutter pub get
       
+    - name: Setup Environment
+      uses: ./.github/actions/setup-env
+      with:
+        openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+        environment: development
+        log-level: DEBUG
+      
     - name: Verify formatting
       run: dart format --output=none .
       
@@ -73,6 +80,13 @@ jobs:
 
     - name: Get dependencies
       run: flutter pub get
+
+    - name: Setup Environment
+      uses: ./.github/actions/setup-env
+      with:
+        openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+        environment: production
+        log-level: INFO
 
     - name: Create google-services.json
       env:
@@ -165,6 +179,13 @@ jobs:
         
     - name: Get dependencies
       run: flutter pub get
+
+    - name: Setup Environment
+      uses: ./.github/actions/setup-env
+      with:
+        openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+        environment: production
+        log-level: INFO
 
     - name: Create GoogleService-Info.plist
       env:

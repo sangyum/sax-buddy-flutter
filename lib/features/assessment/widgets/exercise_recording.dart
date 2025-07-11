@@ -54,7 +54,7 @@ class ExerciseRecording extends StatelessWidget {
             }
 
             return RealTimeWaveform(
-              audioService: audioService,
+              waveformStream: audioService.waveformStream,
               isActive: true,
             );
           },

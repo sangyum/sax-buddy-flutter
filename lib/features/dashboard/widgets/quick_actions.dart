@@ -34,7 +34,7 @@ class QuickActions extends StatelessWidget {
                   icon: Icons.history,
                   title: 'Recent\nRoutines',
                   subtitle: 'Continue',
-                  onTap: () {},
+                  onTap: () => Navigator.of(context).pushNamed('/routines'),
                 ),
               ),
             ],
