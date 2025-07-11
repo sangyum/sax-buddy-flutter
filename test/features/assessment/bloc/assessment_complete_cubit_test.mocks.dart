@@ -312,10 +312,13 @@ class MockRoutinesProvider extends _i1.Mock implements _i9.RoutinesProvider {
   );
 
   @override
-  void addRoutines(List<_i10.PracticeRoutine>? routines) => super.noSuchMethod(
-    Invocation.method(#addRoutines, [routines]),
-    returnValueForMissingStub: null,
-  );
+  _i5.Future<void> addRoutines(List<_i10.PracticeRoutine>? routines) =>
+      (super.noSuchMethod(
+            Invocation.method(#addRoutines, [routines]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
 
   @override
   _i10.PracticeRoutine? getRoutineAt(int? index) =>
@@ -357,6 +360,48 @@ class MockRoutinesProvider extends _i1.Mock implements _i9.RoutinesProvider {
     Invocation.method(#removeRoutineAt, [index]),
     returnValueForMissingStub: null,
   );
+
+  @override
+  void setUserId(String? userId) => super.noSuchMethod(
+    Invocation.method(#setUserId, [userId]),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  _i5.Future<void> loadUserRoutines() =>
+      (super.noSuchMethod(
+            Invocation.method(#loadUserRoutines, []),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> saveRoutine(_i10.PracticeRoutine? routine) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveRoutine, [routine]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> deleteRoutine(String? routineId) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteRoutine, [routineId]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> syncRoutines() =>
+      (super.noSuchMethod(
+            Invocation.method(#syncRoutines, []),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
 
   @override
   Map<String, dynamic> getStatus() =>

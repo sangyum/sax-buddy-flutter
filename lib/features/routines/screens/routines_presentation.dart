@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sax_buddy/features/practice/models/practice_routine.dart';
+import 'package:sax_buddy/features/routines/widgets/error_banner.dart';
+import 'package:sax_buddy/features/routines/widgets/loading_indicator.dart';
 import '../widgets/routine_list.dart';
 
 class RoutinesPresentation extends StatelessWidget {
@@ -46,77 +48,13 @@ class RoutinesPresentation extends StatelessWidget {
       ),
       body: Column(
         children: [
-          if (error != null) _ErrorBanner(error: error!),
-          if (isLoading) _LoadingIndicator(),
+          if (error != null) ErrorBanner(error: error!),
+          if (isLoading) LoadingIndicator(),
           Expanded(
             child: RoutineList(
               routines: routines,
               onRoutineTap: onRoutineTap,
               onRefresh: onRefresh,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ErrorBanner extends StatelessWidget {
-  final String error;
-
-  const _ErrorBanner({required this.error});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      color: const Color(0xFFFFEBEE),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.error_outline,
-            color: Color(0xFFD32F2F),
-            size: 20,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              error,
-              style: const TextStyle(
-                color: Color(0xFFD32F2F),
-                fontSize: 14,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _LoadingIndicator extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 16,
-            height: 16,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2E5266)),
-            ),
-          ),
-          SizedBox(width: 12),
-          Text(
-            'Loading routines...',
-            style: TextStyle(
-              color: Color(0xFF757575),
-              fontSize: 14,
             ),
           ),
         ],

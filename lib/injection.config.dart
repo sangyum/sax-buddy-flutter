@@ -17,8 +17,6 @@ import 'package:sax_buddy/features/assessment/bloc/assessment_complete_cubit.dar
     as _i339;
 import 'package:sax_buddy/features/assessment/domain/assessment_analyzer.dart'
     as _i641;
-import 'package:sax_buddy/features/assessment/domain/routine_generator.dart'
-    as _i494;
 import 'package:sax_buddy/features/assessment/providers/assessment_provider.dart'
     as _i565;
 import 'package:sax_buddy/features/assessment/services/audio_analysis_dataset_service.dart'
@@ -27,6 +25,8 @@ import 'package:sax_buddy/features/auth/providers/auth_provider.dart' as _i536;
 import 'package:sax_buddy/features/auth/repositories/user_repository.dart'
     as _i692;
 import 'package:sax_buddy/features/auth/services/auth_service.dart' as _i640;
+import 'package:sax_buddy/features/practice/repositories/practice_routine_repository.dart'
+    as _i727;
 import 'package:sax_buddy/features/practice/services/practice_generation_service.dart'
     as _i678;
 import 'package:sax_buddy/features/routines/providers/routines_provider.dart'
@@ -47,7 +47,6 @@ extension GetItInjectableX on _i174.GetIt {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final injectionModule = _$InjectionModule();
     gh.factory<_i641.AssessmentAnalyzer>(() => _i641.AssessmentAnalyzer());
-    gh.factory<_i494.RoutineGenerator>(() => _i494.RoutineGenerator());
     gh.singleton<_i974.FirebaseFirestore>(() => injectionModule.firestore);
     gh.singleton<_i59.FirebaseAuth>(() => injectionModule.firebaseAuth);
     gh.singleton<_i266.LoggerService>(() => _i266.LoggerService());
@@ -61,15 +60,24 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i266.LoggerService>(),
       ),
     );
+    gh.factory<_i727.PracticeRoutineRepository>(
+      () => _i727.PracticeRoutineRepository(
+        gh<_i974.FirebaseFirestore>(),
+        gh<_i266.LoggerService>(),
+      ),
+    );
+    gh.factory<_i824.RoutinesProvider>(
+      () => _i824.RoutinesProvider(
+        gh<_i266.LoggerService>(),
+        gh<_i727.PracticeRoutineRepository>(),
+      ),
+    );
     gh.factory<_i536.AuthProvider>(
       () => _i536.AuthProvider(
         gh<_i640.AuthService>(),
         gh<_i692.UserRepository>(),
         gh<_i266.LoggerService>(),
       ),
-    );
-    gh.factory<_i824.RoutinesProvider>(
-      () => _i824.RoutinesProvider(gh<_i266.LoggerService>()),
     );
     gh.factory<_i415.AudioRecordingService>(
       () => _i415.AudioRecordingService(gh<_i266.LoggerService>()),
