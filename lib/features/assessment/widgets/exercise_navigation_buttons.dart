@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
-import '../providers/assessment_provider.dart';
+import '../models/exercise_state.dart';
 
 class ExerciseNavigationButtons extends StatelessWidget {
-  final AssessmentProvider provider;
+  final ExerciseState exerciseState;
+  final bool canGoToPreviousExercise;
+  final bool canGoToNextExercise;
+  final VoidCallback? onPreviousExercise;
+  final VoidCallback? onNextExercise;
   final VoidCallback onCompleteAssessment;
 
   const ExerciseNavigationButtons({
     super.key,
-    required this.provider,
+    required this.exerciseState,
+    required this.canGoToPreviousExercise,
+    required this.canGoToNextExercise,
+    this.onPreviousExercise,
+    this.onNextExercise,
     required this.onCompleteAssessment,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (provider.exerciseState != ExerciseState.completed) {
+    if (exerciseState != ExerciseState.completed) {
       return const SizedBox.shrink();
     }
 
@@ -21,10 +29,10 @@ class ExerciseNavigationButtons extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Row(
         children: [
-          if (provider.canGoToPreviousExercise)
+          if (canGoToPreviousExercise)
             Expanded(
               child: OutlinedButton(
-                onPressed: provider.goToPreviousExercise,
+                onPressed: onPreviousExercise,
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF2E5266)),
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -45,17 +53,17 @@ class ExerciseNavigationButtons extends StatelessWidget {
           
           Expanded(
             child: ElevatedButton(
-              onPressed: provider.canGoToNextExercise
-                  ? provider.goToNextExercise
+              onPressed: canGoToNextExercise
+                  ? onNextExercise
                   : onCompleteAssessment,
               style: ElevatedButton.styleFrom(
-                backgroundColor: provider.canGoToNextExercise
+                backgroundColor: canGoToNextExercise
                     ? const Color(0xFF2E5266)
                     : const Color(0xFF4CAF50),
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               child: Text(
-                provider.canGoToNextExercise ? 'Next Exercise' : 'Complete Assessment',
+                canGoToNextExercise ? 'Next Exercise' : 'Complete Assessment',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 14,

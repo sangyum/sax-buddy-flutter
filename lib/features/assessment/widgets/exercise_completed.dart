@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import '../models/assessment_exercise.dart';
-import '../providers/assessment_provider.dart';
 import 'exercise_card.dart';
 
-class ExerciseCompletedState extends StatelessWidget {
-  final AssessmentProvider provider;
+class ExerciseCompleted extends StatelessWidget {
   final AssessmentExercise exercise;
+  final int exerciseNumber;
 
-  const ExerciseCompletedState({
+  const ExerciseCompleted({
     super.key,
-    required this.provider,
     required this.exercise,
+    required this.exerciseNumber,
   });
 
   @override
@@ -20,7 +19,7 @@ class ExerciseCompletedState extends StatelessWidget {
         const SizedBox(height: 24),
         ExerciseCard(
           exercise: exercise,
-          exerciseNumber: provider.currentExerciseNumber,
+          exerciseNumber: exerciseNumber,
         ),
         const Spacer(),
         Container(
@@ -37,11 +36,7 @@ class ExerciseCompletedState extends StatelessWidget {
               ),
             ],
           ),
-          child: const Icon(
-            Icons.check,
-            size: 40,
-            color: Colors.white,
-          ),
+          child: const Icon(Icons.check, size: 40, color: Colors.white),
         ),
         const SizedBox(height: 16),
         const Text(

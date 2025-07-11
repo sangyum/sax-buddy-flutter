@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import '../models/assessment_exercise.dart';
-import '../providers/assessment_provider.dart';
 import 'exercise_card.dart';
 import 'recording_button.dart';
 
-class ExerciseSetupState extends StatelessWidget {
-  final AssessmentProvider provider;
+class ExerciseSetup extends StatelessWidget {
   final AssessmentExercise exercise;
+  final int exerciseNumber;
+  final VoidCallback onStart;
 
-  const ExerciseSetupState({
+  const ExerciseSetup({
     super.key,
-    required this.provider,
     required this.exercise,
+    required this.exerciseNumber,
+    required this.onStart,
   });
 
   @override
@@ -25,20 +26,17 @@ class ExerciseSetupState extends StatelessWidget {
                 const SizedBox(height: 24),
                 ExerciseCard(
                   exercise: exercise,
-                  exerciseNumber: provider.currentExerciseNumber,
+                  exerciseNumber: exerciseNumber,
                 ),
                 const SizedBox(height: 48),
                 RecordingButton(
                   isRecording: false,
-                  onPressed: provider.startCountdown,
+                  onPressed: onStart,
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'Tap to start recording',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF757575),
-                  ),
+                  'Tap microphone to start recording',
+                  style: TextStyle(fontSize: 14, color: Color(0xFF757575)),
                 ),
               ],
             ),

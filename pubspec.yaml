@@ -47,6 +47,16 @@ dependencies:
   # Logging and environment
   logger: ^2.4.0
   flutter_dotenv: ^5.2.1
+  
+  # Audio recording and analysis
+  audio_waveforms: ^1.0.5
+  permission_handler: ^11.3.1
+  path_provider: ^2.1.4
+  firebase_storage: ^12.3.2
+  path: ^1.9.0
+  
+  # Audio analysis (for future implementation)
+  pitch_detector_dart: ^0.0.7
 
 dev_dependencies:
   flutter_test:

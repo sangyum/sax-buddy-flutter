@@ -4,7 +4,7 @@ import 'package:sax_buddy/features/assessment/widgets/recording_button.dart';
 
 void main() {
   group('RecordingButton', () {
-    testWidgets('should display play icon when not recording', (WidgetTester tester) async {
+    testWidgets('should display microphone icon when not recording', (WidgetTester tester) async {
       bool buttonPressed = false;
 
       await tester.pumpWidget(
@@ -18,7 +18,7 @@ void main() {
         ),
       );
 
-      expect(find.byIcon(Icons.play_arrow), findsOneWidget);
+      expect(find.byIcon(Icons.mic), findsOneWidget);
       expect(buttonPressed, isFalse);
       
       await tester.tap(find.byType(RecordingButton));
@@ -39,7 +39,7 @@ void main() {
         ),
       );
 
-      expect(find.byIcon(Icons.play_arrow), findsNothing);
+      expect(find.byIcon(Icons.mic), findsNothing);
       // The recording state shows a square container instead of an icon
       expect(find.byType(Container), findsWidgets);
     });
