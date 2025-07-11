@@ -1,22 +1,34 @@
 class PracticeRoutine {
+  final String id;
+  final String userId;
   final String title;
   final String description;
   final List<String> targetAreas;
   final String difficulty;
   final String estimatedDuration;
   final List<PracticeExercise> exercises;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final bool isAIGenerated;
 
   const PracticeRoutine({
+    required this.id,
+    required this.userId,
     required this.title,
     required this.description,
     required this.targetAreas,
     required this.difficulty,
     required this.estimatedDuration,
     required this.exercises,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.isAIGenerated,
   });
 
   factory PracticeRoutine.fromJson(Map<String, dynamic> json) {
     return PracticeRoutine(
+      id: json['id'] as String? ?? '',
+      userId: json['userId'] as String? ?? '',
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',
       targetAreas: List<String>.from(json['targetAreas'] as List? ?? []),
@@ -25,17 +37,25 @@ class PracticeRoutine {
       exercises: (json['exercises'] as List? ?? [])
           .map((exercise) => PracticeExercise.fromJson(exercise as Map<String, dynamic>))
           .toList(),
+      createdAt: DateTime.parse(json['createdAt'] as String? ?? DateTime.now().toIso8601String()),
+      updatedAt: DateTime.parse(json['updatedAt'] as String? ?? DateTime.now().toIso8601String()),
+      isAIGenerated: json['isAIGenerated'] as bool? ?? false,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
+      'userId': userId,
       'title': title,
       'description': description,
       'targetAreas': targetAreas,
       'difficulty': difficulty,
       'estimatedDuration': estimatedDuration,
       'exercises': exercises.map((e) => e.toJson()).toList(),
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+      'isAIGenerated': isAIGenerated,
     };
   }
 

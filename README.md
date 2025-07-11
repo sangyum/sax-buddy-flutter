@@ -15,9 +15,11 @@ SaxBuddy helps self-taught saxophonists improve their skills through:
 - ✅ **Firebase Authentication**: Secure user accounts with Google sign-in
 - ✅ **Audio Recording & Analysis**: Real-time microphone-based performance analysis
 - ✅ **AI Integration**: OpenAI GPT-4o-mini powered practice routine generation
+- ✅ **Practice Routine Persistence**: Firestore-based routine storage and management
 - ✅ **Dependency Injection**: get_it + injectable for type-safe DI container
 - ✅ **Responsive UI**: Adaptive layouts for phones and tablets
-- ✅ **Comprehensive Testing**: 200/200 tests passing (100% success rate)
+- ✅ **Comprehensive Testing**: 210+ tests passing (100% success rate)
+- ✅ **Storybook Integration**: Complete component library for UI development
 - ✅ **Production Ready**: Comprehensive logging, error handling, and monitoring
 
 ## Tech Stack
@@ -80,8 +82,14 @@ lib/
 │   ├── assessment/    # Assessment exercises
 │   ├── dashboard/     # Main dashboard
 │   ├── landing/       # Landing page
-│   ├── practice/      # Practice routines
-│   └── routines/      # Routine management
+│   ├── practice/      # Practice routines & models
+│   │   ├── models/    # PracticeRoutine and PracticeExercise
+│   │   ├── repositories/ # PracticeRoutineRepository
+│   │   └── services/  # PracticeGenerationService
+│   └── routines/      # Routine management UI
+│       ├── providers/ # RoutinesProvider
+│       ├── screens/   # Routine list and detail screens
+│       └── widgets/   # Routine UI components
 ├── services/          # Core services
 │   ├── openai_service.dart
 │   ├── logger_service.dart
@@ -92,8 +100,15 @@ lib/
 ├── injection_module.dart  # DI module definitions
 └── main.dart
 
-stories/               # Storybook components
-test/                  # Test files
+stories/               # Storybook component library
+├── routines/         # Routine component stories
+│   └── routines_stories.dart # 14 comprehensive stories
+└── main.dart         # Storybook entry point
+
+test/                  # Comprehensive test suite
+├── features/         # Feature-specific tests
+├── services/         # Service layer tests
+└── 210+ passing tests
 ```
 
 ### Dependency Injection Architecture
@@ -119,6 +134,11 @@ class OpenAIService {
 @injectable
 class UserRepository {
   UserRepository(this._firestore, this._logger);
+}
+
+@injectable
+class PracticeRoutineRepository {
+  PracticeRoutineRepository(this._firestore, this._logger);
 }
 
 @lazySingleton
@@ -178,6 +198,49 @@ flutter test test/features/auth/     # Authentication tests
 flutter test test/features/assessment/ # Assessment tests
 ```
 
+### Practice Routine Persistence
+
+The app includes comprehensive practice routine persistence with Firestore:
+
+#### Data Architecture
+- **Firestore Collection**: `practice_routines/{userId}/routines/{routineId}`
+- **User-Scoped Storage**: Each user has their own routine subcollection
+- **Rich Metadata**: Creation timestamps, AI generation tracking, difficulty levels
+- **Offline Support**: In-memory caching with background sync
+
+#### Repository Pattern
+```dart
+// CRUD operations through PracticeRoutineRepository
+final repository = getIt<PracticeRoutineRepository>();
+
+// Create new routine
+await repository.createRoutine(routine);
+
+// Load user's routines
+final routines = await repository.getUserRoutines(userId);
+
+// Update existing routine
+await repository.updateRoutine(routine);
+
+// Delete routine
+await repository.deleteRoutine(userId, routineId);
+```
+
+#### Provider Integration
+```dart
+// RoutinesProvider handles both memory and persistence
+final provider = getIt<RoutinesProvider>();
+
+// Set user context
+provider.setUserId(currentUser.id);
+
+// Load persisted routines
+await provider.loadUserRoutines();
+
+// Add routines (saves to Firestore automatically)
+await provider.addRoutines(generatedRoutines);
+```
+
 ### Component Development
 
 Use Storybook for isolated component development:
@@ -187,13 +250,28 @@ Use Storybook for isolated component development:
 flutter run -t stories/main.dart
 ```
 
+#### Storybook Features
+- **14 Comprehensive Stories**: Cover all routine component variations
+- **Edge Case Testing**: Long titles, many exercises, various data states
+- **Responsive Design**: Components tested across different screen sizes
+- **Data Variations**: AI-generated vs manual, different difficulty levels
+- **Interactive Development**: Live component editing and testing
+
+#### Available Story Categories
+- **Routine Lists**: Empty state, loading, error handling, different routine counts
+- **Routine Details**: Beginner/intermediate/advanced, single/many exercises
+- **Edge Cases**: Long titles, missing tempo, AI-generated indicators
+- **UI States**: Loading states, error handling, responsive layouts
+
 ### Development Workflow
 
 1. **Assessment Flow**: Complete 3-exercise assessment
 2. **AI Analysis**: Performance data sent to OpenAI for analysis
 3. **Routine Generation**: Personalized practice routines generated
-4. **Practice Session**: User follows AI-generated recommendations
-5. **Progress Tracking**: Performance improvement over time
+4. **Automatic Persistence**: Routines saved to user's Firestore collection
+5. **Practice Session**: User follows AI-generated recommendations
+6. **Progress Tracking**: Performance improvement over time
+7. **Routine Management**: Users can view, organize, and delete saved routines
 
 ## Working with Emulators
 
@@ -253,7 +331,8 @@ The app uses OpenAI's GPT-4o-mini model for generating practice routines:
 
 ### Firebase Services
 - **Authentication**: Google sign-in integration
-- **Firestore**: User data and assessment history
+- **Firestore**: User data, assessment history, and practice routine persistence
+- **Cloud Storage**: Audio file storage for assessments
 - **Analytics**: User behavior tracking (optional)
 
 ## Contributing

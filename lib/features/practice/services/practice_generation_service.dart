@@ -4,6 +4,7 @@ import 'package:sax_buddy/features/practice/models/practice_routine.dart';
 import 'package:sax_buddy/services/openai_service.dart';
 import 'package:sax_buddy/services/logger_service.dart';
 import 'package:injectable/injectable.dart';
+import 'dart:math';
 
 @lazySingleton
 class PracticeGenerationService {
@@ -30,6 +31,40 @@ class PracticeGenerationService {
       _logger.error('Failed to initialize practice generation service: $e');
       rethrow;
     }
+  }
+
+  /// Generate a unique ID for practice routines
+  String _generateId() {
+    final random = Random();
+    final chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    return List.generate(12, (index) => chars[random.nextInt(chars.length)]).join();
+  }
+
+  /// Helper method to create PracticeRoutine with all required fields
+  PracticeRoutine _createRoutine({
+    required String title,
+    required String description,
+    required List<String> targetAreas,
+    required String difficulty,
+    required String estimatedDuration,
+    required List<PracticeExercise> exercises,
+    String? userId,
+    bool isAIGenerated = false,
+  }) {
+    final now = DateTime.now();
+    return PracticeRoutine(
+      id: _generateId(),
+      userId: userId ?? 'temp-user',
+      title: title,
+      description: description,
+      targetAreas: targetAreas,
+      difficulty: difficulty,
+      estimatedDuration: estimatedDuration,
+      exercises: exercises,
+      createdAt: now,
+      updatedAt: now,
+      isAIGenerated: isAIGenerated,
+    );
   }
 
   /// Generate personalized practice plans from assessment dataset
@@ -107,13 +142,15 @@ class PracticeGenerationService {
     
     final adjustedDifficulty = difficultyMap[userLevel] ?? 'intermediate';
     
-    return PracticeRoutine(
+    return _createRoutine(
       title: routine.title,
       description: routine.description,
       targetAreas: routine.targetAreas,
       difficulty: adjustedDifficulty,
       estimatedDuration: routine.estimatedDuration,
       exercises: routine.exercises,
+      userId: routine.userId,
+      isAIGenerated: routine.isAIGenerated,
     );
   }
 
@@ -207,7 +244,7 @@ class PracticeGenerationService {
         break;
     }
     
-    return PracticeRoutine(
+    return _createRoutine(
       title: 'Timing and Rhythm Development',
       description: 'Focused practice to improve timing accuracy and rhythmic consistency',
       targetAreas: ['timing', 'rhythm', 'metronome skills'],
@@ -277,7 +314,7 @@ class PracticeGenerationService {
         break;
     }
     
-    return PracticeRoutine(
+    return _createRoutine(
       title: 'Pitch Accuracy and Intonation',
       description: 'Exercises to improve pitch stability and intonation',
       targetAreas: ['pitch accuracy', 'intonation', 'tone quality'],
@@ -345,7 +382,7 @@ class PracticeGenerationService {
         break;
     }
     
-    return PracticeRoutine(
+    return _createRoutine(
       title: 'Fundamental Technique',
       description: 'Essential exercises for developing proper saxophone technique',
       targetAreas: ['technique', 'fundamentals', 'coordination'],
@@ -410,7 +447,7 @@ class PracticeGenerationService {
         break;
     }
     
-    return PracticeRoutine(
+    return _createRoutine(
       title: 'Scale Mastery',
       description: 'Comprehensive scale practice for technical development',
       targetAreas: ['scales', 'technical facility', 'key signatures'],

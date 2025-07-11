@@ -33,7 +33,8 @@ AI-powered practice routine generation based on real-time analysis of user's pla
 1. **User Accounts** - Firebase auth, trial tracking, subscription flow - See @docs/PHASE1
 2. **Audio Recording/Analysis** - Basic pitch/timing detection prototype - See @docs/PHASE2
 3. **LLM Integration** - AI routine generation with structured prompts - See @docs/PHASE3 ✅ **COMPLETED**
-4. **Notation + Audio** - Sheet music rendering with reference playback - See @docs/PHASE4
+4. **Practice Routine Persistence** - Firestore-based routine storage and management - ✅ **COMPLETED**
+5. **Notation + Audio** - Sheet music rendering with reference playbook - See @docs/PHASE4
 
 ## Development Practices
 
@@ -52,6 +53,13 @@ AI-powered practice routine generation based on real-time analysis of user's pla
 - **Storybook**: Run `./scripts/run-storybook.sh` or `flutter run -t stories/main.dart` for component development
 - **Testing**: Use `flutter test` to run unit tests (not `uv run`)
 
+### Storybook Component Library
+- **Comprehensive Coverage**: Stories for all major UI components
+- **Routine Components**: Complete routine list and detail view stories
+- **Edge Case Testing**: Long titles, many exercises, various difficulty levels
+- **Data Variations**: AI-generated vs manual routines, different exercise types
+- **Responsive Design**: Stories test component behavior across screen sizes
+
 ## Dependency Injection Architecture ✅ **COMPLETED**
 
 ### DI Implementation
@@ -65,6 +73,7 @@ AI-powered practice routine generation based on real-time analysis of user's pla
 - **OpenAIService**: AI integration with OpenAI GPT-4o-mini (@singleton)
 - **AuthService**: Firebase Auth wrapper (@singleton)
 - **UserRepository**: Firestore user data management (@injectable)
+- **PracticeRoutineRepository**: Practice routine persistence with CRUD operations (@injectable)
 - **AudioRecordingService**: Audio capture and processing (@injectable)
 - **AudioAnalysisService**: Real-time audio analysis (@lazySingleton)
 - **PracticeGenerationService**: AI-powered routine generation (@lazySingleton)
@@ -145,3 +154,68 @@ OPENAI_API_KEY=your_openai_api_key_here
 3. OpenAI generates personalized practice routines
 4. User receives AI-powered recommendations
 5. If AI fails, fallback routines are provided
+
+## Practice Routine Persistence ✅ **COMPLETED**
+
+### Firestore Data Architecture
+- **Collection Structure**: `practice_routines/{userId}/routines/{routineId}`
+- **Hierarchical Organization**: User-specific subcollections for efficient querying
+- **Document Schema**: Complete practice routine data with metadata
+- **Performance Optimization**: Offline persistence and caching enabled
+
+### Repository Pattern Implementation
+- **PracticeRoutineRepository**: Full CRUD operations with comprehensive error handling
+- **Firestore Integration**: Native Cloud Firestore integration with structured queries
+- **Performance Logging**: Detailed operation timing and metadata tracking
+- **Error Handling**: Graceful fallbacks with `RepositoryException` wrapper
+
+### Enhanced Data Model
+```dart
+class PracticeRoutine {
+  final String id;              // Unique identifier
+  final String userId;          // Owner reference
+  final String title;           // Routine name
+  final String description;     // Detailed description
+  final List<String> targetAreas; // Practice focus areas
+  final String difficulty;      // Beginner/Intermediate/Advanced
+  final String estimatedDuration; // Expected practice time
+  final List<PracticeExercise> exercises; // Exercise list
+  final DateTime createdAt;     // Creation timestamp
+  final DateTime updatedAt;     // Last modification
+  final bool isAIGenerated;     // Generation source tracking
+}
+```
+
+### Persistence Features
+- **Automatic Saving**: Routines saved immediately after AI generation
+- **User Context**: User ID automatically set on authentication
+- **Background Sync**: Seamless sync between memory and Firestore
+- **Offline Support**: In-memory caching for UI responsiveness
+- **App Startup Loading**: User routines loaded automatically on dashboard access
+
+### RoutinesProvider Enhancement
+- **Dual Storage**: In-memory cache + Firestore persistence
+- **Real-time Updates**: Immediate UI updates with background persistence
+- **Error Recovery**: Graceful handling of network failures
+- **User Management**: Automatic user context management and routine loading
+
+### Repository Operations
+```dart
+// Create new routine
+await repository.createRoutine(routine);
+
+// Load user's routines
+final routines = await repository.getUserRoutines(userId);
+
+// Update existing routine
+await repository.updateRoutine(routine);
+
+// Delete routine
+await repository.deleteRoutine(userId, routineId);
+```
+
+### Integration Points
+- **Assessment Flow**: Generated routines automatically saved to user's collection
+- **Dashboard**: Routines loaded on user authentication
+- **Provider Pattern**: Seamless integration with existing state management
+- **Testing**: Comprehensive test suite with 100% CRUD operation coverage

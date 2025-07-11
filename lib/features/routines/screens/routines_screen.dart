@@ -22,13 +22,10 @@ class RoutinesScreen extends StatelessWidget {
   }
 
   void _handleRoutineTap(BuildContext context, routine) {
-    // For now, just show a snackbar
-    // In the future, this will navigate to routine details
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Opening "${routine.title}" routine'),
-        backgroundColor: const Color(0xFF2E5266),
-      ),
+    Navigator.pushNamed(
+      context,
+      '/routines/detail',
+      arguments: routine,
     );
   }
 }

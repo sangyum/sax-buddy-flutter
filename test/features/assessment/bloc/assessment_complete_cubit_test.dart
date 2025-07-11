@@ -83,12 +83,17 @@ void main() {
 
           final routines = [
             PracticeRoutine(
+              id: 'test-routine-1',
+              userId: 'test-user',
               title: 'Test Routine',
               description: 'A test routine',
               targetAreas: ['scales'],
               difficulty: 'beginner',
               estimatedDuration: '10 minutes',
               exercises: [],
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
+              isAIGenerated: true,
             ),
           ];
 

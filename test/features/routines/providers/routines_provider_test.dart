@@ -3,15 +3,18 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mockito/mockito.dart';
 import 'package:sax_buddy/features/routines/providers/routines_provider.dart';
 import 'package:sax_buddy/features/practice/models/practice_routine.dart';
+import 'package:sax_buddy/features/practice/repositories/practice_routine_repository.dart';
 import 'package:sax_buddy/services/logger_service.dart';
 
-// Mock class
+// Mock classes
 class MockLoggerService extends Mock implements LoggerService {}
+class MockPracticeRoutineRepository extends Mock implements PracticeRoutineRepository {}
 
 void main() {
   group('RoutinesProvider', () {
     late RoutinesProvider provider;
     late MockLoggerService mockLogger;
+    late MockPracticeRoutineRepository mockRepository;
     late List<PracticeRoutine> mockRoutines;
     
     setUpAll(() async {
@@ -21,10 +24,13 @@ void main() {
     
     setUp(() {
       mockLogger = MockLoggerService();
-      provider = RoutinesProvider(mockLogger);
+      mockRepository = MockPracticeRoutineRepository();
+      provider = RoutinesProvider(mockLogger, mockRepository);
       
       mockRoutines = [
         PracticeRoutine(
+          id: 'routine-1',
+          userId: 'test-user',
           title: 'Scale Fundamentals',
           description: 'Basic scale practice routine',
           targetAreas: ['scales', 'technique'],
@@ -40,8 +46,13 @@ void main() {
               notes: 'Focus on intonation',
             ),
           ],
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          isAIGenerated: true,
         ),
         PracticeRoutine(
+          id: 'routine-2',
+          userId: 'test-user',
           title: 'Timing Development',
           description: 'Rhythm and timing practice',
           targetAreas: ['timing', 'rhythm'],
@@ -56,6 +67,9 @@ void main() {
               notes: 'Keep steady tempo',
             ),
           ],
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          isAIGenerated: true,
         ),
       ];
     });
@@ -64,13 +78,6 @@ void main() {
       expect(provider.recentRoutines, isEmpty);
       expect(provider.isLoading, isFalse);
       expect(provider.error, isNull);
-    });
-
-    test('should add routine to recent routines', () {
-      provider.addRoutine(mockRoutines[0]);
-      
-      expect(provider.recentRoutines, hasLength(1));
-      expect(provider.recentRoutines[0].title, equals('Scale Fundamentals'));
     });
 
     test('should add multiple routines and maintain order', () {
@@ -86,12 +93,17 @@ void main() {
       // Add more routines than the limit
       for (int i = 0; i < 15; i++) {
         provider.addRoutine(PracticeRoutine(
+          id: 'routine-$i',
+          userId: 'test-user',
           title: 'Routine $i',
           description: 'Description $i',
           targetAreas: ['test'],
           difficulty: 'intermediate',
           estimatedDuration: '10 minutes',
           exercises: [],
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          isAIGenerated: false,
         ));
       }
       

@@ -36,7 +36,7 @@ class AssessmentCompleteCubit extends Cubit<AssessmentCompleteState> {
       final dataset = await _assessmentAnalyzer.createAssessmentDataset(session);
       final routines = await _practiceGenerationService.generatePracticePlans(dataset);
 
-      routinesProvider.addRoutines(routines);
+      await routinesProvider.addRoutines(routines);
 
       emit(AssessmentCompleteRoutinesGenerated(routines));
       emit(const AssessmentCompleteNavigatingToRoutines());

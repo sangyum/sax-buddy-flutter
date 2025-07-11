@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:sax_buddy/features/assessment/models/assessment_dataset.dart';
 import 'package:sax_buddy/features/practice/models/practice_routine.dart';
@@ -24,6 +25,40 @@ class OpenAIService {
       _logger.error('Failed to initialize OpenAI service: $e');
       rethrow;
     }
+  }
+
+  /// Generate a unique ID for practice routines
+  String _generateId() {
+    final random = Random();
+    final chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    return List.generate(12, (index) => chars[random.nextInt(chars.length)]).join();
+  }
+
+  /// Helper method to create PracticeRoutine with all required fields
+  PracticeRoutine _createRoutine({
+    required String title,
+    required String description,
+    required List<String> targetAreas,
+    required String difficulty,
+    required String estimatedDuration,
+    required List<PracticeExercise> exercises,
+    String? userId,
+    bool isAIGenerated = true,
+  }) {
+    final now = DateTime.now();
+    return PracticeRoutine(
+      id: _generateId(),
+      userId: userId ?? 'temp-user',
+      title: title,
+      description: description,
+      targetAreas: targetAreas,
+      difficulty: difficulty,
+      estimatedDuration: estimatedDuration,
+      exercises: exercises,
+      createdAt: now,
+      updatedAt: now,
+      isAIGenerated: isAIGenerated,
+    );
   }
 
   /// Generate personalized practice plan from assessment dataset
@@ -264,7 +299,7 @@ class OpenAIService {
       
       // Return a fallback routine if parsing fails
       return [
-        PracticeRoutine(
+        _createRoutine(
           title: 'Basic Practice Session',
           description: 'A simple practice routine based on your assessment',
           targetAreas: ['fundamentals'],

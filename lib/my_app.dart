@@ -7,6 +7,8 @@ import 'package:sax_buddy/features/assessment/screens/assessment_complete_screen
 import 'package:sax_buddy/features/auth/providers/auth_provider.dart';
 import 'package:sax_buddy/features/routines/providers/routines_provider.dart';
 import 'package:sax_buddy/features/routines/screens/routines_screen.dart';
+import 'package:sax_buddy/features/routines/screens/routine_detail_screen.dart';
+import 'package:sax_buddy/features/practice/models/practice_routine.dart';
 import 'package:sax_buddy/injection.dart';
 import 'package:sax_buddy/services/logger_service.dart';
 
@@ -50,10 +52,22 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         home: AuthWrapper(logger: logger),
-        routes: {
-          '/assessment': (context) => const AssessmentFlow(),
-          '/assessment/complete': (context) => const AssessmentCompleteScreen(),
-          '/routines': (context) => const RoutinesScreen(),
+        onGenerateRoute: (settings) {
+          switch (settings.name) {
+            case '/assessment':
+              return MaterialPageRoute(builder: (context) => const AssessmentFlow());
+            case '/assessment/complete':
+              return MaterialPageRoute(builder: (context) => const AssessmentCompleteScreen());
+            case '/routines':
+              return MaterialPageRoute(builder: (context) => const RoutinesScreen());
+            case '/routines/detail':
+              final routine = settings.arguments as PracticeRoutine;
+              return MaterialPageRoute(
+                builder: (context) => RoutineDetailScreen(routine: routine),
+              );
+            default:
+              return null;
+          }
         },
       ),
     );
