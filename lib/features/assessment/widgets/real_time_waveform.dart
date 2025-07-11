@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import '../../../services/audio_recording_service.dart';
 
 class RealTimeWaveform extends StatefulWidget {
-  final AudioRecordingService audioService;
+  final Stream<List<double>> waveformStream;
   final bool isActive;
   final Color? activeColor;
   final Color? inactiveColor;
@@ -12,7 +11,7 @@ class RealTimeWaveform extends StatefulWidget {
 
   const RealTimeWaveform({
     super.key,
-    required this.audioService,
+    required this.waveformStream,
     required this.isActive,
     this.activeColor,
     this.inactiveColor,
@@ -46,10 +45,10 @@ class _RealTimeWaveformState extends State<RealTimeWaveform> {
   void _initializeWaveform() {
     // Cancel existing subscription
     _waveformSubscription?.cancel();
-    
+
     if (widget.isActive) {
       // Subscribe to real-time waveform data
-      _waveformSubscription = widget.audioService.waveformStream.listen(
+      _waveformSubscription = widget.waveformStream.listen(
         (waveformData) {
           if (mounted) {
             setState(() {
@@ -90,11 +89,14 @@ class _RealTimeWaveformState extends State<RealTimeWaveform> {
     if (_waveformData.length > widget.barCount) {
       final List<double> processed = [];
       final step = _waveformData.length / widget.barCount;
-      
+
       for (int i = 0; i < widget.barCount; i++) {
         final startIndex = (i * step).floor();
-        final endIndex = ((i + 1) * step).floor().clamp(0, _waveformData.length);
-        
+        final endIndex = ((i + 1) * step).floor().clamp(
+          0,
+          _waveformData.length,
+        );
+
         // Average the values in this range
         double sum = 0;
         int count = 0;
@@ -102,10 +104,10 @@ class _RealTimeWaveformState extends State<RealTimeWaveform> {
           sum += _waveformData[j].abs(); // Use absolute value for amplitude
           count++;
         }
-        
+
         processed.add(count > 0 ? sum / count : 0.1);
       }
-      
+
       return processed;
     }
 
@@ -132,13 +134,12 @@ class _RealTimeWaveformState extends State<RealTimeWaveform> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: processedData.map((amplitude) {
-          
           // Normalize amplitude to 0.1 - 1.0 range
           final normalizedHeight = (amplitude * 0.9 + 0.1).clamp(0.1, 1.0);
-          
+
           // Determine if this bar should be active
           final isActive = widget.isActive && _hasData;
-          
+
           return AnimatedContainer(
             duration: const Duration(milliseconds: 50),
             width: 3,

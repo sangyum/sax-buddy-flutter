@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 import 'dashboard/dashboard_stories.dart';
 import 'assessment/assessment_stories.dart';
+import 'assessment/real_time_waveform_stories.dart';
 
 Future<void> main() async {
   // Initialize environment for storybook
@@ -21,6 +22,7 @@ class StorybookApp extends StatelessWidget {
       stories: [
         ...dashboardStories,
         ...assessmentStories,
+        ...realTimeWaveformStories,
       ],
       wrapperBuilder: (context, child) => MaterialApp(
         title: 'Sax Buddy Storybook',
