@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sax_buddy/services/openai_service.dart';
 import 'package:sax_buddy/features/assessment/models/assessment_dataset.dart';
@@ -6,12 +7,18 @@ void main() {
   group('OpenAIService', () {
     late OpenAIService service;
     late AssessmentDataset mockDataset;
-    
+
     setUp(() {
+
+      // Load test environment variables
+      dotenv.testLoad(fileInput: '''
+LOG_LEVEL=DEBUG
+ENVIRONMENT=test
+''');
       // Note: For testing, we'll need to mock the OpenAI API calls
       // In a real implementation, you would set up proper API mocking
       service = OpenAIService();
-      
+
       mockDataset = AssessmentDataset(
         sessionId: 'test-session-123',
         userLevel: 'intermediate',
@@ -51,18 +58,18 @@ void main() {
 
     test('should initialize with API key', () {
       expect(service.isInitialized, isFalse);
-      
+
       service.initialize('test-api-key');
       expect(service.isInitialized, isTrue);
     });
 
     test('should validate dataset before processing', () {
       service.initialize('test-api-key');
-      
+
       // Valid dataset
       final isValid = service.validateDataset(mockDataset);
       expect(isValid, isTrue);
-      
+
       // Invalid dataset (empty session ID)
       final invalidDataset = AssessmentDataset(
         sessionId: '',
@@ -76,16 +83,16 @@ void main() {
         ),
         timestamp: DateTime(2024, 1, 1),
       );
-      
+
       final isInvalid = service.validateDataset(invalidDataset);
       expect(isInvalid, isFalse);
     });
 
     test('should generate practice plan prompt', () {
       service.initialize('test-api-key');
-      
+
       final prompt = service.generatePracticePlanPrompt(mockDataset);
-      
+
       expect(prompt, isA<String>());
       expect(prompt, contains('intermediate'));
       expect(prompt, contains('C Major Scale'));
@@ -95,7 +102,7 @@ void main() {
 
     test('should handle API errors gracefully', () async {
       service.initialize('invalid-api-key');
-      
+
       // This would normally make an API call and handle errors
       // For testing, we'll simulate error handling
       expect(() => service.validateDataset(mockDataset), returnsNormally);
@@ -103,7 +110,7 @@ void main() {
 
     test('should create structured practice plan from response', () {
       service.initialize('test-api-key');
-      
+
       const mockResponse = '''
 {
   "practiceRoutines": [
@@ -121,14 +128,17 @@ void main() {
   ]
 }
 ''';
-      
+
       final practiceRoutines = service.parsePracticeRoutines(mockResponse);
-      
+
       expect(practiceRoutines, isA<List>());
       expect(practiceRoutines.length, equals(1));
       expect(practiceRoutines[0].title, equals('Scale Fundamentals'));
       expect(practiceRoutines[0].exercises.length, equals(1));
-      expect(practiceRoutines[0].exercises[0].name, equals('C Major Scale - Slow Practice'));
+      expect(
+        practiceRoutines[0].exercises[0].name,
+        equals('C Major Scale - Slow Practice'),
+      );
     });
   });
 }

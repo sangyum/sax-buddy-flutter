@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sax_buddy/features/practice/services/practice_generation_service.dart';
 import 'package:sax_buddy/features/assessment/models/assessment_dataset.dart';
@@ -9,6 +10,12 @@ void main() {
     late AssessmentDataset mockDataset;
     
     setUp(() {
+      // Load test environment variables
+      dotenv.testLoad(fileInput: '''
+LOG_LEVEL=DEBUG
+ENVIRONMENT=test
+''');
+
       service = PracticeGenerationService();
       
       mockDataset = AssessmentDataset(
@@ -73,7 +80,7 @@ void main() {
       
       expect(practiceRoutines, isA<List<PracticeRoutine>>());
       expect(practiceRoutines.isNotEmpty, isTrue);
-      expect(practiceRoutines.first.title, contains('Practice Session'));
+      expect(practiceRoutines.first.title, contains('Timing and Rhythm Development'));
     });
 
     test('should validate dataset before processing', () {
