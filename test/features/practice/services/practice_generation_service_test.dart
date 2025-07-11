@@ -1,23 +1,29 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:sax_buddy/features/assessment/services/audio_analysis_dataset_service.dart';
 import 'package:sax_buddy/features/practice/services/practice_generation_service.dart';
 import 'package:sax_buddy/features/assessment/models/assessment_dataset.dart';
 import 'package:sax_buddy/features/practice/models/practice_routine.dart';
+import 'package:sax_buddy/services/openai_service.dart';
 
+@GenerateMocks([OpenAIService, AudioAnalysisDatasetService])
 void main() {
   group('PracticeGenerationService', () {
     late PracticeGenerationService service;
     late AssessmentDataset mockDataset;
-    
+
     setUp(() {
       // Load test environment variables
-      dotenv.testLoad(fileInput: '''
+      dotenv.testLoad(
+        fileInput: '''
 LOG_LEVEL=DEBUG
 ENVIRONMENT=test
-''');
+''',
+      );
 
       service = PracticeGenerationService();
-      
+
       mockDataset = AssessmentDataset(
         sessionId: 'test-session-123',
         userLevel: 'intermediate',
@@ -57,39 +63,42 @@ ENVIRONMENT=test
 
     test('should initialize with OpenAI service', () {
       expect(service.isInitialized, isFalse);
-      
+
       service.initialize('test-api-key');
       expect(service.isInitialized, isTrue);
     });
 
     test('should generate practice plan from dataset', () async {
       service.initialize('test-api-key');
-      
+
       // Since this involves OpenAI API calls, we'll mock the response
       // In a real implementation, you would mock the OpenAI service
       final practiceRoutines = await service.generatePracticePlans(mockDataset);
-      
+
       expect(practiceRoutines, isA<List<PracticeRoutine>>());
       expect(practiceRoutines.isNotEmpty, isTrue);
     });
 
     test('should generate fallback routine when API fails', () async {
       service.initialize('invalid-api-key');
-      
+
       final practiceRoutines = await service.generatePracticePlans(mockDataset);
-      
+
       expect(practiceRoutines, isA<List<PracticeRoutine>>());
       expect(practiceRoutines.isNotEmpty, isTrue);
-      expect(practiceRoutines.first.title, contains('Timing and Rhythm Development'));
+      expect(
+        practiceRoutines.first.title,
+        contains('Timing and Rhythm Development'),
+      );
     });
 
     test('should validate dataset before processing', () {
       service.initialize('test-api-key');
-      
+
       // Valid dataset
       final isValid = service.validateDataset(mockDataset);
       expect(isValid, isTrue);
-      
+
       // Invalid dataset (empty session ID)
       final invalidDataset = AssessmentDataset(
         sessionId: '',
@@ -103,19 +112,19 @@ ENVIRONMENT=test
         ),
         timestamp: DateTime(2024, 1, 1),
       );
-      
+
       final isInvalid = service.validateDataset(invalidDataset);
       expect(isInvalid, isFalse);
     });
 
     test('should generate targeted routines based on weaknesses', () async {
       service.initialize('test-api-key');
-      
+
       final practiceRoutines = await service.generatePracticePlans(mockDataset);
-      
+
       // Should generate routines targeting timing and rhythm issues
       expect(practiceRoutines.isNotEmpty, isTrue);
-      
+
       // Check that routines are appropriate for intermediate level
       for (final routine in practiceRoutines) {
         expect(routine.difficulty, isIn(['intermediate', 'beginner']));
@@ -125,7 +134,7 @@ ENVIRONMENT=test
 
     test('should handle different skill levels appropriately', () async {
       service.initialize('test-api-key');
-      
+
       // Test with beginner level
       final beginnerDataset = mockDataset.copyWith(
         userLevel: 'beginner',
@@ -136,10 +145,12 @@ ENVIRONMENT=test
           recommendedFocusAreas: ['fundamentals'],
         ),
       );
-      
-      final beginnerRoutines = await service.generatePracticePlans(beginnerDataset);
+
+      final beginnerRoutines = await service.generatePracticePlans(
+        beginnerDataset,
+      );
       expect(beginnerRoutines.isNotEmpty, isTrue);
-      
+
       // Test with advanced level
       final advancedDataset = mockDataset.copyWith(
         userLevel: 'advanced',
@@ -150,14 +161,16 @@ ENVIRONMENT=test
           recommendedFocusAreas: ['advanced techniques'],
         ),
       );
-      
-      final advancedRoutines = await service.generatePracticePlans(advancedDataset);
+
+      final advancedRoutines = await service.generatePracticePlans(
+        advancedDataset,
+      );
       expect(advancedRoutines.isNotEmpty, isTrue);
     });
 
     test('should provide service status', () {
       service.initialize('test-api-key');
-      
+
       final status = service.getStatus();
       expect(status, isA<Map<String, dynamic>>());
       expect(status['isInitialized'], isTrue);
