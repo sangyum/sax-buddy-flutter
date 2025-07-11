@@ -1,0 +1,36 @@
+name: 'Setup Environment'
+description: 'Create .env file with required environment variables'
+inputs:
+  openai-api-key:
+    description: 'OpenAI API key'
+    required: true
+  environment:
+    description: 'Environment (development/production)'
+    required: false
+    default: 'development'
+  log-level:
+    description: 'Log level'
+    required: false
+    default: 'DEBUG'
+runs:
+  using: 'composite'
+  steps:
+    - name: Create .env file
+      shell: bash
+      run: |
+        cat > .env << EOF
+        # Environment Configuration for SaxBuddy
+        
+        # Logging Configuration
+        LOG_LEVEL=${{ inputs.log-level }}
+        
+        # Development vs Production
+        ENVIRONMENT=${{ inputs.environment }}
+        
+        # OpenAI Configuration
+        OPENAI_API_KEY=${{ inputs.openai-api-key }}
+        
+        # Feature Flags
+        ENABLE_ANALYTICS=true
+        ENABLE_CRASH_REPORTING=true
+        EOF
