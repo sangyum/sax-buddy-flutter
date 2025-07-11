@@ -5,10 +5,12 @@ class ActionButtons extends StatelessWidget {
     super.key,
     required this.onGeneratePracticeRoutine,
     required this.onReturnToDashboard,
+    this.isGeneratingRoutines = false,
   });
 
   final VoidCallback onGeneratePracticeRoutine;
   final VoidCallback onReturnToDashboard;
+  final bool isGeneratingRoutines;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +19,7 @@ class ActionButtons extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: onGeneratePracticeRoutine,
+            onPressed: isGeneratingRoutines ? null : onGeneratePracticeRoutine,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF2E5266),
               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -25,14 +27,23 @@ class ActionButtons extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text(
-              'Generate Practice Routine',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            child: isGeneratingRoutines
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      strokeWidth: 2,
+                    ),
+                  )
+                : const Text(
+                    'Generate Practice Routine',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
           ),
         ),
         const SizedBox(height: 12),

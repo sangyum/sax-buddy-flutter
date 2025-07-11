@@ -13,6 +13,12 @@ import 'package:cloud_firestore/cloud_firestore.dart' as _i974;
 import 'package:firebase_auth/firebase_auth.dart' as _i59;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
+import 'package:sax_buddy/features/assessment/bloc/assessment_complete_cubit.dart'
+    as _i339;
+import 'package:sax_buddy/features/assessment/domain/assessment_analyzer.dart'
+    as _i641;
+import 'package:sax_buddy/features/assessment/domain/routine_generator.dart'
+    as _i494;
 import 'package:sax_buddy/features/assessment/providers/assessment_provider.dart'
     as _i565;
 import 'package:sax_buddy/features/assessment/services/audio_analysis_dataset_service.dart'
@@ -40,9 +46,11 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final injectionModule = _$InjectionModule();
-    gh.singleton<_i266.LoggerService>(() => _i266.LoggerService());
+    gh.factory<_i641.AssessmentAnalyzer>(() => _i641.AssessmentAnalyzer());
+    gh.factory<_i494.RoutineGenerator>(() => _i494.RoutineGenerator());
     gh.singleton<_i974.FirebaseFirestore>(() => injectionModule.firestore);
     gh.singleton<_i59.FirebaseAuth>(() => injectionModule.firebaseAuth);
+    gh.singleton<_i266.LoggerService>(() => _i266.LoggerService());
     gh.singleton<_i640.AuthService>(
       () =>
           _i640.AuthService(gh<_i59.FirebaseAuth>(), gh<_i266.LoggerService>()),
@@ -83,6 +91,13 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i266.LoggerService>(),
         gh<_i993.OpenAIService>(),
         gh<_i296.AudioAnalysisDatasetService>(),
+      ),
+    );
+    gh.factory<_i339.AssessmentCompleteCubit>(
+      () => _i339.AssessmentCompleteCubit(
+        gh<_i641.AssessmentAnalyzer>(),
+        gh<_i678.PracticeGenerationService>(),
+        gh<_i266.LoggerService>(),
       ),
     );
     gh.factory<_i565.AssessmentProvider>(
