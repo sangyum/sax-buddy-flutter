@@ -66,6 +66,9 @@ dependencies:
   # Dependency injection
   get_it: ^7.6.7
   injectable: ^2.3.2
+  
+  # Music notation display
+  simple_sheet_music: ^1.0.1
 
 dev_dependencies:
   flutter_test:

@@ -1,3 +1,5 @@
+import '../../notation/domain/sheet_music_data.dart';
+
 class PracticeRoutine {
   final String id;
   final String userId;
@@ -72,6 +74,7 @@ class PracticeExercise {
   final String? keySignature;
   final String? notes;
   final String estimatedDuration;
+  final SheetMusicData? sheetMusicData;
 
   const PracticeExercise({
     required this.name,
@@ -80,6 +83,7 @@ class PracticeExercise {
     this.keySignature,
     this.notes,
     required this.estimatedDuration,
+    this.sheetMusicData,
   });
 
   factory PracticeExercise.fromJson(Map<String, dynamic> json) {
@@ -90,6 +94,9 @@ class PracticeExercise {
       keySignature: json['keySignature'] as String?,
       notes: json['notes'] as String?,
       estimatedDuration: json['estimatedDuration'] as String? ?? '10 minutes',
+      sheetMusicData: json['sheetMusicData'] != null
+          ? SheetMusicData.fromJson(json['sheetMusicData'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -101,6 +108,7 @@ class PracticeExercise {
       if (keySignature != null) 'keySignature': keySignature,
       if (notes != null) 'notes': notes,
       'estimatedDuration': estimatedDuration,
+      if (sheetMusicData != null) 'sheetMusicData': sheetMusicData!.toJson(),
     };
   }
 
