@@ -1,49 +1,61 @@
 import 'package:flutter/material.dart';
+import 'package:sax_buddy/services/audio_recording_service.dart';
 import '../models/assessment_exercise.dart';
-import '../providers/assessment_provider.dart';
+import '../models/exercise_state.dart';
 import 'exercise_setup.dart';
 import 'exercise_recording.dart';
 import 'exercise_completed.dart';
 import 'exercise_countdown.dart';
 
 class ExerciseContent extends StatelessWidget {
-  final AssessmentProvider provider;
+  final ExerciseState exerciseState;
   final AssessmentExercise exercise;
-  final int? exerciseNumber; // Optional for completed state
-  final VoidCallback? onStartRecording; // Optional callback for recording state
-  final VoidCallback? onStopRecording; // Optional callback for recording state
+  final int exerciseNumber;
+  final VoidCallback onStartRecording;
+  final VoidCallback onStopRecording;
+  final AudioRecordingService audioService;
+  final int? countdownValue;
+  final VoidCallback? onCancelCountdown;
 
   const ExerciseContent({
     super.key,
-    required this.provider,
+    required this.exerciseState,
     required this.exercise,
-    this.exerciseNumber,
-    this.onStartRecording,
-    this.onStopRecording,
+    required this.exerciseNumber,
+    required this.onStartRecording,
+    required this.onStopRecording,
+    required this.audioService,
+    this.countdownValue,
+    this.onCancelCountdown,
   });
 
   @override
   Widget build(BuildContext context) {
-    switch (provider.exerciseState) {
+    switch (exerciseState) {
       case ExerciseState.setup:
         return ExerciseSetup(
           exercise: exercise,
-          exerciseNumber: exerciseNumber!,
-          onStart: onStartRecording!,
+          exerciseNumber: exerciseNumber,
+          onStart: onStartRecording,
         );
       case ExerciseState.countdown:
-        return ExerciseCountdown(provider: provider, exercise: exercise);
+        return ExerciseCountdown(
+          exercise: exercise,
+          exerciseNumber: exerciseNumber,
+          countdownValue: countdownValue ?? 0,
+          onCancel: onCancelCountdown ?? () {},
+        );
       case ExerciseState.recording:
         return ExerciseRecording(
           exercise: exercise,
-          exerciseNumber: exerciseNumber ?? provider.currentExerciseNumber,
-          onStopRecording: onStopRecording ?? provider.stopRecording,
-          audioService: provider.audioService,
+          exerciseNumber: exerciseNumber,
+          onStopRecording: onStopRecording,
+          audioService: audioService,
         );
       case ExerciseState.completed:
         return ExerciseCompleted(
           exercise: exercise,
-          exerciseNumber: exerciseNumber ?? provider.currentExerciseNumber,
+          exerciseNumber: exerciseNumber,
         );
     }
   }

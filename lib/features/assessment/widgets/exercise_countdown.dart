@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import '../models/assessment_exercise.dart';
-import '../providers/assessment_provider.dart';
 import 'exercise_card.dart';
 import 'countdown_overlay_button.dart';
 
 class ExerciseCountdown extends StatelessWidget {
-  final AssessmentProvider provider;
   final AssessmentExercise exercise;
+  final int exerciseNumber;
+  final int countdownValue;
+  final VoidCallback onCancel;
 
   const ExerciseCountdown({
     super.key,
-    required this.provider,
     required this.exercise,
+    required this.exerciseNumber,
+    required this.countdownValue,
+    required this.onCancel,
   });
 
   @override
@@ -26,13 +29,13 @@ class ExerciseCountdown extends StatelessWidget {
                 // Exercise card remains visible during countdown
                 ExerciseCard(
                   exercise: exercise,
-                  exerciseNumber: provider.currentExerciseNumber,
+                  exerciseNumber: exerciseNumber,
                 ),
                 const SizedBox(height: 48),
                 // Countdown overlay over the recording button
                 CountdownOverlayButton(
-                  countdownValue: provider.countdownValue,
-                  onCancel: provider.cancelCountdown,
+                  countdownValue: countdownValue,
+                  onCancel: onCancel,
                 ),
               ],
             ),
