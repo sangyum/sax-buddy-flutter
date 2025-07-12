@@ -16,10 +16,11 @@ SaxBuddy helps self-taught saxophonists improve their skills through:
 - ✅ **Audio Recording & Analysis**: Real-time microphone-based performance analysis
 - ✅ **AI Integration**: OpenAI GPT-4o-mini powered practice routine generation
 - ✅ **Practice Routine Persistence**: Firestore-based routine storage and management
+- ✅ **Sheet Music Notation**: Real sheet music rendering with simple_sheet_music package
 - ✅ **Dependency Injection**: get_it + injectable for type-safe DI container
 - ✅ **Responsive UI**: Adaptive layouts for phones and tablets
-- ✅ **Comprehensive Testing**: 210+ tests passing (100% success rate)
-- ✅ **Storybook Integration**: Complete component library for UI development
+- ✅ **Comprehensive Testing**: 225+ tests passing (100% success rate)
+- ✅ **Storybook Integration**: Complete component library with 18+ interactive stories
 - ✅ **Production Ready**: Comprehensive logging, error handling, and monitoring
 
 ## Tech Stack
@@ -27,6 +28,7 @@ SaxBuddy helps self-taught saxophonists improve their skills through:
 - **Frontend**: Flutter + Dart
 - **Backend**: Firebase (Auth + Firestore)
 - **AI**: OpenAI GPT-4o-mini via dart_openai package
+- **Sheet Music**: simple_sheet_music package for notation rendering
 - **Audio**: flutter_sound + custom pitch detection
 - **State Management**: Provider pattern
 - **Dependency Injection**: get_it + injectable
@@ -82,6 +84,9 @@ lib/
 │   ├── assessment/    # Assessment exercises
 │   ├── dashboard/     # Main dashboard
 │   ├── landing/       # Landing page
+│   ├── notation/      # Sheet music notation system
+│   │   ├── services/  # SimpleSheetMusicService (JSON to Measure conversion)
+│   │   └── widgets/   # NotationView, ExerciseNotationCard
 │   ├── practice/      # Practice routines & models
 │   │   ├── models/    # PracticeRoutine and PracticeExercise
 │   │   ├── repositories/ # PracticeRoutineRepository
@@ -101,14 +106,18 @@ lib/
 └── main.dart
 
 stories/               # Storybook component library
+├── notation/         # Notation component stories
+│   ├── notation_view_stories.dart # 9 NotationView stories
+│   └── exercise_notation_card_stories.dart # 9 ExerciseNotationCard stories
 ├── routines/         # Routine component stories
 │   └── routines_stories.dart # 14 comprehensive stories
 └── main.dart         # Storybook entry point
 
 test/                  # Comprehensive test suite
 ├── features/         # Feature-specific tests
+│   └── notation/     # NotationView and ExerciseNotationCard tests
 ├── services/         # Service layer tests
-└── 210+ passing tests
+└── 225+ passing tests
 ```
 
 ### Dependency Injection Architecture
@@ -144,6 +153,11 @@ class PracticeRoutineRepository {
 @lazySingleton
 class PracticeGenerationService {
   PracticeGenerationService(this._logger, this._openAI, this._dataset);
+}
+
+@lazySingleton
+class SimpleSheetMusicService {
+  // Converts JSON notation to List<Measure> for sheet music rendering
 }
 ```
 
@@ -241,6 +255,52 @@ await provider.loadUserRoutines();
 await provider.addRoutines(generatedRoutines);
 ```
 
+### Sheet Music Notation System
+
+The app includes a comprehensive sheet music notation system built on the `simple_sheet_music` Flutter package:
+
+#### Architecture Overview
+```
+AI Generation → JSON Notation → SimpleSheetMusicService → List<Measure> → NotationView → Rendered Sheet Music
+```
+
+#### Core Components
+
+**SimpleSheetMusicService**
+- Converts AI-generated JSON notation to `simple_sheet_music` Measure objects
+- Handles error cases gracefully with fallback mechanisms
+- Registered as @lazySingleton for optimal performance
+
+**NotationView Widget**
+- Accepts `List<Measure>?` for clean separation of concerns
+- Configurable display options (height, width, title, tempo)
+- Responsive design with adaptive layouts
+- Built-in loading, empty, and error states
+
+**ExerciseNotationCard Widget**
+- Interactive expandable card for exercise display
+- Integrates with NotationView for sheet music rendering
+- Shows exercise metadata (tempo, key signature, duration)
+- Smooth expand/collapse animations
+
+#### Musical Content Support
+- **Scales**: Major and minor scales with proper key signatures
+- **Arpeggios**: Triad patterns with accidentals and inversions
+- **Complex Exercises**: Mixed note durations, syncopated rhythms, advanced patterns
+- **Error Handling**: Invalid notation data handled gracefully
+
+#### AI Integration
+- LLM generates etudes with minimum 4 measures
+- Structured JSON format compatible with simple_sheet_music
+- Supports notes, accidentals, durations, clefs, and key signatures
+- Fallback to sample routines when AI generation fails
+
+#### Testing & Development
+- 8 comprehensive unit tests for NotationView (100% passing)
+- 18 Storybook stories for interactive development
+- Error scenario testing with invalid notation data
+- Responsive design validation across screen sizes
+
 ### Component Development
 
 Use Storybook for isolated component development:
@@ -251,17 +311,22 @@ flutter run -t stories/main.dart
 ```
 
 #### Storybook Features
-- **14 Comprehensive Stories**: Cover all routine component variations
-- **Edge Case Testing**: Long titles, many exercises, various data states
+- **32+ Comprehensive Stories**: Cover all component variations across the app
+- **Notation Components**: Interactive sheet music display with musical examples
+- **Routine Components**: Complete routine management and display stories
+- **Edge Case Testing**: Long titles, many exercises, invalid data, various states
 - **Responsive Design**: Components tested across different screen sizes
-- **Data Variations**: AI-generated vs manual, different difficulty levels
+- **Data Variations**: AI-generated vs manual, different musical content and difficulty levels
 - **Interactive Development**: Live component editing and testing
 
 #### Available Story Categories
-- **Routine Lists**: Empty state, loading, error handling, different routine counts
-- **Routine Details**: Beginner/intermediate/advanced, single/many exercises
-- **Edge Cases**: Long titles, missing tempo, AI-generated indicators
-- **UI States**: Loading states, error handling, responsive layouts
+- **Notation System**: 
+  - 9 NotationView stories (scales, arpeggios, complex exercises, loading states)
+  - 9 ExerciseNotationCard stories (interactive states, error handling, UI variations)
+- **Routine Management**: 
+  - 14 comprehensive stories covering routine lists and details
+- **Edge Cases**: Long titles, missing data, invalid notation, AI-generated indicators
+- **UI States**: Loading states, error handling, responsive layouts, musical content display
 
 ### Development Workflow
 
