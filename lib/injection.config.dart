@@ -25,8 +25,8 @@ import 'package:sax_buddy/features/auth/providers/auth_provider.dart' as _i536;
 import 'package:sax_buddy/features/auth/repositories/user_repository.dart'
     as _i692;
 import 'package:sax_buddy/features/auth/services/auth_service.dart' as _i640;
-import 'package:sax_buddy/features/notation/services/notation_generation_service.dart'
-    as _i338;
+import 'package:sax_buddy/features/notation/services/simple_sheet_music_service.dart'
+    as _i573;
 import 'package:sax_buddy/features/practice/repositories/practice_routine_repository.dart'
     as _i727;
 import 'package:sax_buddy/features/practice/services/practice_generation_service.dart'
@@ -52,8 +52,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i974.FirebaseFirestore>(() => injectionModule.firestore);
     gh.singleton<_i59.FirebaseAuth>(() => injectionModule.firebaseAuth);
     gh.singleton<_i266.LoggerService>(() => _i266.LoggerService());
-    gh.lazySingleton<_i338.NotationGenerationService>(
-      () => _i338.NotationGenerationService(),
+    gh.lazySingleton<_i573.SimpleSheetMusicService>(
+      () => _i573.SimpleSheetMusicService(),
     );
     gh.singleton<_i640.AuthService>(
       () =>

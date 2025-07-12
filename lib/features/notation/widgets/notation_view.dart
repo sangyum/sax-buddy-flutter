@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
-import '../domain/sheet_music_data.dart';
+import 'package:simple_sheet_music/simple_sheet_music.dart';
 
 /// Widget for displaying sheet music notation
 class NotationView extends StatelessWidget {
-  final SheetMusicData? sheetMusicData;
+  final List<Measure>? measures;
   final bool isLoading;
   final double? height;
   final double? width;
+  final String? title;
+  final int? tempo;
 
   const NotationView({
     super.key,
-    this.sheetMusicData,
+    this.measures,
     this.isLoading = false,
     this.height,
     this.width,
+    this.title,
+    this.tempo,
   });
 
   @override
@@ -26,14 +30,12 @@ class NotationView extends StatelessWidget {
           border: Border.all(color: Colors.grey.shade300),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: const Center(child: CircularProgressIndicator()),
       );
     }
 
-    if (sheetMusicData == null) {
-      return EmptyNotation(height: height, width: width);
+    if (measures == null || measures!.isEmpty) {
+      return _EmptyNotation(height: height, width: width);
     }
 
     return Container(
@@ -56,7 +58,7 @@ class NotationView extends StatelessWidget {
                 children: [
                   Flexible(
                     child: Text(
-                      sheetMusicData!.metadata.title,
+                      title ?? 'Musical Exercise',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -64,7 +66,7 @@ class NotationView extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '♩ = ${sheetMusicData!.metadata.tempo}',
+                    '♩ = ${tempo ?? 120}',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontStyle: FontStyle.italic,
                     ),
@@ -73,54 +75,37 @@ class NotationView extends StatelessWidget {
               ),
               const SizedBox(height: 16),
             ],
-            
-            // Sheet music rendering area (placeholder for now)
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.music_note,
-                        size: height != null && height! < 150 ? 24 : 48,
-                        color: Colors.blue,
-                      ),
-                      if (height == null || height! >= 120) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          '${sheetMusicData!.measures.length} measure(s)',
-                          style: Theme.of(context).textTheme.bodySmall,
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            ),
+
+            // Sheet music rendering area
+            Expanded(child: _buildSheetMusic()),
           ],
         ),
       ),
     );
   }
+
+  /// Build the actual sheet music widget or fallback
+  Widget _buildSheetMusic() {
+    try {
+      return SimpleSheetMusic(
+        height: height ?? 200,
+        measures: measures!,
+      );
+    } catch (e) {
+      return _FallbackDisplay(
+        message: 'Error rendering notation: ${e.toString()}',
+        height: height,
+      );
+    }
+  }
 }
 
-class EmptyNotation extends StatelessWidget {
-  const EmptyNotation({
-    super.key,
-    required this.height,
-    required this.width,
-  });
-
+/// Widget displayed when no notation data is available
+class _EmptyNotation extends StatelessWidget {
   final double? height;
   final double? width;
+
+  const _EmptyNotation({this.height, this.width});
 
   @override
   Widget build(BuildContext context) {
@@ -132,21 +117,51 @@ class EmptyNotation extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         color: Colors.grey.shade50,
       ),
-      child: const Center(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.music_note_outlined,
-              size: 48,
-              color: Colors.grey,
-            ),
-            SizedBox(height: 8),
+            Icon(Icons.music_note, size: 48, color: Colors.grey.shade400),
+            const SizedBox(height: 8),
             Text(
               'No notation available',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 16,
+              style: TextStyle(color: Colors.grey.shade600),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Widget displayed when there's an error rendering notation
+class _FallbackDisplay extends StatelessWidget {
+  final String message;
+  final double? height;
+
+  const _FallbackDisplay({required this.message, this.height});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: height ?? 200,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.red.shade300),
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.red.shade50,
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 48, color: Colors.red.shade400),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                message,
+                style: TextStyle(color: Colors.red.shade700),
+                textAlign: TextAlign.center,
               ),
             ),
           ],

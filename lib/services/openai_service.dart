@@ -194,6 +194,7 @@ class OpenAIService {
     buffer.writeln('- Include difficulty level, estimated duration, and detailed instructions');
     buffer.writeln('- Focus on the identified weaknesses while building on strengths');
     buffer.writeln('- Make exercises progressive and appropriate for the student\'s level');
+    buffer.writeln('- **IMPORTANT**: Each exercise must include a musical etude with at least 4 measures of notation');
     buffer.writeln();
     buffer.writeln('Please respond with a JSON object matching this schema:');
     buffer.writeln('''
@@ -212,12 +213,38 @@ class OpenAIService {
           "tempo": "BPM (optional)",
           "keySignature": "Key (optional)",
           "notes": "Additional notes",
-          "estimatedDuration": "X minutes"
+          "estimatedDuration": "X minutes",
+          "musicalNotation": {
+            "clef": "treble",
+            "keySignature": "cMajor|dMajor|gMajor|fMajor|bFlatMajor|eFlatMajor",
+            "tempo": 120,
+            "measures": [
+              {
+                "notes": [
+                  {
+                    "pitch": "c4|d4|e4|f4|g4|a4|b4|c5|d5|e5|f5|g5|a5|b5",
+                    "duration": "whole|half|quarter|eighth|sixteenth",
+                    "accidental": null or "sharp|flat"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     }
   ]
 }
+
+IMPORTANT NOTATION REQUIREMENTS:
+- Each exercise MUST include "musicalNotation" with at least 4 measures
+- Use treble clef for all saxophone exercises
+- Available pitches: c4, d4, e4, f4, g4, a4, b4, c5, d5, e5, f5, g5, a5, b5
+- Available durations: whole, half, quarter, eighth, sixteenth
+- Available accidentals: null, "sharp", "flat"
+- Available key signatures: cMajor, dMajor, gMajor, fMajor, bFlatMajor, eFlatMajor
+- Create meaningful musical etudes that target the specific weakness areas
+- Ensure measures contain appropriate number of beats for 4/4 time signature
 ''');
     
     return buffer.toString();
@@ -306,13 +333,13 @@ class OpenAIService {
           difficulty: 'intermediate',
           estimatedDuration: '20 minutes',
           exercises: [
-            PracticeExercise(
+            _createFallbackExerciseWithNotation(
               name: 'Scale Practice',
-              description: 'Practice major scales slowly with focus on intonation',
+              description: 'Practice C major scale slowly with focus on intonation',
               estimatedDuration: '10 minutes',
               notes: 'Use a metronome at 60 BPM',
             ),
-            PracticeExercise(
+            _createFallbackExerciseWithNotation(
               name: 'Long Tones',
               description: 'Hold long tones for 8 counts each',
               estimatedDuration: '10 minutes',
@@ -322,6 +349,22 @@ class OpenAIService {
         ),
       ];
     }
+  }
+
+  /// Create fallback exercise with basic musical notation
+  PracticeExercise _createFallbackExerciseWithNotation({
+    required String name,
+    required String description,
+    required String estimatedDuration,
+    String? notes,
+  }) {
+    return PracticeExercise(
+      name: name,
+      description: description,
+      estimatedDuration: estimatedDuration,
+      notes: notes,
+      musicalNotation: null, // Will be populated when we convert notation data
+    );
   }
 
   /// Get service status

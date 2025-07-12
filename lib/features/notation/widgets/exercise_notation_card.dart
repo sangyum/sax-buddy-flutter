@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../practice/models/practice_routine.dart';
+import '../services/simple_sheet_music_service.dart';
 import 'notation_view.dart';
 
 /// Card widget that displays a practice exercise with optional notation
@@ -7,10 +8,12 @@ class ExerciseNotationCard extends StatefulWidget {
   final PracticeExercise exercise;
   final bool showNotationByDefault;
   final VoidCallback? onTap;
+  final SimpleSheetMusicService sheetMusicService;
 
   const ExerciseNotationCard({
     super.key,
     required this.exercise,
+    required this.sheetMusicService,
     this.showNotationByDefault = false,
     this.onTap,
   });
@@ -155,15 +158,42 @@ class _ExerciseNotationCardState extends State<ExerciseNotationCard> {
               if (_isExpanded)
                 Padding(
                   padding: const EdgeInsets.only(top: 16),
-                  child: NotationView(
-                    sheetMusicData: widget.exercise.sheetMusicData,
-                    height: 100,
-                  ),
+                  child: _buildNotationView(),
                 ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  /// Build notation view with JSON-to-Measure conversion
+  Widget _buildNotationView() {
+    if (widget.exercise.musicalNotation == null) {
+      return NotationView(
+        measures: null,
+        height: 100,
+      );
+    }
+
+    try {
+      final measures = widget.sheetMusicService.convertJsonToMeasures(
+        widget.exercise.musicalNotation!,
+      );
+      final tempo = widget.exercise.musicalNotation!['tempo'] as int?;
+      
+      return NotationView(
+        measures: measures,
+        height: 100,
+        tempo: tempo,
+        title: widget.exercise.name,
+      );
+    } catch (e) {
+      return NotationView(
+        measures: [],
+        height: 100,
+        title: 'Error loading notation',
+      );
+    }
   }
 }
