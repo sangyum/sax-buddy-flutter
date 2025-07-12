@@ -34,7 +34,7 @@ AI-powered practice routine generation based on real-time analysis of user's pla
 2. **Audio Recording/Analysis** - Basic pitch/timing detection prototype - See @docs/PHASE2
 3. **LLM Integration** - AI routine generation with structured prompts - See @docs/PHASE3 ✅ **COMPLETED**
 4. **Practice Routine Persistence** - Firestore-based routine storage and management - ✅ **COMPLETED**
-5. **Notation + Audio** - Sheet music rendering with reference playbook - See @docs/PHASE4
+5. **Notation + Audio** - Sheet music rendering with reference playbook - ✅ **COMPLETED**
 
 ## Development Practices
 
@@ -54,11 +54,12 @@ AI-powered practice routine generation based on real-time analysis of user's pla
 - **Testing**: Use `flutter test` to run unit tests (not `uv run`)
 
 ### Storybook Component Library
-- **Comprehensive Coverage**: Stories for all major UI components
+- **Comprehensive Coverage**: Stories for all major UI components including NotationView and ExerciseNotationCard
 - **Routine Components**: Complete routine list and detail view stories
-- **Edge Case Testing**: Long titles, many exercises, various difficulty levels
-- **Data Variations**: AI-generated vs manual routines, different exercise types
-- **Responsive Design**: Stories test component behavior across screen sizes
+- **Notation Components**: Interactive sheet music display with various musical examples
+- **Edge Case Testing**: Long titles, many exercises, various difficulty levels, invalid notation data
+- **Data Variations**: AI-generated vs manual routines, different exercise types, musical scales and arpeggios
+- **Responsive Design**: Stories test component behavior across screen sizes and states
 
 ## Dependency Injection Architecture ✅ **COMPLETED**
 
@@ -77,6 +78,7 @@ AI-powered practice routine generation based on real-time analysis of user's pla
 - **AudioRecordingService**: Audio capture and processing (@injectable)
 - **AudioAnalysisService**: Real-time audio analysis (@lazySingleton)
 - **PracticeGenerationService**: AI-powered routine generation (@lazySingleton)
+- **SimpleSheetMusicService**: JSON-to-Measure conversion for sheet music rendering (@lazySingleton)
 
 ### DI Setup
 ```dart
@@ -219,3 +221,61 @@ await repository.deleteRoutine(userId, routineId);
 - **Dashboard**: Routines loaded on user authentication
 - **Provider Pattern**: Seamless integration with existing state management
 - **Testing**: Comprehensive test suite with 100% CRUD operation coverage
+
+## Sheet Music Notation System ✅ **COMPLETED**
+
+### Architecture Overview
+- **Package Integration**: Uses `simple_sheet_music` Flutter package for rendering actual sheet music
+- **AI-Generated Content**: LLM generates etudes with 4+ measures in structured JSON format
+- **Service Layer**: SimpleSheetMusicService converts JSON notation to Measure objects
+- **Component Separation**: NotationView receives List<Measure> for clean widget architecture
+
+### Core Components
+
+#### SimpleSheetMusicService
+- **JSON Conversion**: Transforms AI-generated JSON into simple_sheet_music Measure objects
+- **Error Handling**: Graceful fallbacks for invalid notation data
+- **Type Safety**: Proper conversion with comprehensive error checking
+- **Dependency Injection**: Registered as @lazySingleton for performance
+
+#### NotationView Widget
+- **Interface**: Accepts `List<Measure>?` instead of raw JSON for better separation of concerns
+- **Display Options**: Configurable height, width, title, and tempo parameters
+- **State Management**: Loading, empty, and error states with appropriate UI feedback
+- **Responsive Design**: Adaptive layout that hides title/tempo for small heights
+
+#### ExerciseNotationCard Widget
+- **Interactive Display**: Expandable card showing exercise details with optional notation
+- **JSON Processing**: Handles conversion from exercise's musical notation to List<Measure>
+- **Visual Design**: Duration badges, tempo/key signature display, and smooth animations
+- **Error Recovery**: Graceful handling of conversion errors with fallback states
+
+### Data Flow
+```
+AI Generation → JSON Notation → SimpleSheetMusicService → List<Measure> → NotationView → SimpleSheetMusic Widget
+```
+
+### LLM Integration
+- **Structured Prompts**: AI generates etudes with minimum 4 measures
+- **JSON Schema**: Standardized format compatible with simple_sheet_music package
+- **Musical Elements**: Supports notes, accidentals, durations, clefs, and key signatures
+- **Fallback Handling**: Sample routines provided when AI generation fails
+
+### Testing & Development
+- **Unit Tests**: Comprehensive test suite for NotationView widget (8/8 passing)
+- **Storybook Stories**: 
+  - 9 NotationView stories covering various scenarios, sizes, and musical examples
+  - 9 ExerciseNotationCard stories testing states, interactions, and error handling
+- **Component Library**: Interactive development environment for rapid iteration
+
+### Musical Content Support
+- **Scales**: Major and minor scales with proper key signatures
+- **Arpeggios**: Triad patterns with accidentals and various inversions
+- **Complex Exercises**: Mixed note durations, syncopated rhythms, and advanced patterns
+- **Error Handling**: Invalid notation data handled gracefully with user feedback
+
+### Performance Optimizations
+- **Widget Efficiency**: NotationView uses direct Measure objects to avoid repeated JSON parsing
+- **Lazy Loading**: SimpleSheetMusicService registered as singleton for reuse
+- **Memory Management**: Efficient handling of large musical notation datasets
+- **Responsive Rendering**: Adaptive UI based on available screen space

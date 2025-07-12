@@ -44,7 +44,8 @@ final List<Story> routinesStories = [
     builder: (context) => RoutinesPresentation(
       routines: [],
       isLoading: false,
-      error: 'Failed to load practice routines. Please check your internet connection.',
+      error:
+          'Failed to load practice routines. Please check your internet connection.',
       onRefresh: () => debugPrint('Refresh tapped'),
       onRoutineTap: (routine) => debugPrint('Routine tapped: ${routine.title}'),
     ),
@@ -71,7 +72,7 @@ final List<Story> routinesStories = [
       onRoutineTap: (routine) => debugPrint('Routine tapped: ${routine.title}'),
     ),
   ),
-  
+
   // Routine Detail Stories
   Story(
     name: 'Routine Detail/Beginner Routine',
@@ -82,7 +83,8 @@ final List<Story> routinesStories = [
   ),
   Story(
     name: 'Routine Detail/Intermediate Routine',
-    description: 'Routine detail view for an intermediate-level practice routine',
+    description:
+        'Routine detail view for an intermediate-level practice routine',
     builder: (context) => RoutineDetailPresentation(
       routine: _mockRoutines[0], // Scale Fundamentals - intermediate
     ),
@@ -97,39 +99,72 @@ final List<Story> routinesStories = [
   Story(
     name: 'Routine Detail/Single Exercise',
     description: 'Routine detail view with only one exercise',
-    builder: (context) => RoutineDetailPresentation(
-      routine: _singleExerciseRoutine,
-    ),
+    builder: (context) =>
+        RoutineDetailPresentation(routine: _singleExerciseRoutine),
   ),
   Story(
     name: 'Routine Detail/Many Exercises',
     description: 'Routine detail view with many exercises for scrolling',
-    builder: (context) => RoutineDetailPresentation(
-      routine: _manyExercisesRoutine,
-    ),
+    builder: (context) =>
+        RoutineDetailPresentation(routine: _manyExercisesRoutine),
   ),
   Story(
     name: 'Routine Detail/Long Title',
     description: 'Routine detail view with a very long title to test layout',
-    builder: (context) => RoutineDetailPresentation(
-      routine: _longTitleRoutine,
-    ),
+    builder: (context) => RoutineDetailPresentation(routine: _longTitleRoutine),
   ),
   Story(
     name: 'Routine Detail/AI Generated',
     description: 'Routine detail view for an AI-generated practice routine',
-    builder: (context) => RoutineDetailPresentation(
-      routine: _aiGeneratedRoutine,
-    ),
+    builder: (context) =>
+        RoutineDetailPresentation(routine: _aiGeneratedRoutine),
   ),
   Story(
     name: 'Routine Detail/No Tempo',
-    description: 'Routine detail view with exercises that have no tempo specified',
-    builder: (context) => RoutineDetailPresentation(
-      routine: _noTempoRoutine,
-    ),
+    description:
+        'Routine detail view with exercises that have no tempo specified',
+    builder: (context) => RoutineDetailPresentation(routine: _noTempoRoutine),
   ),
 ];
+
+final Map<String, dynamic> _musicalNotation = {
+  'clef': 'treble',
+  'keySignature': 'cMajor',
+  'tempo': 120,
+  'measures': [
+    {
+      'notes': [
+        {'pitch': 'c4', 'duration': 'quarter', 'accidental': null},
+        {'pitch': 'd4', 'duration': 'quarter', 'accidental': null},
+        {'pitch': 'e4', 'duration': 'quarter', 'accidental': null},
+        {'pitch': 'f4', 'duration': 'quarter', 'accidental': null},
+      ],
+    },
+    {
+      'notes': [
+        {'pitch': 'g4', 'duration': 'quarter', 'accidental': null},
+        {'pitch': 'a4', 'duration': 'quarter', 'accidental': null},
+        {'pitch': 'b4', 'duration': 'quarter', 'accidental': null},
+        {'pitch': 'c5', 'duration': 'quarter', 'accidental': null},
+      ],
+    },
+    {
+      'notes': [
+        {'pitch': 'b4', 'duration': 'quarter', 'accidental': null},
+        {'pitch': 'a4', 'duration': 'quarter', 'accidental': null},
+        {'pitch': 'g4', 'duration': 'quarter', 'accidental': null},
+        {'pitch': 'f4', 'duration': 'quarter', 'accidental': null},
+      ],
+    },
+    {
+      'notes': [
+        {'pitch': 'e4', 'duration': 'quarter', 'accidental': null},
+        {'pitch': 'd4', 'duration': 'quarter', 'accidental': null},
+        {'pitch': 'c4', 'duration': 'half', 'accidental': null},
+      ],
+    },
+  ],
+};
 
 final List<PracticeRoutine> _mockRoutines = [
   PracticeRoutine(
@@ -139,7 +174,8 @@ final List<PracticeRoutine> _mockRoutines = [
     updatedAt: DateTime.now(),
     isAIGenerated: false,
     title: 'Scale Fundamentals',
-    description: 'Practice basic scale patterns to improve finger coordination and pitch accuracy',
+    description:
+        'Practice basic scale patterns to improve finger coordination and pitch accuracy',
     targetAreas: ['scales', 'pitch accuracy', 'finger coordination'],
     difficulty: 'intermediate',
     estimatedDuration: '20 minutes',
@@ -151,6 +187,7 @@ final List<PracticeRoutine> _mockRoutines = [
         tempo: '80 BPM',
         keySignature: 'C Major',
         notes: 'Focus on clean fingering and intonation',
+        musicalNotation: _musicalNotation,
       ),
       PracticeExercise(
         name: 'Chromatic Scale',
@@ -158,6 +195,7 @@ final List<PracticeRoutine> _mockRoutines = [
         estimatedDuration: '10 minutes',
         tempo: '60 BPM',
         notes: 'Keep fingers close to keys',
+        musicalNotation: _musicalNotation,
       ),
     ],
   ),
@@ -179,6 +217,7 @@ final List<PracticeRoutine> _mockRoutines = [
         estimatedDuration: '8 minutes',
         tempo: '60 BPM',
         notes: 'Focus on starting and stopping exactly with the beat',
+        musicalNotation: _musicalNotation,
       ),
       PracticeExercise(
         name: 'Rhythmic Patterns',
@@ -186,6 +225,7 @@ final List<PracticeRoutine> _mockRoutines = [
         estimatedDuration: '7 minutes',
         tempo: '100 BPM',
         notes: 'Use different note values and patterns',
+        musicalNotation: _musicalNotation,
       ),
     ],
   ),
@@ -206,12 +246,14 @@ final List<PracticeRoutine> _mockRoutines = [
         description: 'Hold sustained notes for breath development',
         estimatedDuration: '8 minutes',
         notes: 'Focus on steady air flow and tone quality',
+        musicalNotation: _musicalNotation,
       ),
       PracticeExercise(
         name: 'Breathing Exercises',
         description: 'Practice proper breathing technique',
         estimatedDuration: '4 minutes',
         notes: 'Use diaphragmatic breathing',
+        musicalNotation: _musicalNotation,
       ),
     ],
   ),
@@ -237,6 +279,7 @@ final List<PracticeRoutine> _manyMockRoutines = [
         estimatedDuration: '12 minutes',
         tempo: '90 BPM',
         notes: 'Focus on swing rhythm',
+        musicalNotation: _musicalNotation,
       ),
       PracticeExercise(
         name: 'Call and Response',
@@ -244,6 +287,7 @@ final List<PracticeRoutine> _manyMockRoutines = [
         estimatedDuration: '13 minutes',
         tempo: '120 BPM',
         notes: 'Listen and respond to musical phrases',
+        musicalNotation: _musicalNotation,
       ),
     ],
   ),
@@ -264,12 +308,14 @@ final List<PracticeRoutine> _manyMockRoutines = [
         description: 'Practice overtone exercises for altissimo development',
         estimatedDuration: '15 minutes',
         notes: 'Focus on embouchure control and voicing',
+        musicalNotation: _musicalNotation,
       ),
       PracticeExercise(
         name: 'Altissimo Scales',
         description: 'Practice scales extending into altissimo range',
         estimatedDuration: '15 minutes',
         notes: 'Start slowly and build confidence',
+        musicalNotation: _musicalNotation,
       ),
     ],
   ),
@@ -291,6 +337,7 @@ final List<PracticeRoutine> _manyMockRoutines = [
         estimatedDuration: '10 minutes',
         tempo: '80-120 BPM',
         notes: 'Keep tongue light and consistent',
+        musicalNotation: _musicalNotation,
       ),
       PracticeExercise(
         name: 'Staccato Patterns',
@@ -298,6 +345,7 @@ final List<PracticeRoutine> _manyMockRoutines = [
         estimatedDuration: '8 minutes',
         tempo: '100 BPM',
         notes: 'Focus on clean starts and stops',
+        musicalNotation: _musicalNotation,
       ),
     ],
   ),
@@ -318,12 +366,14 @@ final List<PracticeRoutine> _manyMockRoutines = [
         description: 'Practice matching pitch with a tuner',
         estimatedDuration: '8 minutes',
         notes: 'Use electronic tuner for reference',
+        musicalNotation: _musicalNotation,
       ),
       PracticeExercise(
         name: 'Interval Recognition',
         description: 'Practice recognizing and playing intervals',
         estimatedDuration: '8 minutes',
         notes: 'Focus on perfect 4ths and 5ths first',
+        musicalNotation: _musicalNotation,
       ),
     ],
   ),
@@ -347,6 +397,7 @@ final PracticeRoutine _singleExerciseRoutine = PracticeRoutine(
       description: 'Deep breathing to prepare for practice',
       estimatedDuration: '5 minutes',
       notes: 'Take slow, deep breaths and focus on diaphragmatic breathing',
+      musicalNotation: _musicalNotation,
     ),
   ],
 );
@@ -358,8 +409,15 @@ final PracticeRoutine _manyExercisesRoutine = PracticeRoutine(
   updatedAt: DateTime.now(),
   isAIGenerated: false,
   title: 'Comprehensive Practice Session',
-  description: 'A complete practice routine covering all aspects of saxophone technique',
-  targetAreas: ['scales', 'articulation', 'timing', 'intonation', 'tone quality'],
+  description:
+      'A complete practice routine covering all aspects of saxophone technique',
+  targetAreas: [
+    'scales',
+    'articulation',
+    'timing',
+    'intonation',
+    'tone quality',
+  ],
   difficulty: 'intermediate',
   estimatedDuration: '45 minutes',
   exercises: [
@@ -368,6 +426,7 @@ final PracticeRoutine _manyExercisesRoutine = PracticeRoutine(
       description: 'Start with sustained notes to warm up',
       estimatedDuration: '5 minutes',
       notes: 'Focus on steady air flow and consistent tone',
+      musicalNotation: _musicalNotation,
     ),
     PracticeExercise(
       name: 'Chromatic Scale',
@@ -375,6 +434,7 @@ final PracticeRoutine _manyExercisesRoutine = PracticeRoutine(
       estimatedDuration: '5 minutes',
       tempo: '60 BPM',
       notes: 'Keep fingers close to keys',
+      musicalNotation: _musicalNotation,
     ),
     PracticeExercise(
       name: 'Major Scales',
@@ -383,6 +443,7 @@ final PracticeRoutine _manyExercisesRoutine = PracticeRoutine(
       tempo: '80 BPM',
       keySignature: 'All Major Keys',
       notes: 'Focus on clean fingering and intonation',
+      musicalNotation: _musicalNotation,
     ),
     PracticeExercise(
       name: 'Arpeggios',
@@ -390,6 +451,7 @@ final PracticeRoutine _manyExercisesRoutine = PracticeRoutine(
       estimatedDuration: '8 minutes',
       tempo: '90 BPM',
       notes: 'Practice both major and minor arpeggios',
+      musicalNotation: _musicalNotation,
     ),
     PracticeExercise(
       name: 'Articulation Studies',
@@ -397,18 +459,21 @@ final PracticeRoutine _manyExercisesRoutine = PracticeRoutine(
       estimatedDuration: '7 minutes',
       tempo: '100 BPM',
       notes: 'Practice staccato, legato, and accent patterns',
+      musicalNotation: _musicalNotation,
     ),
     PracticeExercise(
       name: 'Interval Training',
       description: 'Perfect 4ths, 5ths, and octaves',
       estimatedDuration: '5 minutes',
       notes: 'Focus on intonation and pitch accuracy',
+      musicalNotation: _musicalNotation,
     ),
     PracticeExercise(
       name: 'Cool Down',
       description: 'Slow, expressive playing to end practice',
       estimatedDuration: '5 minutes',
       notes: 'Play something musical and expressive',
+      musicalNotation: _musicalNotation,
     ),
   ],
 );
@@ -419,30 +484,44 @@ final PracticeRoutine _longTitleRoutine = PracticeRoutine(
   createdAt: DateTime.now(),
   updatedAt: DateTime.now(),
   isAIGenerated: false,
-  title: 'Advanced Contemporary Saxophone Techniques with Extended Range and Complex Rhythmic Patterns',
-  description: 'This is an extremely comprehensive routine designed for advanced players who want to push their technical boundaries and explore contemporary saxophone literature',
-  targetAreas: ['extended techniques', 'contemporary music', 'complex rhythms', 'multiphonics'],
+  title:
+      'Advanced Contemporary Saxophone Techniques with Extended Range and Complex Rhythmic Patterns',
+  description:
+      'This is an extremely comprehensive routine designed for advanced players who want to push their technical boundaries and explore contemporary saxophone literature',
+  targetAreas: [
+    'extended techniques',
+    'contemporary music',
+    'complex rhythms',
+    'multiphonics',
+  ],
   difficulty: 'advanced',
   estimatedDuration: '60 minutes',
   exercises: [
     PracticeExercise(
       name: 'Multiphonic Exercises',
-      description: 'Practice producing multiple notes simultaneously using special fingerings and embouchure techniques',
+      description:
+          'Practice producing multiple notes simultaneously using special fingerings and embouchure techniques',
       estimatedDuration: '20 minutes',
-      notes: 'Start with simple two-note multiphonics and gradually work toward more complex combinations',
+      notes:
+          'Start with simple two-note multiphonics and gradually work toward more complex combinations',
+      musicalNotation: _musicalNotation,
     ),
     PracticeExercise(
       name: 'Extended Techniques',
-      description: 'Explore growling, flutter tonguing, and other contemporary effects',
+      description:
+          'Explore growling, flutter tonguing, and other contemporary effects',
       estimatedDuration: '15 minutes',
       notes: 'Practice each technique slowly and with control',
+      musicalNotation: _musicalNotation,
     ),
     PracticeExercise(
       name: 'Complex Rhythmic Patterns in Mixed Meters',
-      description: 'Work on challenging rhythmic patterns that change meters frequently',
+      description:
+          'Work on challenging rhythmic patterns that change meters frequently',
       estimatedDuration: '25 minutes',
       tempo: '120 BPM',
       notes: 'Use a metronome and count carefully through meter changes',
+      musicalNotation: _musicalNotation,
     ),
   ],
 );
@@ -454,7 +533,8 @@ final PracticeRoutine _aiGeneratedRoutine = PracticeRoutine(
   updatedAt: DateTime.now(),
   isAIGenerated: true,
   title: 'AI-Personalized Practice Plan',
-  description: 'This routine was generated based on your recent assessment performance and focuses on your specific areas for improvement',
+  description:
+      'This routine was generated based on your recent assessment performance and focuses on your specific areas for improvement',
   targetAreas: ['pitch accuracy', 'timing consistency', 'breath control'],
   difficulty: 'intermediate',
   estimatedDuration: '22 minutes',
@@ -464,6 +544,7 @@ final PracticeRoutine _aiGeneratedRoutine = PracticeRoutine(
       description: 'Focus on notes where pitch accuracy needs improvement',
       estimatedDuration: '8 minutes',
       notes: 'AI identified these specific pitches for focused practice',
+      musicalNotation: _musicalNotation,
     ),
     PracticeExercise(
       name: 'Metronome Synchronization',
@@ -471,12 +552,15 @@ final PracticeRoutine _aiGeneratedRoutine = PracticeRoutine(
       estimatedDuration: '7 minutes',
       tempo: '85 BPM',
       notes: 'AI detected timing inconsistencies at this tempo range',
+      musicalNotation: _musicalNotation,
     ),
     PracticeExercise(
       name: 'Adaptive Breathing Exercises',
       description: 'Customized breathing patterns for improved breath support',
       estimatedDuration: '7 minutes',
-      notes: 'AI-generated breathing routine based on your lung capacity analysis',
+      notes:
+          'AI-generated breathing routine based on your lung capacity analysis',
+      musicalNotation: _musicalNotation,
     ),
   ],
 );
@@ -488,7 +572,8 @@ final PracticeRoutine _noTempoRoutine = PracticeRoutine(
   updatedAt: DateTime.now(),
   isAIGenerated: false,
   title: 'Free-Form Expression',
-  description: 'A practice routine focused on musical expression without strict tempo constraints',
+  description:
+      'A practice routine focused on musical expression without strict tempo constraints',
   targetAreas: ['expression', 'creativity', 'musicality'],
   difficulty: 'intermediate',
   estimatedDuration: '18 minutes',
@@ -498,18 +583,21 @@ final PracticeRoutine _noTempoRoutine = PracticeRoutine(
       description: 'Play long tones with dynamic changes and vibrato',
       estimatedDuration: '6 minutes',
       notes: 'Focus on creating beautiful, expressive sounds',
+      musicalNotation: _musicalNotation,
     ),
     PracticeExercise(
       name: 'Free Improvisation',
       description: 'Improvise freely without constraints',
       estimatedDuration: '8 minutes',
       notes: 'Let your creativity flow without worrying about mistakes',
+      musicalNotation: _musicalNotation,
     ),
     PracticeExercise(
       name: 'Ballad Playing',
       description: 'Play a slow ballad with personal interpretation',
       estimatedDuration: '4 minutes',
       notes: 'Focus on phrasing and emotional expression',
+      musicalNotation: _musicalNotation,
     ),
   ],
 );

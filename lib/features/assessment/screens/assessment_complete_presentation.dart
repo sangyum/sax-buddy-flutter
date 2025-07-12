@@ -44,9 +44,9 @@ class AssessmentCompletePresentation extends StatelessWidget {
               const SizedBox(height: 32),
 
               ResultsSummary(
-                completedExercisesCount: session!.completedExercises.length,
+                completedExercisesCount: session == null ? 0 : session!.completedExercises.length,
                 totalExercises: totalExcercises,
-                completedExercises: session!.completedExercises
+                completedExercises: session == null ? [] : session!.completedExercises
               ),
 
               const Spacer(),

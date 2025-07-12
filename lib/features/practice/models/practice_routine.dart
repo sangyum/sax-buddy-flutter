@@ -72,6 +72,7 @@ class PracticeExercise {
   final String? keySignature;
   final String? notes;
   final String estimatedDuration;
+  final Map<String, dynamic>? musicalNotation;
 
   const PracticeExercise({
     required this.name,
@@ -80,6 +81,7 @@ class PracticeExercise {
     this.keySignature,
     this.notes,
     required this.estimatedDuration,
+    this.musicalNotation,
   });
 
   factory PracticeExercise.fromJson(Map<String, dynamic> json) {
@@ -90,6 +92,7 @@ class PracticeExercise {
       keySignature: json['keySignature'] as String?,
       notes: json['notes'] as String?,
       estimatedDuration: json['estimatedDuration'] as String? ?? '10 minutes',
+      musicalNotation: json['musicalNotation'] as Map<String, dynamic>?,
     );
   }
 
@@ -101,6 +104,7 @@ class PracticeExercise {
       if (keySignature != null) 'keySignature': keySignature,
       if (notes != null) 'notes': notes,
       'estimatedDuration': estimatedDuration,
+      if (musicalNotation != null) 'musicalNotation': musicalNotation,
     };
   }
 
