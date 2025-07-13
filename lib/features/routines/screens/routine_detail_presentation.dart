@@ -34,7 +34,9 @@ class RoutineDetailPresentation extends StatelessWidget {
           children: [
             RoutineHeader(routine: routine),
             const SizedBox(height: 24),
-            ExerciseList(exercises: routine.exercises),
+            ExerciseList(
+              exercises: routine.exercises,
+            ),
           ],
         ),
       ),

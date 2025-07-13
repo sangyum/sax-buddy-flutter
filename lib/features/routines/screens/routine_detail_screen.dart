@@ -12,6 +12,8 @@ class RoutineDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RoutineDetailPresentation(routine: routine);
+    return RoutineDetailPresentation(
+      routine: routine,
+    );
   }
 }

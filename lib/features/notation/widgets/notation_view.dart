@@ -87,9 +87,13 @@ class NotationView extends StatelessWidget {
   /// Build the actual sheet music widget or fallback
   Widget _buildSheetMusic() {
     try {
-      return SimpleSheetMusic(
-        height: height ?? 200,
-        measures: measures!,
+      // Enable horizontal scrolling for sheet music
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: SimpleSheetMusic(
+          height: height ?? 200,
+          measures: measures!,
+        ),
       );
     } catch (e) {
       return _FallbackDisplay(

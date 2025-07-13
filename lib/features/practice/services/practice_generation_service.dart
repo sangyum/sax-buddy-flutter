@@ -203,6 +203,7 @@ class PracticeGenerationService {
             keySignature: 'C Major',
             estimatedDuration: '10 minutes',
             notes: 'Keep steady tempo throughout',
+            etude: PracticeExercise.convertJsonToMeasures(_getSampleMusicalNotation(tempo: 80)),
           ),
         ]);
         break;
@@ -221,6 +222,7 @@ class PracticeGenerationService {
             tempo: '120 BPM',
             estimatedDuration: '15 minutes',
             notes: 'Try dotted rhythms and syncopation',
+            etude: PracticeExercise.convertJsonToMeasures(_getSampleMusicalNotation(tempo: 120)),
           ),
         ]);
         break;
@@ -275,6 +277,7 @@ class PracticeGenerationService {
             keySignature: 'C Major',
             estimatedDuration: '10 minutes',
             notes: 'Listen carefully to intonation',
+            etude: PracticeExercise.convertJsonToMeasures(_getSampleMusicalNotation(tempo: 60)),
           ),
         ]);
         break;
@@ -406,6 +409,7 @@ class PracticeGenerationService {
             keySignature: 'C Major, G Major, F Major',
             estimatedDuration: '15 minutes',
             notes: 'Focus on fingering accuracy',
+            etude: PracticeExercise.convertJsonToMeasures(_getSampleMusicalNotation(tempo: 80)),
           ),
         ]);
         break;
@@ -417,6 +421,7 @@ class PracticeGenerationService {
             tempo: '100 BPM',
             estimatedDuration: '15 minutes',
             notes: 'Maintain consistent tempo and articulation',
+            etude: PracticeExercise.convertJsonToMeasures(_getSampleMusicalNotation(tempo: 100)),
           ),
           PracticeExercise(
             name: 'Natural Minor Scales',
@@ -455,6 +460,52 @@ class PracticeGenerationService {
       estimatedDuration: '${exercises.fold(0, (sum, e) => sum + int.parse(e.estimatedDuration.split(' ')[0]))} minutes',
       exercises: exercises,
     );
+  }
+
+  /// Get sample musical notation for fallback exercises
+  Map<String, dynamic> _getSampleMusicalNotation({
+    String keySignature = 'cMajor',
+    int tempo = 120,
+  }) {
+    // Create a simple C major scale pattern that works for most exercises
+    return {
+      'clef': 'treble',
+      'keySignature': keySignature,
+      'tempo': tempo,
+      'measures': [
+        {
+          'notes': [
+            {'pitch': 'c4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'd4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'e4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'f4', 'duration': 'quarter', 'accidental': null},
+          ]
+        },
+        {
+          'notes': [
+            {'pitch': 'g4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'a4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'b4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'c5', 'duration': 'quarter', 'accidental': null},
+          ]
+        },
+        {
+          'notes': [
+            {'pitch': 'b4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'a4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'g4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'f4', 'duration': 'quarter', 'accidental': null},
+          ]
+        },
+        {
+          'notes': [
+            {'pitch': 'e4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'd4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'c4', 'duration': 'half', 'accidental': null},
+          ]
+        },
+      ]
+    };
   }
 
   /// Get service status

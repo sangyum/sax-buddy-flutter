@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:simple_sheet_music/simple_sheet_music.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 import 'package:sax_buddy/features/notation/widgets/notation_view.dart';
-import 'package:sax_buddy/features/notation/services/simple_sheet_music_service.dart';
+import 'package:sax_buddy/features/practice/models/practice_routine.dart';
 
 final List<Story> notationViewStories = [
   Story(
     name: 'NotationView/C Major Scale',
     description: 'NotationView displaying a C major scale exercise',
     builder: (context) {
-      final service = SimpleSheetMusicService();
-      final measures = service.convertJsonToMeasures(_cMajorScaleNotation);
+      final measures = PracticeExercise.convertJsonToMeasures(_cMajorScaleNotation);
       return Container(
         padding: const EdgeInsets.all(16),
         child: NotationView(
@@ -42,8 +41,7 @@ final List<Story> notationViewStories = [
     name: 'NotationView/Complex Exercise',
     description: 'NotationView with mixed note durations and accidentals',
     builder: (context) {
-      final service = SimpleSheetMusicService();
-      final measures = service.convertJsonToMeasures(_complexExerciseNotation);
+      final measures = PracticeExercise.convertJsonToMeasures(_complexExerciseNotation);
       return Container(
         padding: const EdgeInsets.all(16),
         child: NotationView(
@@ -56,14 +54,13 @@ final List<Story> notationViewStories = [
     },
   ),
   Story(
-    name: 'NotationView/Small Size',
-    description: 'NotationView in compact mode (100px height)',
+    name: 'NotationView/Readable Size',
+    description: 'NotationView with improved readability (200px height, horizontal scroll)',
     builder: (context) {
-      final service = SimpleSheetMusicService();
-      final measures = service.convertJsonToMeasures(_cMajorScaleNotation);
+      final measures = PracticeExercise.convertJsonToMeasures(_cMajorScaleNotation);
       return Container(
         padding: const EdgeInsets.all(16),
-        child: NotationView(measures: measures, height: 100, tempo: 120),
+        child: NotationView(measures: measures, height: 200, tempo: 120),
       );
     },
   ),
@@ -71,8 +68,7 @@ final List<Story> notationViewStories = [
     name: 'NotationView/Large Size',
     description: 'NotationView in expanded mode (400px height)',
     builder: (context) {
-      final service = SimpleSheetMusicService();
-      final measures = service.convertJsonToMeasures(_cMajorScaleNotation);
+      final measures = PracticeExercise.convertJsonToMeasures(_cMajorScaleNotation);
       return Container(
         padding: const EdgeInsets.all(16),
         child: NotationView(
@@ -80,6 +76,22 @@ final List<Story> notationViewStories = [
           height: 400,
           tempo: 120,
           title: 'C Major Scale - Large',
+        ),
+      );
+    },
+  ),
+  Story(
+    name: 'NotationView/Horizontal Scroll Demo',
+    description: 'NotationView with multiple measures demonstrating horizontal scrolling',
+    builder: (context) {
+      final measures = PracticeExercise.convertJsonToMeasures(_complexExerciseNotation);
+      return Container(
+        padding: const EdgeInsets.all(16),
+        child: NotationView(
+          measures: measures,
+          height: 250,
+          tempo: 140,
+          title: 'Complex Exercise - Scroll Horizontally',
         ),
       );
     },
@@ -118,7 +130,6 @@ final List<Story> notationViewStories = [
     name: 'NotationView/Different Tempos',
     description: 'NotationView examples with various tempo markings',
     builder: (context) {
-      final service = SimpleSheetMusicService();
       return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -129,7 +140,7 @@ final List<Story> notationViewStories = [
             ),
             const SizedBox(height: 8),
             NotationView(
-              measures: service.convertJsonToMeasures(
+              measures: PracticeExercise.convertJsonToMeasures(
                 _getNotationWithTempo(60),
               ),
               height: 200,
@@ -143,7 +154,7 @@ final List<Story> notationViewStories = [
             ),
             const SizedBox(height: 8),
             NotationView(
-              measures: service.convertJsonToMeasures(
+              measures: PracticeExercise.convertJsonToMeasures(
                 _getNotationWithTempo(120),
               ),
               height: 200,
@@ -157,7 +168,7 @@ final List<Story> notationViewStories = [
             ),
             const SizedBox(height: 8),
             NotationView(
-              measures: service.convertJsonToMeasures(
+              measures: PracticeExercise.convertJsonToMeasures(
                 _getNotationWithTempo(180),
               ),
               height: 200,

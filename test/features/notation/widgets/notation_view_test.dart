@@ -2,15 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:simple_sheet_music/simple_sheet_music.dart';
 import 'package:sax_buddy/features/notation/widgets/notation_view.dart';
-import 'package:sax_buddy/features/notation/services/simple_sheet_music_service.dart';
+import 'package:sax_buddy/features/practice/models/practice_routine.dart';
 
 void main() {
   group('NotationView', () {
-    late SimpleSheetMusicService service;
-
-    setUp(() {
-      service = SimpleSheetMusicService();
-    });
 
     testWidgets('should display notation view with measures', (WidgetTester tester) async {
       final musicalNotation = {
@@ -29,7 +24,7 @@ void main() {
         ]
       };
 
-      final measures = service.convertJsonToMeasures(musicalNotation);
+      final measures = PracticeExercise.convertJsonToMeasures(musicalNotation);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -114,7 +109,7 @@ void main() {
         ]
       };
 
-      final measures = service.convertJsonToMeasures(musicalNotation);
+      final measures = PracticeExercise.convertJsonToMeasures(musicalNotation);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -143,7 +138,7 @@ void main() {
         ]
       };
 
-      final measures = service.convertJsonToMeasures(musicalNotation);
+      final measures = PracticeExercise.convertJsonToMeasures(musicalNotation);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -172,7 +167,7 @@ void main() {
         ]
       };
 
-      final measures = service.convertJsonToMeasures(musicalNotation);
+      final measures = PracticeExercise.convertJsonToMeasures(musicalNotation);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -205,7 +200,7 @@ void main() {
         ]
       };
 
-      final measures = service.convertJsonToMeasures(musicalNotation);
+      final measures = PracticeExercise.convertJsonToMeasures(musicalNotation);
 
       await tester.pumpWidget(
         MaterialApp(

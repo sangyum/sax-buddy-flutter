@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sax_buddy/features/practice/models/practice_routine.dart';
-import 'package:sax_buddy/features/routines/screens/routine_detail_screen.dart';
+import 'package:sax_buddy/features/routines/screens/routine_detail_presentation.dart';
 
 void main() {
   group('RoutineDetailScreen Tests', () {
     late PracticeRoutine testRoutine;
-    
     setUp(() {
+      
       testRoutine = PracticeRoutine(
         id: 'test-routine',
         userId: 'test-user',
@@ -40,7 +40,9 @@ void main() {
     testWidgets('should display routine title in app bar', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: RoutineDetailScreen(routine: testRoutine),
+          home: RoutineDetailPresentation(
+            routine: testRoutine,
+          ),
         ),
       );
 
@@ -51,7 +53,9 @@ void main() {
     testWidgets('should display routine description', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: RoutineDetailScreen(routine: testRoutine),
+          home: RoutineDetailPresentation(
+            routine: testRoutine,
+          ),
         ),
       );
 
@@ -61,7 +65,9 @@ void main() {
     testWidgets('should display all exercises', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: RoutineDetailScreen(routine: testRoutine),
+          home: RoutineDetailPresentation(
+            routine: testRoutine,
+          ),
         ),
       );
 
@@ -72,7 +78,9 @@ void main() {
     testWidgets('should display routine metadata', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: RoutineDetailScreen(routine: testRoutine),
+          home: RoutineDetailPresentation(
+            routine: testRoutine,
+          ),
         ),
       );
 

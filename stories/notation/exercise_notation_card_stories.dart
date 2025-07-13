@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 import 'package:sax_buddy/features/notation/widgets/exercise_notation_card.dart';
-import 'package:sax_buddy/features/notation/services/simple_sheet_music_service.dart';
 import 'package:sax_buddy/features/practice/models/practice_routine.dart';
 
 final List<Story> exerciseNotationCardStories = [
@@ -9,12 +8,10 @@ final List<Story> exerciseNotationCardStories = [
     name: 'ExerciseNotationCard/Basic Scale Exercise',
     description: 'Basic exercise card with C major scale notation',
     builder: (context) {
-      final service = SimpleSheetMusicService();
       return Container(
         padding: const EdgeInsets.all(16),
         child: ExerciseNotationCard(
           exercise: _createScaleExercise(),
-          sheetMusicService: service,
           showNotationByDefault: false,
         ),
       );
@@ -24,12 +21,10 @@ final List<Story> exerciseNotationCardStories = [
     name: 'ExerciseNotationCard/Expanded by Default',
     description: 'Exercise card with notation expanded by default',
     builder: (context) {
-      final service = SimpleSheetMusicService();
       return Container(
         padding: const EdgeInsets.all(16),
         child: ExerciseNotationCard(
           exercise: _createArpeggioExercise(),
-          sheetMusicService: service,
           showNotationByDefault: true,
         ),
       );
@@ -39,12 +34,10 @@ final List<Story> exerciseNotationCardStories = [
     name: 'ExerciseNotationCard/Complex Exercise',
     description: 'Advanced exercise with complex notation and mixed durations',
     builder: (context) {
-      final service = SimpleSheetMusicService();
       return Container(
         padding: const EdgeInsets.all(16),
         child: ExerciseNotationCard(
           exercise: _createComplexExercise(),
-          sheetMusicService: service,
           showNotationByDefault: true,
         ),
       );
@@ -54,12 +47,10 @@ final List<Story> exerciseNotationCardStories = [
     name: 'ExerciseNotationCard/Without Notation',
     description: 'Exercise card without musical notation data',
     builder: (context) {
-      final service = SimpleSheetMusicService();
       return Container(
         padding: const EdgeInsets.all(16),
         child: ExerciseNotationCard(
           exercise: _createExerciseWithoutNotation(),
-          sheetMusicService: service,
           showNotationByDefault: false,
         ),
       );
@@ -69,12 +60,10 @@ final List<Story> exerciseNotationCardStories = [
     name: 'ExerciseNotationCard/Long Title Exercise',
     description: 'Exercise with very long title and description',
     builder: (context) {
-      final service = SimpleSheetMusicService();
       return Container(
         padding: const EdgeInsets.all(16),
         child: ExerciseNotationCard(
           exercise: _createLongTitleExercise(),
-          sheetMusicService: service,
           showNotationByDefault: false,
         ),
       );
@@ -84,7 +73,6 @@ final List<Story> exerciseNotationCardStories = [
     name: 'ExerciseNotationCard/Interactive States',
     description: 'Multiple cards showing various interactive states',
     builder: (context) {
-      final service = SimpleSheetMusicService();
       return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -97,7 +85,6 @@ final List<Story> exerciseNotationCardStories = [
             const SizedBox(height: 8),
             ExerciseNotationCard(
               exercise: _createScaleExercise(),
-              sheetMusicService: service,
               showNotationByDefault: false,
             ),
             const SizedBox(height: 24),
@@ -108,7 +95,6 @@ final List<Story> exerciseNotationCardStories = [
             const SizedBox(height: 8),
             ExerciseNotationCard(
               exercise: _createArpeggioExercise(),
-              sheetMusicService: service,
               showNotationByDefault: true,
             ),
             const SizedBox(height: 24),
@@ -119,7 +105,6 @@ final List<Story> exerciseNotationCardStories = [
             const SizedBox(height: 8),
             ExerciseNotationCard(
               exercise: _createExerciseWithoutNotation(),
-              sheetMusicService: service,
               showNotationByDefault: false,
             ),
           ],
@@ -131,7 +116,6 @@ final List<Story> exerciseNotationCardStories = [
     name: 'ExerciseNotationCard/Tap Callbacks',
     description: 'Exercise card with tap callback demonstration',
     builder: (context) {
-      final service = SimpleSheetMusicService();
       return Container(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -143,7 +127,6 @@ final List<Story> exerciseNotationCardStories = [
             const SizedBox(height: 16),
             ExerciseNotationCard(
               exercise: _createScaleExercise(),
-              sheetMusicService: service,
               showNotationByDefault: false,
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -160,26 +143,22 @@ final List<Story> exerciseNotationCardStories = [
     name: 'ExerciseNotationCard/Different Durations',
     description: 'Exercise cards with various duration estimates',
     builder: (context) {
-      final service = SimpleSheetMusicService();
       return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             ExerciseNotationCard(
               exercise: _createExerciseWithDuration('5 minutes'),
-              sheetMusicService: service,
               showNotationByDefault: false,
             ),
             const SizedBox(height: 16),
             ExerciseNotationCard(
               exercise: _createExerciseWithDuration('15 minutes'),
-              sheetMusicService: service,
               showNotationByDefault: false,
             ),
             const SizedBox(height: 16),
             ExerciseNotationCard(
               exercise: _createExerciseWithDuration('30 minutes'),
-              sheetMusicService: service,
               showNotationByDefault: false,
             ),
           ],
@@ -191,12 +170,10 @@ final List<Story> exerciseNotationCardStories = [
     name: 'ExerciseNotationCard/Error Handling',
     description: 'Exercise card with invalid notation data',
     builder: (context) {
-      final service = SimpleSheetMusicService();
       return Container(
         padding: const EdgeInsets.all(16),
         child: ExerciseNotationCard(
           exercise: _createExerciseWithInvalidNotation(),
-          sheetMusicService: service,
           showNotationByDefault: true,
         ),
       );
@@ -213,7 +190,7 @@ PracticeExercise _createScaleExercise() {
     tempo: '♩ = 120',
     keySignature: 'C Major',
     estimatedDuration: '10 minutes',
-    musicalNotation: _cMajorScaleNotation,
+    etude: PracticeExercise.convertJsonToMeasures(_cMajorScaleNotation),
   );
 }
 
@@ -224,7 +201,7 @@ PracticeExercise _createArpeggioExercise() {
     tempo: '♩ = 100',
     keySignature: 'D Major',
     estimatedDuration: '8 minutes',
-    musicalNotation: _dMajorArpeggioNotation,
+    etude: PracticeExercise.convertJsonToMeasures(_dMajorArpeggioNotation),
   );
 }
 
@@ -235,7 +212,7 @@ PracticeExercise _createComplexExercise() {
     tempo: '♩ = 140',
     keySignature: 'F Major',
     estimatedDuration: '20 minutes',
-    musicalNotation: _complexExerciseNotation,
+    etude: PracticeExercise.convertJsonToMeasures(_complexExerciseNotation),
   );
 }
 
@@ -244,7 +221,7 @@ PracticeExercise _createExerciseWithoutNotation() {
     name: 'Breathing Exercise',
     description: 'Focus on proper breathing technique and air support without instrument.',
     estimatedDuration: '5 minutes',
-    musicalNotation: null,
+    etude: null,
   );
 }
 
@@ -255,7 +232,7 @@ PracticeExercise _createLongTitleExercise() {
     tempo: '♩ = 80',
     keySignature: 'Bb Major',
     estimatedDuration: '25 minutes',
-    musicalNotation: _cMajorScaleNotation,
+    etude: PracticeExercise.convertJsonToMeasures(_cMajorScaleNotation),
   );
 }
 
@@ -266,7 +243,7 @@ PracticeExercise _createExerciseWithDuration(String duration) {
     tempo: '♩ = 120',
     keySignature: 'C Major',
     estimatedDuration: duration,
-    musicalNotation: _cMajorScaleNotation,
+    etude: PracticeExercise.convertJsonToMeasures(_cMajorScaleNotation),
   );
 }
 
@@ -277,7 +254,7 @@ PracticeExercise _createExerciseWithInvalidNotation() {
     tempo: '♩ = 120',
     keySignature: 'C Major',
     estimatedDuration: '10 minutes',
-    musicalNotation: _invalidNotation,
+    etude: null, // Invalid notation should result in null etude
   );
 }
 
@@ -382,15 +359,3 @@ final Map<String, dynamic> _complexExerciseNotation = {
   ]
 };
 
-final Map<String, dynamic> _invalidNotation = {
-  'clef': 'treble',
-  'keySignature': 'invalid',
-  'tempo': 'not-a-number',
-  'measures': [
-    {
-      'notes': [
-        {'pitch': 'invalid-pitch', 'duration': 'invalid-duration', 'accidental': 'invalid'},
-      ]
-    },
-  ]
-};
