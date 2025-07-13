@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../practice/models/practice_routine.dart';
-import '../services/simple_sheet_music_service.dart';
 import 'notation_view.dart';
 
 /// Card widget that displays a practice exercise with optional notation
@@ -8,12 +7,10 @@ class ExerciseNotationCard extends StatefulWidget {
   final PracticeExercise exercise;
   final bool showNotationByDefault;
   final VoidCallback? onTap;
-  final SimpleSheetMusicService sheetMusicService;
 
   const ExerciseNotationCard({
     super.key,
     required this.exercise,
-    required this.sheetMusicService,
     this.showNotationByDefault = false,
     this.onTap,
   });
@@ -143,7 +140,7 @@ class _ExerciseNotationCardState extends State<ExerciseNotationCard> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        _isExpanded ? 'Hide Notation' : 'Show Notation',
+                        _isExpanded ? 'Hide etude' : 'Show etude',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).primaryColor,
                           fontWeight: FontWeight.w500,
@@ -167,33 +164,18 @@ class _ExerciseNotationCardState extends State<ExerciseNotationCard> {
     );
   }
 
-  /// Build notation view with JSON-to-Measure conversion
+  /// Build notation view using etude data
   Widget _buildNotationView() {
-    if (widget.exercise.musicalNotation == null) {
+    if (widget.exercise.etude == null) {
       return NotationView(
         measures: null,
-        height: 100,
       );
     }
 
-    try {
-      final measures = widget.sheetMusicService.convertJsonToMeasures(
-        widget.exercise.musicalNotation!,
-      );
-      final tempo = widget.exercise.musicalNotation!['tempo'] as int?;
-      
-      return NotationView(
-        measures: measures,
-        height: 100,
-        tempo: tempo,
-        title: widget.exercise.name,
-      );
-    } catch (e) {
-      return NotationView(
-        measures: [],
-        height: 100,
-        title: 'Error loading notation',
-      );
-    }
+    return NotationView(
+      measures: widget.exercise.etude,
+      tempo: 120, // Default tempo since we don't store it in Measure objects
+      title: widget.exercise.name,
+    );
   }
 }

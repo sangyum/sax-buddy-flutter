@@ -363,8 +363,50 @@ IMPORTANT NOTATION REQUIREMENTS:
       description: description,
       estimatedDuration: estimatedDuration,
       notes: notes,
-      musicalNotation: null, // Will be populated when we convert notation data
+      etude: PracticeExercise.convertJsonToMeasures(_getSampleMusicalNotation()),
     );
+  }
+
+  /// Get sample musical notation for fallback exercises
+  Map<String, dynamic> _getSampleMusicalNotation() {
+    return {
+      'clef': 'treble',
+      'keySignature': 'cMajor',
+      'tempo': 120,
+      'measures': [
+        {
+          'notes': [
+            {'pitch': 'c4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'd4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'e4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'f4', 'duration': 'quarter', 'accidental': null},
+          ]
+        },
+        {
+          'notes': [
+            {'pitch': 'g4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'a4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'b4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'c5', 'duration': 'quarter', 'accidental': null},
+          ]
+        },
+        {
+          'notes': [
+            {'pitch': 'b4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'a4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'g4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'f4', 'duration': 'quarter', 'accidental': null},
+          ]
+        },
+        {
+          'notes': [
+            {'pitch': 'e4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'd4', 'duration': 'quarter', 'accidental': null},
+            {'pitch': 'c4', 'duration': 'half', 'accidental': null},
+          ]
+        },
+      ]
+    };
   }
 
   /// Get service status

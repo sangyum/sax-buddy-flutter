@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:sax_buddy/features/practice/models/practice_routine.dart';
-import 'exercise_card.dart';
+import 'package:sax_buddy/features/notation/widgets/exercise_notation_card.dart';
 
 class ExerciseList extends StatelessWidget {
   final List<PracticeExercise> exercises;
 
-  const ExerciseList({
-    super.key,
-    required this.exercises,
-  });
+  const ExerciseList({super.key, required this.exercises});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +31,12 @@ class ExerciseList extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        ...exercises.map((exercise) => ExerciseCard(exercise: exercise)),
+        ...exercises.map(
+          (exercise) => ExerciseNotationCard(
+            exercise: exercise,
+            showNotationByDefault: false,
+          ),
+        ),
       ],
     );
   }

@@ -2,15 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:simple_sheet_music/simple_sheet_music.dart';
 import 'package:sax_buddy/features/notation/widgets/notation_view.dart';
-import 'package:sax_buddy/features/notation/services/simple_sheet_music_service.dart';
+import 'package:sax_buddy/features/practice/models/practice_routine.dart';
 
 void main() {
   group('NotationView', () {
-    late SimpleSheetMusicService service;
-
-    setUp(() {
-      service = SimpleSheetMusicService();
-    });
 
     testWidgets('should display notation view with measures', (WidgetTester tester) async {
       final musicalNotation = {
@@ -29,7 +24,7 @@ void main() {
         ]
       };
 
-      final measures = service.convertJsonToMeasures(musicalNotation);
+      final measures = PracticeExercise.convertJsonToMeasures(musicalNotation);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -114,14 +109,13 @@ void main() {
         ]
       };
 
-      final measures = service.convertJsonToMeasures(musicalNotation);
+      final measures = PracticeExercise.convertJsonToMeasures(musicalNotation);
 
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: NotationView(
               measures: measures,
-              height: 200, // Ensure title/tempo section shows
             ),
           ),
         ),
@@ -143,14 +137,13 @@ void main() {
         ]
       };
 
-      final measures = service.convertJsonToMeasures(musicalNotation);
+      final measures = PracticeExercise.convertJsonToMeasures(musicalNotation);
 
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: NotationView(
               measures: measures,
-              height: 200, // Ensure title/tempo section shows
             ),
           ),
         ),
@@ -159,7 +152,7 @@ void main() {
       expect(find.text('Musical Exercise'), findsOneWidget);
     });
 
-    testWidgets('should hide title and tempo for small heights', (WidgetTester tester) async {
+    testWidgets('should always show title and tempo when provided', (WidgetTester tester) async {
       final musicalNotation = {
         'clef': 'treble',
         'keySignature': 'cMajor',
@@ -172,23 +165,22 @@ void main() {
         ]
       };
 
-      final measures = service.convertJsonToMeasures(musicalNotation);
+      final measures = PracticeExercise.convertJsonToMeasures(musicalNotation);
 
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: NotationView(
               measures: measures,
-              height: 100, // Small height
-              title: 'Should Not Show',
+              title: 'Test Title',
               tempo: 140,
             ),
           ),
         ),
       );
 
-      expect(find.text('Should Not Show'), findsNothing);
-      expect(find.text('♩ = 140'), findsNothing);
+      expect(find.text('Test Title'), findsOneWidget);
+      expect(find.text('♩ = 140'), findsOneWidget);
     });
 
     testWidgets('should show SimpleSheetMusic widget when measures provided', (WidgetTester tester) async {
@@ -205,7 +197,7 @@ void main() {
         ]
       };
 
-      final measures = service.convertJsonToMeasures(musicalNotation);
+      final measures = PracticeExercise.convertJsonToMeasures(musicalNotation);
 
       await tester.pumpWidget(
         MaterialApp(
