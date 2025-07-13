@@ -169,13 +169,11 @@ class _ExerciseNotationCardState extends State<ExerciseNotationCard> {
     if (widget.exercise.etude == null) {
       return NotationView(
         measures: null,
-        height: 200, // Increased height for consistency
       );
     }
 
     return NotationView(
       measures: widget.exercise.etude,
-      height: 200, // Increased height for better readability
       tempo: 120, // Default tempo since we don't store it in Measure objects
       title: widget.exercise.name,
     );

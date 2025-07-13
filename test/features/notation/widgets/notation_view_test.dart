@@ -116,7 +116,6 @@ void main() {
           home: Scaffold(
             body: NotationView(
               measures: measures,
-              height: 200, // Ensure title/tempo section shows
             ),
           ),
         ),
@@ -145,7 +144,6 @@ void main() {
           home: Scaffold(
             body: NotationView(
               measures: measures,
-              height: 200, // Ensure title/tempo section shows
             ),
           ),
         ),
@@ -154,7 +152,7 @@ void main() {
       expect(find.text('Musical Exercise'), findsOneWidget);
     });
 
-    testWidgets('should hide title and tempo for small heights', (WidgetTester tester) async {
+    testWidgets('should always show title and tempo when provided', (WidgetTester tester) async {
       final musicalNotation = {
         'clef': 'treble',
         'keySignature': 'cMajor',
@@ -174,16 +172,15 @@ void main() {
           home: Scaffold(
             body: NotationView(
               measures: measures,
-              height: 100, // Small height
-              title: 'Should Not Show',
+              title: 'Test Title',
               tempo: 140,
             ),
           ),
         ),
       );
 
-      expect(find.text('Should Not Show'), findsNothing);
-      expect(find.text('♩ = 140'), findsNothing);
+      expect(find.text('Test Title'), findsOneWidget);
+      expect(find.text('♩ = 140'), findsOneWidget);
     });
 
     testWidgets('should show SimpleSheetMusic widget when measures provided', (WidgetTester tester) async {

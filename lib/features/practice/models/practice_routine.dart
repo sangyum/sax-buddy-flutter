@@ -37,10 +37,17 @@ class PracticeRoutine {
       difficulty: json['difficulty'] as String? ?? 'intermediate',
       estimatedDuration: json['estimatedDuration'] as String? ?? '20 minutes',
       exercises: (json['exercises'] as List? ?? [])
-          .map((exercise) => PracticeExercise.fromJson(exercise as Map<String, dynamic>))
+          .map(
+            (exercise) =>
+                PracticeExercise.fromJson(exercise as Map<String, dynamic>),
+          )
           .toList(),
-      createdAt: DateTime.parse(json['createdAt'] as String? ?? DateTime.now().toIso8601String()),
-      updatedAt: DateTime.parse(json['updatedAt'] as String? ?? DateTime.now().toIso8601String()),
+      createdAt: DateTime.parse(
+        json['createdAt'] as String? ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        json['updatedAt'] as String? ?? DateTime.now().toIso8601String(),
+      ),
       isAIGenerated: json['isAIGenerated'] as bool? ?? false,
     );
   }
@@ -88,7 +95,8 @@ class PracticeExercise {
 
   factory PracticeExercise.fromJson(Map<String, dynamic> json) {
     List<Measure>? etude;
-    final musicalNotationJson = json['musicalNotation'] as Map<String, dynamic>?;
+    final musicalNotationJson =
+        json['musicalNotation'] as Map<String, dynamic>?;
     if (musicalNotationJson != null) {
       try {
         etude = convertJsonToMeasures(musicalNotationJson);
@@ -97,7 +105,7 @@ class PracticeExercise {
         etude = null;
       }
     }
-    
+
     return PracticeExercise(
       name: json['name'] as String? ?? '',
       description: json['description'] as String? ?? '',
@@ -119,7 +127,7 @@ class PracticeExercise {
         musicalNotationJson = null;
       }
     }
-    
+
     return {
       'name': name,
       'description': description,
@@ -135,39 +143,47 @@ class PracticeExercise {
   String toString() {
     return 'PracticeExercise(name: $name, duration: $estimatedDuration)';
   }
-  
+
   /// Convert JSON notation data to simple_sheet_music Measure objects
-  static List<Measure> convertJsonToMeasures(Map<String, dynamic> notationJson) {
+  static List<Measure> convertJsonToMeasures(
+    Map<String, dynamic> notationJson,
+  ) {
     try {
       final measures = <Measure>[];
       final measuresData = notationJson['measures'] as List<dynamic>? ?? [];
-      final keySignatureType = _parseKeySignature(notationJson['keySignature'] as String? ?? 'cMajor');
-      
+      final keySignatureType = _parseKeySignature(
+        notationJson['keySignature'] as String? ?? 'cMajor',
+      );
+
       // Process each measure
       for (int i = 0; i < measuresData.length; i++) {
         final measureData = measuresData[i];
         final notesData = measureData['notes'] as List<dynamic>? ?? [];
-        final notes = notesData.map((noteData) => _parseNote(noteData as Map<String, dynamic>)).toList();
-        
+        final notes = notesData
+            .map((noteData) => _parseNote(noteData as Map<String, dynamic>))
+            .toList();
+
         if (i == 0) {
           // First measure: include clef and key signature
-          measures.add(Measure([
-            const Clef(ClefType.treble),
-            KeySignature(keySignatureType),
-            ...notes,
-          ]));
+          measures.add(
+            Measure([
+              const Clef(ClefType.treble),
+              KeySignature(keySignatureType),
+              ...notes,
+            ]),
+          );
         } else {
           // Subsequent measures: only notes
           measures.add(Measure(notes));
         }
       }
-      
+
       return measures;
     } catch (e) {
       throw PracticeExerciseException('Failed to convert JSON to measures: $e');
     }
   }
-  
+
   /// Convert Measure objects back to JSON notation data
   /// This is a simplified conversion that creates a basic structure
   /// In practice, this method may not be heavily used since we're moving from JSON to Measure
@@ -175,14 +191,12 @@ class PracticeExercise {
   static Map<String, dynamic> _convertMeasuresToJson(List<Measure> measures) {
     try {
       final measuresData = <Map<String, dynamic>>[];
-      
+
       // Create empty measures for each input measure
       for (int i = 0; i < measures.length; i++) {
-        measuresData.add({
-          'notes': <Map<String, dynamic>>[],
-        });
+        measuresData.add({'notes': <Map<String, dynamic>>[]});
       }
-      
+
       return {
         'clef': 'treble',
         'keySignature': 'cMajor',
@@ -193,24 +207,20 @@ class PracticeExercise {
       throw PracticeExerciseException('Failed to convert measures to JSON: $e');
     }
   }
-  
+
   /// Parse a single note from JSON data
   static Note _parseNote(Map<String, dynamic> noteData) {
     final pitchString = noteData['pitch'] as String;
     final durationString = noteData['duration'] as String;
     final accidentalString = noteData['accidental'] as String?;
-    
+
     final pitch = _parsePitch(pitchString);
     final duration = _parseDuration(durationString);
     final accidental = _parseAccidental(accidentalString);
-    
-    return Note(
-      pitch,
-      noteDuration: duration,
-      accidental: accidental,
-    );
+
+    return Note(pitch, noteDuration: duration, accidental: accidental);
   }
-  
+
   /// Parse pitch from string (e.g., "c4", "d5")
   static Pitch _parsePitch(String pitchString) {
     switch (pitchString.toLowerCase()) {
@@ -246,7 +256,7 @@ class PracticeExercise {
         throw PracticeExerciseException('Unsupported pitch: $pitchString');
     }
   }
-  
+
   /// Parse duration from string
   static NoteDuration _parseDuration(String durationString) {
     switch (durationString.toLowerCase()) {
@@ -260,15 +270,23 @@ class PracticeExercise {
         return NoteDuration.eighth;
       case 'sixteenth':
         return NoteDuration.sixteenth;
+      case 'thirtysecond':
+        return NoteDuration.thirtySecond;
+      case 'sixthFourth':
+        return NoteDuration.sixtyFourth;
+      case 'hundredsTwentyEighth':
+        return NoteDuration.hundredsTwentyEighth;
       default:
-        throw PracticeExerciseException('Unsupported duration: $durationString');
+        throw PracticeExerciseException(
+          'Unsupported duration: $durationString',
+        );
     }
   }
-  
+
   /// Parse accidental from string
   static Accidental? _parseAccidental(String? accidentalString) {
     if (accidentalString == null) return null;
-    
+
     switch (accidentalString.toLowerCase()) {
       case 'sharp':
         return Accidental.sharp;
@@ -278,7 +296,7 @@ class PracticeExercise {
         return null;
     }
   }
-  
+
   /// Parse key signature from string
   static KeySignatureType _parseKeySignature(String keySignatureString) {
     switch (keySignatureString.toLowerCase()) {
@@ -303,9 +321,9 @@ class PracticeExercise {
 /// Custom exception for practice exercise conversion errors
 class PracticeExerciseException implements Exception {
   final String message;
-  
+
   const PracticeExerciseException(this.message);
-  
+
   @override
   String toString() => 'PracticeExerciseException: $message';
 }

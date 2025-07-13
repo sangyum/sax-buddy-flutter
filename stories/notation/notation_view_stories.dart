@@ -14,7 +14,6 @@ final List<Story> notationViewStories = [
         padding: const EdgeInsets.all(16),
         child: NotationView(
           measures: measures,
-          height: 250,
           tempo: 120,
           title: 'C Major Scale',
         ),
@@ -30,7 +29,6 @@ final List<Story> notationViewStories = [
         padding: const EdgeInsets.all(16),
         child: NotationView(
           measures: measures,
-          height: 250,
           tempo: 100,
           title: 'D Major Arpeggio',
         ),
@@ -46,7 +44,6 @@ final List<Story> notationViewStories = [
         padding: const EdgeInsets.all(16),
         child: NotationView(
           measures: measures,
-          height: 250,
           tempo: 140,
           title: 'Complex Exercise',
         ),
@@ -60,7 +57,7 @@ final List<Story> notationViewStories = [
       final measures = PracticeExercise.convertJsonToMeasures(_cMajorScaleNotation);
       return Container(
         padding: const EdgeInsets.all(16),
-        child: NotationView(measures: measures, height: 200, tempo: 120),
+        child: NotationView(measures: measures, tempo: 120),
       );
     },
   ),
@@ -73,7 +70,6 @@ final List<Story> notationViewStories = [
         padding: const EdgeInsets.all(16),
         child: NotationView(
           measures: measures,
-          height: 400,
           tempo: 120,
           title: 'C Major Scale - Large',
         ),
@@ -89,7 +85,6 @@ final List<Story> notationViewStories = [
         padding: const EdgeInsets.all(16),
         child: NotationView(
           measures: measures,
-          height: 250,
           tempo: 140,
           title: 'Complex Exercise - Scroll Horizontally',
         ),
@@ -102,7 +97,7 @@ final List<Story> notationViewStories = [
     builder: (context) {
       return Container(
         padding: const EdgeInsets.all(16),
-        child: NotationView(measures: null, isLoading: true, height: 250),
+        child: NotationView(measures: null, isLoading: true),
       );
     },
   ),
@@ -112,7 +107,7 @@ final List<Story> notationViewStories = [
     builder: (context) {
       return Container(
         padding: const EdgeInsets.all(16),
-        child: NotationView(measures: null, height: 250),
+        child: NotationView(measures: null),
       );
     },
   ),
@@ -122,7 +117,7 @@ final List<Story> notationViewStories = [
     builder: (context) {
       return Container(
         padding: const EdgeInsets.all(16),
-        child: NotationView(measures: [], height: 250, title: 'Error State'),
+        child: NotationView(measures: [], title: 'Error State'),
       );
     },
   ),
@@ -143,7 +138,6 @@ final List<Story> notationViewStories = [
               measures: PracticeExercise.convertJsonToMeasures(
                 _getNotationWithTempo(60),
               ),
-              height: 200,
               tempo: 60,
               title: 'Slow Exercise',
             ),
@@ -157,7 +151,6 @@ final List<Story> notationViewStories = [
               measures: PracticeExercise.convertJsonToMeasures(
                 _getNotationWithTempo(120),
               ),
-              height: 200,
               tempo: 120,
               title: 'Moderate Exercise',
             ),
@@ -171,7 +164,6 @@ final List<Story> notationViewStories = [
               measures: PracticeExercise.convertJsonToMeasures(
                 _getNotationWithTempo(180),
               ),
-              height: 200,
               tempo: 180,
               title: 'Fast Exercise',
             ),
