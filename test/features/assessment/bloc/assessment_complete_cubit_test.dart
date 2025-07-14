@@ -98,7 +98,10 @@ void main() {
           ];
 
           when(
-            mockPracticeGenerationService.generatePracticePlans(any),
+            mockPracticeGenerationService.generatePracticePlans(
+              any,
+              onRoutineCompleted: anyNamed('onRoutineCompleted'),
+            ),
           ).thenAnswer((_) async => routines);
 
           expectLater(
@@ -129,7 +132,10 @@ void main() {
         );
 
         when(
-          mockPracticeGenerationService.generatePracticePlans(any),
+          mockPracticeGenerationService.generatePracticePlans(
+            any,
+            onRoutineCompleted: anyNamed('onRoutineCompleted'),
+          ),
         ).thenThrow(Exception('Test error'));
 
         expectLater(

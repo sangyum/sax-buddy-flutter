@@ -8,8 +8,15 @@ import '../bloc/assessment_complete_state.dart';
 import '../../../injection.dart';
 import 'assessment_complete_presentation.dart';
 
-class AssessmentCompleteScreen extends StatelessWidget {
+class AssessmentCompleteScreen extends StatefulWidget {
   const AssessmentCompleteScreen({super.key});
+
+  @override
+  State<AssessmentCompleteScreen> createState() => _AssessmentCompleteScreenState();
+}
+
+class _AssessmentCompleteScreenState extends State<AssessmentCompleteScreen> {
+  bool _isDialogShowing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -47,18 +54,70 @@ class AssessmentCompleteScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildProgressDialog(BuildContext context, AssessmentCompleteGeneratingRoutines state) {
+    return AlertDialog(
+      title: const Text('Generating Practice Routines'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const CircularProgressIndicator(),
+          const SizedBox(height: 16),
+          if (state.completedRoutines.isEmpty)
+            const Text('Analyzing your assessment and creating personalized routines...')
+          else
+            Column(
+              children: [
+                Text('${state.completedRoutines.length} routines completed'),
+                const SizedBox(height: 8),
+                ...state.completedRoutines.map((routine) => 
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.check_circle, color: Colors.green, size: 16),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            routine.title,
+                            style: const TextStyle(fontSize: 14),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
   void _handleStateChanges(BuildContext context, AssessmentCompleteState state) {
     switch (state) {
       case AssessmentCompleteGeneratingRoutines():
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => const Center(child: CircularProgressIndicator()),
-        );
+        if (!_isDialogShowing) {
+          _isDialogShowing = true;
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (dialogContext) => _buildProgressDialog(dialogContext, state),
+          );
+        } else {
+          // Update existing dialog - we'll need to rebuild it
+          Navigator.of(context).pop();
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (dialogContext) => _buildProgressDialog(dialogContext, state),
+          );
+        }
         break;
       
       case AssessmentCompleteRoutinesGenerated():
         if (Navigator.of(context).canPop()) {
+          _isDialogShowing = false;
           Navigator.of(context).pop(); // Close loading dialog
         }
         ScaffoldMessenger.of(context).showSnackBar(
@@ -76,6 +135,7 @@ class AssessmentCompleteScreen extends StatelessWidget {
       
       case AssessmentCompleteNoSession():
         if (Navigator.of(context).canPop()) {
+          _isDialogShowing = false;
           Navigator.of(context).pop(); // Close loading dialog if open
         }
         ScaffoldMessenger.of(context).showSnackBar(
@@ -88,6 +148,7 @@ class AssessmentCompleteScreen extends StatelessWidget {
       
       case AssessmentCompleteError():
         if (Navigator.of(context).canPop()) {
+          _isDialogShowing = false;
           Navigator.of(context).pop(); // Close loading dialog if open
         }
         ScaffoldMessenger.of(context).showSnackBar(

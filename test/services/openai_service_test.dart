@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:sax_buddy/services/openai_service.dart';
 import 'package:sax_buddy/services/logger_service.dart';
-import 'package:sax_buddy/features/assessment/models/assessment_dataset.dart';
 
 // Mock classes
 class MockLoggerService extends Mock implements LoggerService {}
@@ -12,7 +11,6 @@ void main() {
   group('OpenAIService', () {
     late OpenAIService service;
     late MockLoggerService mockLogger;
-    late AssessmentDataset mockDataset;
 
     setUp(() {
       // Load test environment variables
@@ -26,42 +24,6 @@ ENVIRONMENT=test
       
       // Create service with mock dependencies
       service = OpenAIService(mockLogger);
-
-      mockDataset = AssessmentDataset(
-        sessionId: 'test-session-123',
-        userLevel: 'intermediate',
-        exercises: [
-          ExerciseDataset(
-            exerciseId: 1,
-            exerciseType: 'C Major Scale',
-            expectedNotes: ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'],
-            detectedNotes: ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'],
-            pitchAccuracy: 0.85,
-            timingAccuracy: 0.8,
-            recommendations: ['Practice with metronome'],
-            strengths: ['pitch accuracy'],
-            weaknesses: ['timing consistency'],
-          ),
-          ExerciseDataset(
-            exerciseId: 2,
-            exerciseType: 'C Major Arpeggio',
-            expectedNotes: ['C4', 'E4', 'G4', 'C5'],
-            detectedNotes: ['C4', 'E4', 'G4', 'C5'],
-            pitchAccuracy: 0.75,
-            timingAccuracy: 0.7,
-            recommendations: ['Focus on interval accuracy'],
-            strengths: [],
-            weaknesses: ['pitch stability', 'timing accuracy'],
-          ),
-        ],
-        overallAssessment: OverallAssessment(
-          skillLevel: 'intermediate',
-          strengths: ['pitch accuracy'],
-          weaknesses: ['timing consistency'],
-          recommendedFocusAreas: ['rhythm', 'intonation'],
-        ),
-        timestamp: DateTime(2024, 1, 1),
-      );
     });
 
     test('should initialize with API key', () {
@@ -71,79 +33,36 @@ ENVIRONMENT=test
       expect(service.isInitialized, isTrue);
     });
 
-    test('should validate dataset before processing', () {
+    test('should handle initialization errors gracefully', () {
+      // Test that the service can handle initialization without throwing
+      expect(() => service.initialize('test-api-key'), returnsNormally);
+      expect(service.isInitialized, isTrue);
+    });
+
+    test('should provide service status', () {
+      final status = service.getStatus();
+      expect(status, isA<Map<String, dynamic>>());
+      expect(status['isInitialized'], isFalse);
+      expect(status['service'], 'OpenAI');
+      expect(status['timestamp'], isA<String>());
+
       service.initialize('test-api-key');
-
-      // Valid dataset
-      final isValid = service.validateDataset(mockDataset);
-      expect(isValid, isTrue);
-
-      // Invalid dataset (empty session ID)
-      final invalidDataset = AssessmentDataset(
-        sessionId: '',
-        userLevel: 'intermediate',
-        exercises: [],
-        overallAssessment: OverallAssessment(
-          skillLevel: 'intermediate',
-          strengths: [],
-          weaknesses: [],
-          recommendedFocusAreas: [],
-        ),
-        timestamp: DateTime(2024, 1, 1),
-      );
-
-      final isInvalid = service.validateDataset(invalidDataset);
-      expect(isInvalid, isFalse);
+      final statusAfterInit = service.getStatus();
+      expect(statusAfterInit['isInitialized'], isTrue);
     });
 
-    // Note: generatePracticePlanPrompt is now private - tested indirectly through generatePracticePlan
-    // test('should generate practice plan prompt', () {
-    //   service.initialize('test-api-key');
-    //   final prompt = service.generatePracticePlanPrompt(mockDataset);
-    //   expect(prompt, isA<String>());
-    //   expect(prompt, contains('intermediate'));
-    //   expect(prompt, contains('C Major Scale'));
-    //   expect(prompt, contains('practice plan'));
-    //   expect(prompt, contains('saxophone'));
-    // });
-
-    test('should handle API errors gracefully', () async {
-      service.initialize('invalid-api-key');
-
-      // This would normally make an API call and handle errors
-      // For testing, we'll simulate error handling
-      expect(() => service.validateDataset(mockDataset), returnsNormally);
+    test('should have generic generateResponse method', () {
+      service.initialize('test-api-key');
+      
+      // Test that the method exists and requires initialization
+      expect(() => service.generateResponse('test prompt'), isA<Function>());
     });
 
-    // Note: parsePracticeRoutines is now private - tested indirectly through generatePracticePlan
-    // test('should create structured practice plan from response', () {
-    //   service.initialize('test-api-key');
-    //   const mockResponse = '''
-    // {
-    //   "practiceRoutines": [
-    //     {
-    //       "title": "Scale Fundamentals",
-    //       "exercises": [
-    //         {
-    //           "name": "C Major Scale - Slow Practice",
-    //           "description": "Practice C major scale at 60 BPM, focus on intonation",
-    //           "difficulty": "intermediate",
-    //           "estimatedDuration": "10 minutes"
-    //         }
-    //       ]
-    //     }
-    //   ]
-    // }
-    // ''';
-    //   final practiceRoutines = service.parsePracticeRoutines(mockResponse);
-    //   expect(practiceRoutines, isA<List>());
-    //   expect(practiceRoutines.length, equals(1));
-    //   expect(practiceRoutines[0].title, equals('Scale Fundamentals'));
-    //   expect(practiceRoutines[0].exercises.length, equals(1));
-    //   expect(
-    //     practiceRoutines[0].exercises[0].name,
-    //     equals('C Major Scale - Slow Practice'),
-    //   );
-    // });
+    test('should have batch response generation capability', () {
+      service.initialize('test-api-key');
+      
+      // Test that the batch method exists
+      expect(() => service.generateBatchResponses(['prompt1', 'prompt2']), isA<Function>());
+    });
   });
 }

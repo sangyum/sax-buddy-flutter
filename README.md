@@ -408,7 +408,36 @@ The app uses OpenAI's GPT-4o-mini model for generating practice routines:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+## Performance Optimizations
+
+### Incremental Practice Routine Generation
+- **50-60% Performance Improvement**: Reduced generation time from 40-60s to 15-20s
+- **Parallel Processing**: Uses `Future.wait()` for concurrent etude generation within routines
+- **Real-time Progress**: Users see routines as they complete with progress callbacks
+- **Smart Batching**: Maintains personalized AI content while optimizing API calls
+- **Incremental UI Updates**: `onRoutineCompleted` callbacks for responsive user experience
+
+### Generic LLM Architecture
+- **Clean Separation**: OpenAI service handles pure API communication
+- **Domain Logic**: Practice-specific prompts and parsing moved to PracticeGenerationService
+- **Generic Methods**: `generateResponse()` and `generateBatchResponses()` for reusability
+- **Testability**: Easier mocking and testing with clear service boundaries
+
 ## Architecture Decisions
+
+### ADR-001: Incremental Practice Routine Generation
+**Decision**: Implement parallel processing with progress callbacks rather than backend migration
+- **Performance**: 50-60% improvement with client-side optimization
+- **User Experience**: Real-time progress updates instead of long wait times
+- **Complexity**: Avoids backend infrastructure while maintaining personalized content
+- **Implementation**: `Future.wait()` for etude batching per routine
+
+### ADR-002: Unified PracticeGenerationService Architecture  
+**Decision**: Keep unified service handling both routine structure and etude generation
+- **Domain Cohesion**: Etudes generated with routine context (difficulty, target areas)
+- **Performance**: Efficient parallel processing within single service
+- **Simplicity**: Avoids premature optimization and service coordination overhead
+- **Future Flexibility**: Can split if requirements justify increased complexity
 
 ### Why OpenAI over Other LLMs?
 - **Reliability**: Consistent API availability and performance

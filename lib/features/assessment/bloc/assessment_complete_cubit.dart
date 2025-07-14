@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sax_buddy/features/assessment/domain/assessment_analyzer.dart';
 import 'package:sax_buddy/features/practice/services/practice_generation_service.dart';
+import 'package:sax_buddy/features/practice/models/practice_routine.dart';
 import '../models/assessment_session.dart';
 import '../providers/assessment_provider.dart';
 import '../../routines/providers/routines_provider.dart';
@@ -31,10 +32,28 @@ class AssessmentCompleteCubit extends Cubit<AssessmentCompleteState> {
     }
 
     try {
+      final dataset = await _assessmentAnalyzer.createAssessmentDataset(session);
+      
+      // Track completed routines for incremental updates
+      final completedRoutines = <PracticeRoutine>[];
+      
+      // Initial state - we don't know total count yet
       emit(const AssessmentCompleteGeneratingRoutines());
 
-      final dataset = await _assessmentAnalyzer.createAssessmentDataset(session);
-      final routines = await _practiceGenerationService.generatePracticePlans(dataset);
+      final routines = await _practiceGenerationService.generatePracticePlans(
+        dataset,
+        onRoutineCompleted: (routine) {
+          completedRoutines.add(routine);
+          
+          // Emit incremental progress
+          emit(AssessmentCompleteGeneratingRoutines(
+            completedRoutines: List.from(completedRoutines),
+            totalRoutines: 0, // We'll know this when all are complete
+          ));
+          
+          _logger.debug('Routine completed: ${routine.title} (${completedRoutines.length} total)');
+        },
+      );
 
       await routinesProvider.addRoutines(routines);
 
