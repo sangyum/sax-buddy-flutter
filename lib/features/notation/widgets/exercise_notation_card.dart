@@ -164,17 +164,21 @@ class _ExerciseNotationCardState extends State<ExerciseNotationCard> {
     );
   }
 
-  /// Build notation view using etude data
+  /// Build notation view using MusicXML data
   Widget _buildNotationView() {
-    if (widget.exercise.etude == null) {
-      return NotationView(
-        measures: null,
-      );
+    // Parse tempo from exercise tempo string if available
+    int? tempoValue;
+    if (widget.exercise.tempo != null) {
+      // Extract number from tempo string (e.g., "120 BPM" -> 120)
+      final tempoMatch = RegExp(r'(\d+)').firstMatch(widget.exercise.tempo!);
+      if (tempoMatch != null) {
+        tempoValue = int.tryParse(tempoMatch.group(1)!);
+      }
     }
 
     return NotationView(
-      measures: widget.exercise.etude,
-      tempo: 120, // Default tempo since we don't store it in Measure objects
+      musicXML: widget.exercise.musicXML,
+      tempo: tempoValue ?? 120,
       title: widget.exercise.name,
     );
   }

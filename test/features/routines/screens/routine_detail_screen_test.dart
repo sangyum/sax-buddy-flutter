@@ -16,7 +16,7 @@ void main() {
         targetAreas: ['Scales', 'Timing'],
         difficulty: 'beginner',
         estimatedDuration: '20 minutes',
-        exercises: const [
+        exercises: [
           PracticeExercise(
             name: 'C Major Scale',
             description: 'Play C major scale ascending and descending',

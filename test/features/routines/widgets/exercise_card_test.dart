@@ -6,14 +6,14 @@ import 'package:sax_buddy/features/routines/widgets/exercise_card.dart';
 void main() {
   group('ExerciseCard Tests', () {
     testWidgets('should display exercise name and description', (WidgetTester tester) async {
-      const exercise = PracticeExercise(
+      final exercise = PracticeExercise(
         name: 'C Major Scale',
         description: 'Play C major scale ascending and descending',
         estimatedDuration: '10 minutes',
       );
 
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: Scaffold(
             body: ExerciseCard(exercise: exercise),
           ),
@@ -26,7 +26,7 @@ void main() {
     });
 
     testWidgets('should display optional fields when provided', (WidgetTester tester) async {
-      const exercise = PracticeExercise(
+      final exercise = PracticeExercise(
         name: 'Scale Practice',
         description: 'Focus on accuracy',
         tempo: '60 BPM',
@@ -36,7 +36,7 @@ void main() {
       );
 
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: Scaffold(
             body: ExerciseCard(exercise: exercise),
           ),
@@ -49,14 +49,14 @@ void main() {
     });
 
     testWidgets('should not display optional fields when not provided', (WidgetTester tester) async {
-      const exercise = PracticeExercise(
+      final exercise = PracticeExercise(
         name: 'Simple Exercise',
         description: 'Basic practice',
         estimatedDuration: '5 minutes',
       );
 
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: Scaffold(
             body: ExerciseCard(exercise: exercise),
           ),

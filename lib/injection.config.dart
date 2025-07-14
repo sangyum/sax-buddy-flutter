@@ -36,6 +36,7 @@ import 'package:sax_buddy/services/audio_analysis_service.dart' as _i749;
 import 'package:sax_buddy/services/audio_recording_service.dart' as _i415;
 import 'package:sax_buddy/services/firebase_storage_service.dart' as _i174;
 import 'package:sax_buddy/services/logger_service.dart' as _i266;
+import 'package:sax_buddy/services/musicxml_service.dart' as _i686;
 import 'package:sax_buddy/services/openai_service.dart' as _i993;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -90,6 +91,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i296.AudioAnalysisDatasetService>(
       () => _i296.AudioAnalysisDatasetService(gh<_i266.LoggerService>()),
+    );
+    gh.lazySingleton<_i686.MusicXMLService>(
+      () => _i686.MusicXMLService(gh<_i266.LoggerService>()),
     );
     gh.lazySingleton<_i749.AudioAnalysisService>(
       () => _i749.AudioAnalysisService(gh<_i266.LoggerService>()),

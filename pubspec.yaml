@@ -68,7 +68,7 @@ dependencies:
   injectable: ^2.3.2
   
   # Music notation display
-  simple_sheet_music: ^1.0.1
+  webview_flutter: ^4.4.2
 
 dev_dependencies:
   flutter_test:
@@ -84,6 +84,7 @@ dev_dependencies:
   # Testing dependencies
   mockito: ^5.4.4
   build_runner: ^2.4.13
+  webview_flutter_platform_interface: ^2.10.0
   
   # Dependency injection code generation
   injectable_generator: ^2.4.1

@@ -6,16 +6,16 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i6;
+import 'package:mockito/src/dummies.dart' as _i9;
 import 'package:sax_buddy/features/assessment/models/assessment_dataset.dart'
     as _i2;
 import 'package:sax_buddy/features/assessment/models/assessment_result.dart'
-    as _i8;
-import 'package:sax_buddy/features/assessment/services/audio_analysis_dataset_service.dart'
     as _i7;
+import 'package:sax_buddy/features/assessment/services/audio_analysis_dataset_service.dart'
+    as _i6;
 import 'package:sax_buddy/features/practice/models/practice_routine.dart'
     as _i5;
-import 'package:sax_buddy/services/audio_analysis_service.dart' as _i9;
+import 'package:sax_buddy/services/audio_analysis_service.dart' as _i8;
 import 'package:sax_buddy/services/logger_service.dart' as _i10;
 import 'package:sax_buddy/services/openai_service.dart' as _i3;
 
@@ -79,25 +79,6 @@ class MockOpenAIService extends _i1.Mock implements _i3.OpenAIService {
           as bool);
 
   @override
-  String generatePracticePlanPrompt(_i2.AssessmentDataset? dataset) =>
-      (super.noSuchMethod(
-            Invocation.method(#generatePracticePlanPrompt, [dataset]),
-            returnValue: _i6.dummyValue<String>(
-              this,
-              Invocation.method(#generatePracticePlanPrompt, [dataset]),
-            ),
-          )
-          as String);
-
-  @override
-  List<_i5.PracticeRoutine> parsePracticeRoutines(String? response) =>
-      (super.noSuchMethod(
-            Invocation.method(#parsePracticeRoutines, [response]),
-            returnValue: <_i5.PracticeRoutine>[],
-          )
-          as List<_i5.PracticeRoutine>);
-
-  @override
   Map<String, dynamic> getStatus() =>
       (super.noSuchMethod(
             Invocation.method(#getStatus, []),
@@ -110,15 +91,15 @@ class MockOpenAIService extends _i1.Mock implements _i3.OpenAIService {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockAudioAnalysisDatasetService extends _i1.Mock
-    implements _i7.AudioAnalysisDatasetService {
+    implements _i6.AudioAnalysisDatasetService {
   MockAudioAnalysisDatasetService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
   _i4.Future<_i2.AssessmentDataset> createDataset(
-    _i8.AssessmentResult? assessmentResult,
-    List<_i9.AudioAnalysisResult>? audioAnalysisResults,
+    _i7.AssessmentResult? assessmentResult,
+    List<_i8.AudioAnalysisResult>? audioAnalysisResults,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#createDataset, [
@@ -149,7 +130,7 @@ class MockAudioAnalysisDatasetService extends _i1.Mock
   String generateLLMPromptContext(_i2.AssessmentDataset? dataset) =>
       (super.noSuchMethod(
             Invocation.method(#generateLLMPromptContext, [dataset]),
-            returnValue: _i6.dummyValue<String>(
+            returnValue: _i9.dummyValue<String>(
               this,
               Invocation.method(#generateLLMPromptContext, [dataset]),
             ),
