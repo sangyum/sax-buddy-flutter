@@ -1,159 +1,134 @@
 import 'package:flutter/material.dart';
-import 'package:simple_sheet_music/simple_sheet_music.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'dart:convert';
 
-/// Widget for displaying sheet music notation
-class NotationView extends StatelessWidget {
-  final List<Measure>? measures;
+/// Widget for displaying sheet music notation using OSMD
+class NotationView extends StatefulWidget {
+  final String? musicXML;
   final bool isLoading;
   final String? title;
   final int? tempo;
 
   const NotationView({
     super.key,
-    this.measures,
+    this.musicXML,
     this.isLoading = false,
     this.title,
     this.tempo,
   });
 
   @override
+  State<NotationView> createState() => _NotationViewState();
+}
+
+class _NotationViewState extends State<NotationView> {
+  late final WebViewController _controller;
+  bool _isWebViewReady = false;
+  bool _hasLoadedContent = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeWebView();
+  }
+
+  void _initializeWebView() {
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(Colors.white)
+      ..addJavaScriptChannel(
+        'onViewerReady',
+        onMessageReceived: (JavaScriptMessage message) {
+          setState(() {
+            _isWebViewReady = true;
+          });
+          _loadNotationIfReady();
+        },
+      )
+      ..addJavaScriptChannel(
+        'onNotationLoaded',
+        onMessageReceived: (JavaScriptMessage message) {
+          // Handle successful notation loading
+          debugPrint('Notation loaded successfully');
+        },
+      )
+      ..addJavaScriptChannel(
+        'onNotationError',
+        onMessageReceived: (JavaScriptMessage message) {
+          // Handle notation loading errors
+          debugPrint('Notation error: ${message.message}');
+        },
+      )
+      ..loadFlutterAsset('assets/osmd_viewer.html');
+  }
+
+  void _loadNotationIfReady() {
+    if (_isWebViewReady && !_hasLoadedContent) {
+      _loadNotation();
+    }
+  }
+
+  Future<void> _loadNotation() async {
+    if (widget.isLoading) {
+      await _controller.runJavaScript('showLoading();');
+      return;
+    }
+
+    if (widget.musicXML == null || widget.musicXML!.isEmpty) {
+      await _controller.runJavaScript('showEmpty();');
+      return;
+    }
+
+    try {
+      final title = widget.title ?? 'Musical Exercise';
+      final tempo = widget.tempo ?? 120;
+      
+      // Escape the MusicXML for JavaScript
+      final escapedXML = jsonEncode(widget.musicXML!);
+      
+      await _controller.runJavaScript('''
+        loadMusicXML($escapedXML, "$title", $tempo);
+      ''');
+      
+      setState(() {
+        _hasLoadedContent = true;
+      });
+    } catch (e) {
+      debugPrint('Error loading notation: $e');
+      await _controller.runJavaScript('showError("Failed to load notation");');
+    }
+  }
+
+  @override
+  void didUpdateWidget(NotationView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    
+    // Reload notation if content changed
+    if (oldWidget.musicXML != widget.musicXML ||
+        oldWidget.title != widget.title ||
+        oldWidget.tempo != widget.tempo ||
+        oldWidget.isLoading != widget.isLoading) {
+      _hasLoadedContent = false;
+      _loadNotationIfReady();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: const Center(
-          child: Padding(
-            padding: EdgeInsets.all(32),
-            child: CircularProgressIndicator(),
-          ),
-        ),
-      );
-    }
-
-    if (measures == null || measures!.isEmpty) {
-      return const _EmptyNotation();
-    }
-
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),
         borderRadius: BorderRadius.circular(8),
         color: Colors.white,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title and tempo
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: Text(
-                    title ?? 'Musical Exercise',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Text(
-                  '♩ = ${tempo ?? 120}',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // Sheet music rendering area
-            _buildSheetMusic(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Build the actual sheet music widget or fallback
-  Widget _buildSheetMusic() {
-    try {
-      // Let SimpleSheetMusic determine its own natural size
-      return SimpleSheetMusic(
-        measures: measures!,
-        width: 800,
-      );
-    } catch (e) {
-      return _FallbackDisplay(
-        message: 'Error rendering notation: ${e.toString()}',
-      );
-    }
-  }
-}
-
-/// Widget displayed when no notation data is available
-class _EmptyNotation extends StatelessWidget {
-  const _EmptyNotation();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
+      child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        color: Colors.grey.shade50,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.music_note, size: 48, color: Colors.grey.shade400),
-            const SizedBox(height: 8),
-            Text(
-              'No notation available',
-              style: TextStyle(color: Colors.grey.shade600),
-            ),
-          ],
+        child: SizedBox(
+          height: 400, // Fixed height for consistent layout
+          child: WebViewWidget(controller: _controller),
         ),
       ),
     );
   }
-}
 
-/// Widget displayed when there's an error rendering notation
-class _FallbackDisplay extends StatelessWidget {
-  final String message;
-
-  const _FallbackDisplay({required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.red.shade300),
-        borderRadius: BorderRadius.circular(8),
-        color: Colors.red.shade50,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.error_outline, size: 48, color: Colors.red.shade400),
-            const SizedBox(height: 8),
-            Text(
-              message,
-              style: TextStyle(color: Colors.red.shade700),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSMD Music Notation Viewer</title>
+    <script src="https://cdn.jsdelivr.net/npm/opensheetmusicdisplay@1.9.0/build/opensheetmusicdisplay.min.js" 
+            onload="console.log('OSMD library loaded successfully')" 
+            onerror="console.error('Failed to load OSMD library')"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: white;
+        }
+        
+        #osmdContainer {
+            width: 100%;
+            height: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            box-sizing: border-box;
+            background-color: white;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        
+        .tempo {
+            font-size: 14px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .error {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: #d32f2f;
+            background-color: #ffebee;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .error-icon {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+        
+        .empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: #999;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="osmdContainer">
+        <div class="header" id="header" style="display: none;">
+            <h3 class="title" id="exerciseTitle">Musical Exercise</h3>
+            <span class="tempo" id="tempoDisplay">♩ = 120</span>
+        </div>
+        <div id="osmdDiv"></div>
+        <div class="loading" id="loadingDiv">
+            Loading sheet music...
+        </div>
+        <div class="error" id="errorDiv" style="display: none;">
+            <div class="error-icon">⚠️</div>
+            <div id="errorMessage">Error loading notation</div>
+        </div>
+        <div class="empty" id="emptyDiv" style="display: none;">
+            <div class="empty-icon">🎵</div>
+            <div>No notation available</div>
+        </div>
+    </div>
+
+    <script>
+        let osmd = null;
+        let isInitialized = false;
+
+        // Initialize OSMD
+        function initializeOSMD() {
+            if (isInitialized) return;
+            
+            // Check if OSMD library is available
+            if (typeof opensheetmusicdisplay === 'undefined') {
+                showError('Music notation library not available');
+                return;
+            }
+            
+            try {
+                osmd = new opensheetmusicdisplay.OpenSheetMusicDisplay("osmdDiv", {
+                    autoResize: true,
+                    backend: "svg",
+                    drawingParameters: "compacttight",
+                    drawTitle: false,
+                    drawSubtitle: false,
+                    drawComposer: false,
+                    pageFormat: "Endless",
+                    pageBackgroundColor: "#FFFFFF",
+                    defaultColorMusic: "#000000",
+                    renderSingleHorizontalStaffline: true
+                });
+                isInitialized = true;
+            } catch (error) {
+                showError(`Failed to initialize music renderer: ${error.message}`);
+            }
+        }
+
+        // Load MusicXML and render
+        function loadMusicXML(musicXML, title = "Musical Exercise", tempo = 120) {
+            hideAllStates();
+            showLoading();
+
+            if (!isInitialized) {
+                initializeOSMD();
+            }
+
+            if (!osmd) {
+                showError("Music renderer not available");
+                return;
+            }
+
+            try {
+                // Update header information
+                document.getElementById("exerciseTitle").textContent = title;
+                document.getElementById("tempoDisplay").textContent = `♩ = ${tempo}`;
+
+                // Load and render the MusicXML
+                osmd.load(musicXML).then(() => {
+                    osmd.render();
+                    showNotation();
+                    
+                    // Send success message to Flutter
+                    if (window.onNotationLoaded) {
+                        window.onNotationLoaded.postMessage('success');
+                    }
+                }).catch((error) => {
+                    console.error("Failed to load/render MusicXML:", error);
+                    showError(`Failed to render notation: ${error.message}`);
+                    
+                    // Send error message to Flutter
+                    if (window.onNotationError) {
+                        window.onNotationError.postMessage(error.message);
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error processing MusicXML:", error);
+                showError(`Error processing notation: ${error.message}`);
+                
+                // Send error message to Flutter
+                if (window.onNotationError) {
+                    window.onNotationError.postMessage(error.message);
+                }
+            }
+        }
+
+        // Show empty state
+        function showEmpty() {
+            hideAllStates();
+            document.getElementById("emptyDiv").style.display = "flex";
+        }
+
+        // Show loading state
+        function showLoading() {
+            hideAllStates();
+            document.getElementById("loadingDiv").style.display = "flex";
+        }
+
+        // Show error state
+        function showError(message) {
+            hideAllStates();
+            document.getElementById("errorMessage").textContent = message;
+            document.getElementById("errorDiv").style.display = "flex";
+        }
+
+        // Show notation
+        function showNotation() {
+            hideAllStates();
+            document.getElementById("header").style.display = "flex";
+            document.getElementById("osmdDiv").style.display = "block";
+        }
+
+        // Hide all state divs
+        function hideAllStates() {
+            document.getElementById("header").style.display = "none";
+            document.getElementById("osmdDiv").style.display = "none";
+            document.getElementById("loadingDiv").style.display = "none";
+            document.getElementById("errorDiv").style.display = "none";
+            document.getElementById("emptyDiv").style.display = "none";
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', () => {
+            // Add a delay to ensure everything is ready
+            setTimeout(() => {
+                initializeOSMD();
+                
+                // Send ready message to Flutter
+                if (window.onViewerReady) {
+                    window.onViewerReady.postMessage('ready');
+                }
+            }, 100);
+        });
+
+        // Handle messages from Flutter (optional)
+        // JavaScript channels are handled automatically by Flutter
+
+        // Export functions for Flutter to call
+        window.loadMusicXML = loadMusicXML;
+        window.showEmpty = showEmpty;
+        window.showLoading = showLoading;
+        window.showError = showError;
+    </script>
+</body>
+</html>

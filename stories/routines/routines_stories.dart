@@ -4,6 +4,69 @@ import 'package:sax_buddy/features/routines/screens/routines_presentation.dart';
 import 'package:sax_buddy/features/routines/screens/routine_detail_presentation.dart';
 import 'package:sax_buddy/features/practice/models/practice_routine.dart';
 
+// Sample MusicXML for story examples
+const String _sampleMusicXML = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<score-partwise version="4.0">
+  <work>
+    <work-title>Sample Exercise</work-title>
+  </work>
+  <part-list>
+    <score-part id="P1">
+      <part-name>Saxophone</part-name>
+    </score-part>
+  </part-list>
+  <part id="P1">
+    <measure number="1">
+      <attributes>
+        <divisions>1</divisions>
+        <key>
+          <fifths>0</fifths>
+        </key>
+        <time>
+          <beats>4</beats>
+          <beat-type>4</beat-type>
+        </time>
+        <clef>
+          <sign>G</sign>
+          <line>2</line>
+        </clef>
+      </attributes>
+      <note>
+        <pitch>
+          <step>C</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>D</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>E</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>F</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+    </measure>
+  </part>
+</score-partwise>''';
+
 final List<Story> routinesStories = [
   Story(
     name: 'Routines/With Routines',
@@ -137,44 +200,6 @@ final List<Story> routinesStories = [
   ),
 ];
 
-final Map<String, dynamic> _musicalNotation = {
-  'clef': 'treble',
-  'keySignature': 'cMajor',
-  'tempo': 120,
-  'measures': [
-    {
-      'notes': [
-        {'pitch': 'c4', 'duration': 'quarter', 'accidental': null},
-        {'pitch': 'd4', 'duration': 'quarter', 'accidental': null},
-        {'pitch': 'e4', 'duration': 'quarter', 'accidental': null},
-        {'pitch': 'f4', 'duration': 'quarter', 'accidental': null},
-      ],
-    },
-    {
-      'notes': [
-        {'pitch': 'g4', 'duration': 'quarter', 'accidental': null},
-        {'pitch': 'a4', 'duration': 'quarter', 'accidental': null},
-        {'pitch': 'b4', 'duration': 'quarter', 'accidental': null},
-        {'pitch': 'c5', 'duration': 'quarter', 'accidental': null},
-      ],
-    },
-    {
-      'notes': [
-        {'pitch': 'b4', 'duration': 'quarter', 'accidental': null},
-        {'pitch': 'a4', 'duration': 'quarter', 'accidental': null},
-        {'pitch': 'g4', 'duration': 'quarter', 'accidental': null},
-        {'pitch': 'f4', 'duration': 'quarter', 'accidental': null},
-      ],
-    },
-    {
-      'notes': [
-        {'pitch': 'e4', 'duration': 'quarter', 'accidental': null},
-        {'pitch': 'd4', 'duration': 'quarter', 'accidental': null},
-        {'pitch': 'c4', 'duration': 'half', 'accidental': null},
-      ],
-    },
-  ],
-};
 
 final List<PracticeRoutine> _mockRoutines = [
   PracticeRoutine(
@@ -197,7 +222,7 @@ final List<PracticeRoutine> _mockRoutines = [
         tempo: '80 BPM',
         keySignature: 'C Major',
         notes: 'Focus on clean fingering and intonation',
-        etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+        musicXML: _sampleMusicXML,
       ),
       PracticeExercise(
         name: 'Chromatic Scale',
@@ -205,7 +230,7 @@ final List<PracticeRoutine> _mockRoutines = [
         estimatedDuration: '10 minutes',
         tempo: '60 BPM',
         notes: 'Keep fingers close to keys',
-        etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+        musicXML: null,
       ),
     ],
   ),
@@ -227,7 +252,7 @@ final List<PracticeRoutine> _mockRoutines = [
         estimatedDuration: '8 minutes',
         tempo: '60 BPM',
         notes: 'Focus on starting and stopping exactly with the beat',
-        etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+        musicXML: _sampleMusicXML,
       ),
       PracticeExercise(
         name: 'Rhythmic Patterns',
@@ -235,7 +260,7 @@ final List<PracticeRoutine> _mockRoutines = [
         estimatedDuration: '7 minutes',
         tempo: '100 BPM',
         notes: 'Use different note values and patterns',
-        etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+        musicXML: null,
       ),
     ],
   ),
@@ -256,14 +281,14 @@ final List<PracticeRoutine> _mockRoutines = [
         description: 'Hold sustained notes for breath development',
         estimatedDuration: '8 minutes',
         notes: 'Focus on steady air flow and tone quality',
-        etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+        musicXML: null,
       ),
       PracticeExercise(
         name: 'Breathing Exercises',
         description: 'Practice proper breathing technique',
         estimatedDuration: '4 minutes',
         notes: 'Use diaphragmatic breathing',
-        etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+        musicXML: null,
       ),
     ],
   ),
@@ -289,7 +314,7 @@ final List<PracticeRoutine> _manyMockRoutines = [
         estimatedDuration: '12 minutes',
         tempo: '90 BPM',
         notes: 'Focus on swing rhythm',
-        etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+        musicXML: _sampleMusicXML,
       ),
       PracticeExercise(
         name: 'Call and Response',
@@ -297,7 +322,7 @@ final List<PracticeRoutine> _manyMockRoutines = [
         estimatedDuration: '13 minutes',
         tempo: '120 BPM',
         notes: 'Listen and respond to musical phrases',
-        etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+        musicXML: null,
       ),
     ],
   ),
@@ -318,14 +343,14 @@ final List<PracticeRoutine> _manyMockRoutines = [
         description: 'Practice overtone exercises for altissimo development',
         estimatedDuration: '15 minutes',
         notes: 'Focus on embouchure control and voicing',
-        etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+        musicXML: null,
       ),
       PracticeExercise(
         name: 'Altissimo Scales',
         description: 'Practice scales extending into altissimo range',
         estimatedDuration: '15 minutes',
         notes: 'Start slowly and build confidence',
-        etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+        musicXML: null,
       ),
     ],
   ),
@@ -347,7 +372,7 @@ final List<PracticeRoutine> _manyMockRoutines = [
         estimatedDuration: '10 minutes',
         tempo: '80-120 BPM',
         notes: 'Keep tongue light and consistent',
-        etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+        musicXML: null,
       ),
       PracticeExercise(
         name: 'Staccato Patterns',
@@ -355,7 +380,7 @@ final List<PracticeRoutine> _manyMockRoutines = [
         estimatedDuration: '8 minutes',
         tempo: '100 BPM',
         notes: 'Focus on clean starts and stops',
-        etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+        musicXML: null,
       ),
     ],
   ),
@@ -376,14 +401,14 @@ final List<PracticeRoutine> _manyMockRoutines = [
         description: 'Practice matching pitch with a tuner',
         estimatedDuration: '8 minutes',
         notes: 'Use electronic tuner for reference',
-        etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+        musicXML: null,
       ),
       PracticeExercise(
         name: 'Interval Recognition',
         description: 'Practice recognizing and playing intervals',
         estimatedDuration: '8 minutes',
         notes: 'Focus on perfect 4ths and 5ths first',
-        etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+        musicXML: null,
       ),
     ],
   ),
@@ -407,7 +432,7 @@ final PracticeRoutine _singleExerciseRoutine = PracticeRoutine(
       description: 'Deep breathing to prepare for practice',
       estimatedDuration: '5 minutes',
       notes: 'Take slow, deep breaths and focus on diaphragmatic breathing',
-      etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+      musicXML: null,
     ),
   ],
 );
@@ -436,7 +461,7 @@ final PracticeRoutine _manyExercisesRoutine = PracticeRoutine(
       description: 'Start with sustained notes to warm up',
       estimatedDuration: '5 minutes',
       notes: 'Focus on steady air flow and consistent tone',
-      etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+      musicXML: null,
     ),
     PracticeExercise(
       name: 'Chromatic Scale',
@@ -444,7 +469,7 @@ final PracticeRoutine _manyExercisesRoutine = PracticeRoutine(
       estimatedDuration: '5 minutes',
       tempo: '60 BPM',
       notes: 'Keep fingers close to keys',
-      etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+      musicXML: null,
     ),
     PracticeExercise(
       name: 'Major Scales',
@@ -453,7 +478,7 @@ final PracticeRoutine _manyExercisesRoutine = PracticeRoutine(
       tempo: '80 BPM',
       keySignature: 'All Major Keys',
       notes: 'Focus on clean fingering and intonation',
-      etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+      musicXML: null,
     ),
     PracticeExercise(
       name: 'Arpeggios',
@@ -461,7 +486,7 @@ final PracticeRoutine _manyExercisesRoutine = PracticeRoutine(
       estimatedDuration: '8 minutes',
       tempo: '90 BPM',
       notes: 'Practice both major and minor arpeggios',
-      etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+      musicXML: null,
     ),
     PracticeExercise(
       name: 'Articulation Studies',
@@ -469,21 +494,21 @@ final PracticeRoutine _manyExercisesRoutine = PracticeRoutine(
       estimatedDuration: '7 minutes',
       tempo: '100 BPM',
       notes: 'Practice staccato, legato, and accent patterns',
-      etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+      musicXML: null,
     ),
     PracticeExercise(
       name: 'Interval Training',
       description: 'Perfect 4ths, 5ths, and octaves',
       estimatedDuration: '5 minutes',
       notes: 'Focus on intonation and pitch accuracy',
-      etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+      musicXML: null,
     ),
     PracticeExercise(
       name: 'Cool Down',
       description: 'Slow, expressive playing to end practice',
       estimatedDuration: '5 minutes',
       notes: 'Play something musical and expressive',
-      etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+      musicXML: null,
     ),
   ],
 );
@@ -514,7 +539,7 @@ final PracticeRoutine _longTitleRoutine = PracticeRoutine(
       estimatedDuration: '20 minutes',
       notes:
           'Start with simple two-note multiphonics and gradually work toward more complex combinations',
-      etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+      musicXML: null,
     ),
     PracticeExercise(
       name: 'Extended Techniques',
@@ -522,7 +547,7 @@ final PracticeRoutine _longTitleRoutine = PracticeRoutine(
           'Explore growling, flutter tonguing, and other contemporary effects',
       estimatedDuration: '15 minutes',
       notes: 'Practice each technique slowly and with control',
-      etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+      musicXML: null,
     ),
     PracticeExercise(
       name: 'Complex Rhythmic Patterns in Mixed Meters',
@@ -531,7 +556,7 @@ final PracticeRoutine _longTitleRoutine = PracticeRoutine(
       estimatedDuration: '25 minutes',
       tempo: '120 BPM',
       notes: 'Use a metronome and count carefully through meter changes',
-      etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+      musicXML: null,
     ),
   ],
 );
@@ -554,7 +579,7 @@ final PracticeRoutine _aiGeneratedRoutine = PracticeRoutine(
       description: 'Focus on notes where pitch accuracy needs improvement',
       estimatedDuration: '8 minutes',
       notes: 'AI identified these specific pitches for focused practice',
-      etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+      musicXML: null,
     ),
     PracticeExercise(
       name: 'Metronome Synchronization',
@@ -562,7 +587,7 @@ final PracticeRoutine _aiGeneratedRoutine = PracticeRoutine(
       estimatedDuration: '7 minutes',
       tempo: '85 BPM',
       notes: 'AI detected timing inconsistencies at this tempo range',
-      etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+      musicXML: null,
     ),
     PracticeExercise(
       name: 'Adaptive Breathing Exercises',
@@ -570,7 +595,7 @@ final PracticeRoutine _aiGeneratedRoutine = PracticeRoutine(
       estimatedDuration: '7 minutes',
       notes:
           'AI-generated breathing routine based on your lung capacity analysis',
-      etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+      musicXML: null,
     ),
   ],
 );
@@ -593,21 +618,21 @@ final PracticeRoutine _noTempoRoutine = PracticeRoutine(
       description: 'Play long tones with dynamic changes and vibrato',
       estimatedDuration: '6 minutes',
       notes: 'Focus on creating beautiful, expressive sounds',
-      etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+      musicXML: null,
     ),
     PracticeExercise(
       name: 'Free Improvisation',
       description: 'Improvise freely without constraints',
       estimatedDuration: '8 minutes',
       notes: 'Let your creativity flow without worrying about mistakes',
-      etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+      musicXML: null,
     ),
     PracticeExercise(
       name: 'Ballad Playing',
       description: 'Play a slow ballad with personal interpretation',
       estimatedDuration: '4 minutes',
       notes: 'Focus on phrasing and emotional expression',
-      etude: PracticeExercise.convertJsonToMeasures(_musicalNotation),
+      musicXML: null,
     ),
   ],
 );

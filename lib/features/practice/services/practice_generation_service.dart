@@ -203,7 +203,7 @@ class PracticeGenerationService {
             keySignature: 'C Major',
             estimatedDuration: '10 minutes',
             notes: 'Keep steady tempo throughout',
-            etude: PracticeExercise.convertJsonToMeasures(_getSampleMusicalNotation(tempo: 80)),
+            musicXML: _getSampleMusicXML(tempo: 80),
           ),
         ]);
         break;
@@ -222,7 +222,7 @@ class PracticeGenerationService {
             tempo: '120 BPM',
             estimatedDuration: '15 minutes',
             notes: 'Try dotted rhythms and syncopation',
-            etude: PracticeExercise.convertJsonToMeasures(_getSampleMusicalNotation(tempo: 120)),
+            musicXML: _getSampleMusicXML(tempo: 120),
           ),
         ]);
         break;
@@ -277,7 +277,7 @@ class PracticeGenerationService {
             keySignature: 'C Major',
             estimatedDuration: '10 minutes',
             notes: 'Listen carefully to intonation',
-            etude: PracticeExercise.convertJsonToMeasures(_getSampleMusicalNotation(tempo: 60)),
+            musicXML: _getSampleMusicXML(tempo: 60),
           ),
         ]);
         break;
@@ -409,7 +409,7 @@ class PracticeGenerationService {
             keySignature: 'C Major, G Major, F Major',
             estimatedDuration: '15 minutes',
             notes: 'Focus on fingering accuracy',
-            etude: PracticeExercise.convertJsonToMeasures(_getSampleMusicalNotation(tempo: 80)),
+            musicXML: _getSampleMusicXML(tempo: 80),
           ),
         ]);
         break;
@@ -421,7 +421,7 @@ class PracticeGenerationService {
             tempo: '100 BPM',
             estimatedDuration: '15 minutes',
             notes: 'Maintain consistent tempo and articulation',
-            etude: PracticeExercise.convertJsonToMeasures(_getSampleMusicalNotation(tempo: 100)),
+            musicXML: _getSampleMusicXML(tempo: 100),
           ),
           PracticeExercise(
             name: 'Natural Minor Scales',
@@ -463,49 +463,174 @@ class PracticeGenerationService {
   }
 
   /// Get sample musical notation for fallback exercises
-  Map<String, dynamic> _getSampleMusicalNotation({
-    String keySignature = 'cMajor',
+  String _getSampleMusicXML({
     int tempo = 120,
+    String title = 'Practice Exercise',
   }) {
     // Create a simple C major scale pattern that works for most exercises
-    return {
-      'clef': 'treble',
-      'keySignature': keySignature,
-      'tempo': tempo,
-      'measures': [
-        {
-          'notes': [
-            {'pitch': 'c4', 'duration': 'quarter', 'accidental': null},
-            {'pitch': 'd4', 'duration': 'quarter', 'accidental': null},
-            {'pitch': 'e4', 'duration': 'quarter', 'accidental': null},
-            {'pitch': 'f4', 'duration': 'quarter', 'accidental': null},
-          ]
-        },
-        {
-          'notes': [
-            {'pitch': 'g4', 'duration': 'quarter', 'accidental': null},
-            {'pitch': 'a4', 'duration': 'quarter', 'accidental': null},
-            {'pitch': 'b4', 'duration': 'quarter', 'accidental': null},
-            {'pitch': 'c5', 'duration': 'quarter', 'accidental': null},
-          ]
-        },
-        {
-          'notes': [
-            {'pitch': 'b4', 'duration': 'quarter', 'accidental': null},
-            {'pitch': 'a4', 'duration': 'quarter', 'accidental': null},
-            {'pitch': 'g4', 'duration': 'quarter', 'accidental': null},
-            {'pitch': 'f4', 'duration': 'quarter', 'accidental': null},
-          ]
-        },
-        {
-          'notes': [
-            {'pitch': 'e4', 'duration': 'quarter', 'accidental': null},
-            {'pitch': 'd4', 'duration': 'quarter', 'accidental': null},
-            {'pitch': 'c4', 'duration': 'half', 'accidental': null},
-          ]
-        },
-      ]
-    };
+    return '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<score-partwise version="4.0">
+  <work>
+    <work-title>$title</work-title>
+  </work>
+  <part-list>
+    <score-part id="P1">
+      <part-name>Saxophone</part-name>
+    </score-part>
+  </part-list>
+  <part id="P1">
+    <measure number="1">
+      <attributes>
+        <divisions>1</divisions>
+        <key>
+          <fifths>0</fifths>
+        </key>
+        <time>
+          <beats>4</beats>
+          <beat-type>4</beat-type>
+        </time>
+        <clef>
+          <sign>G</sign>
+          <line>2</line>
+        </clef>
+      </attributes>
+      <direction placement="above">
+        <direction-type>
+          <metronome>
+            <beat-unit>quarter</beat-unit>
+            <per-minute>$tempo</per-minute>
+          </metronome>
+        </direction-type>
+      </direction>
+      <note>
+        <pitch>
+          <step>C</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>D</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>E</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>F</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+    </measure>
+    <measure number="2">
+      <note>
+        <pitch>
+          <step>G</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>A</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>B</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>C</step>
+          <octave>5</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+    </measure>
+    <measure number="3">
+      <note>
+        <pitch>
+          <step>B</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>A</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>G</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>F</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+    </measure>
+    <measure number="4">
+      <note>
+        <pitch>
+          <step>E</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>D</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>C</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>2</duration>
+        <type>half</type>
+      </note>
+    </measure>
+  </part>
+</score-partwise>''';
   }
 
   /// Get service status
