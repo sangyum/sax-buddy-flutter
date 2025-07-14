@@ -6,17 +6,15 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i9;
+import 'package:mockito/src/dummies.dart' as _i5;
 import 'package:sax_buddy/features/assessment/models/assessment_dataset.dart'
     as _i2;
 import 'package:sax_buddy/features/assessment/models/assessment_result.dart'
     as _i7;
 import 'package:sax_buddy/features/assessment/services/audio_analysis_dataset_service.dart'
     as _i6;
-import 'package:sax_buddy/features/practice/models/practice_routine.dart'
-    as _i5;
 import 'package:sax_buddy/services/audio_analysis_service.dart' as _i8;
-import 'package:sax_buddy/services/logger_service.dart' as _i10;
+import 'package:sax_buddy/services/logger_service.dart' as _i9;
 import 'package:sax_buddy/services/openai_service.dart' as _i3;
 
 // ignore_for_file: type=lint
@@ -59,24 +57,25 @@ class MockOpenAIService extends _i1.Mock implements _i3.OpenAIService {
   );
 
   @override
-  _i4.Future<List<_i5.PracticeRoutine>> generatePracticePlan(
-    _i2.AssessmentDataset? dataset,
-  ) =>
+  _i4.Future<String> generateResponse(String? prompt) =>
       (super.noSuchMethod(
-            Invocation.method(#generatePracticePlan, [dataset]),
-            returnValue: _i4.Future<List<_i5.PracticeRoutine>>.value(
-              <_i5.PracticeRoutine>[],
+            Invocation.method(#generateResponse, [prompt]),
+            returnValue: _i4.Future<String>.value(
+              _i5.dummyValue<String>(
+                this,
+                Invocation.method(#generateResponse, [prompt]),
+              ),
             ),
           )
-          as _i4.Future<List<_i5.PracticeRoutine>>);
+          as _i4.Future<String>);
 
   @override
-  bool validateDataset(_i2.AssessmentDataset? dataset) =>
+  _i4.Future<List<String>> generateBatchResponses(List<String>? prompts) =>
       (super.noSuchMethod(
-            Invocation.method(#validateDataset, [dataset]),
-            returnValue: false,
+            Invocation.method(#generateBatchResponses, [prompts]),
+            returnValue: _i4.Future<List<String>>.value(<String>[]),
           )
-          as bool);
+          as _i4.Future<List<String>>);
 
   @override
   Map<String, dynamic> getStatus() =>
@@ -130,7 +129,7 @@ class MockAudioAnalysisDatasetService extends _i1.Mock
   String generateLLMPromptContext(_i2.AssessmentDataset? dataset) =>
       (super.noSuchMethod(
             Invocation.method(#generateLLMPromptContext, [dataset]),
-            returnValue: _i9.dummyValue<String>(
+            returnValue: _i5.dummyValue<String>(
               this,
               Invocation.method(#generateLLMPromptContext, [dataset]),
             ),
@@ -149,18 +148,18 @@ class MockAudioAnalysisDatasetService extends _i1.Mock
 /// A class which mocks [LoggerService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockLoggerService extends _i1.Mock implements _i10.LoggerService {
+class MockLoggerService extends _i1.Mock implements _i9.LoggerService {
   MockLoggerService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i10.LogLevel get currentLevel =>
+  _i9.LogLevel get currentLevel =>
       (super.noSuchMethod(
             Invocation.getter(#currentLevel),
-            returnValue: _i10.LogLevel.trace,
+            returnValue: _i9.LogLevel.trace,
           )
-          as _i10.LogLevel);
+          as _i9.LogLevel);
 
   @override
   void trace(

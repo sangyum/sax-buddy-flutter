@@ -681,10 +681,15 @@ class MockPracticeGenerationService extends _i1.Mock
 
   @override
   _i5.Future<List<_i10.PracticeRoutine>> generatePracticePlans(
-    _i2.AssessmentDataset? dataset,
-  ) =>
+    _i2.AssessmentDataset? dataset, {
+    dynamic Function(_i10.PracticeRoutine)? onRoutineCompleted,
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#generatePracticePlans, [dataset]),
+            Invocation.method(
+              #generatePracticePlans,
+              [dataset],
+              {#onRoutineCompleted: onRoutineCompleted},
+            ),
             returnValue: _i5.Future<List<_i10.PracticeRoutine>>.value(
               <_i10.PracticeRoutine>[],
             ),

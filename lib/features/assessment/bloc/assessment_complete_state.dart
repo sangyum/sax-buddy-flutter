@@ -13,7 +13,16 @@ class AssessmentCompleteInitial extends AssessmentCompleteState {
 }
 
 class AssessmentCompleteGeneratingRoutines extends AssessmentCompleteState {
-  const AssessmentCompleteGeneratingRoutines();
+  final List<PracticeRoutine> completedRoutines;
+  final int totalRoutines;
+  
+  const AssessmentCompleteGeneratingRoutines({
+    this.completedRoutines = const [],
+    this.totalRoutines = 0,
+  });
+  
+  @override
+  List<Object?> get props => [completedRoutines, totalRoutines];
 }
 
 class AssessmentCompleteRoutinesGenerated extends AssessmentCompleteState {
