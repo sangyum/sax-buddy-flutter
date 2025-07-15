@@ -8,8 +8,6 @@ import '../../../services/logger_service.dart';
 import '../../../services/audio_recording_service.dart';
 import '../../../services/audio_analysis_service.dart';
 import '../../../services/firebase_storage_service.dart';
-import '../repositories/assessment_repository.dart';
-import '../models/assessment_result.dart';
 import 'package:injectable/injectable.dart';
 
 enum ExerciseState {
@@ -25,14 +23,12 @@ class AssessmentProvider extends ChangeNotifier {
   final AudioRecordingService _audioService;
   final AudioAnalysisService _analysisService;
   final FirebaseStorageService _storageService;
-  final AssessmentRepository _assessmentRepository;
 
   AssessmentProvider(
     this._logger,
     this._audioService,
     this._analysisService,
     this._storageService,
-    this._assessmentRepository,
   );
 
   AssessmentSession? _currentSession;
@@ -43,7 +39,6 @@ class AssessmentProvider extends ChangeNotifier {
   DateTime? _exerciseStartTime;
   String? _currentRecordingPath;
   String? _lastError;
-  String? _userId;
 
   AssessmentSession? get currentSession => _currentSession;
   ExerciseState get exerciseState => _exerciseState;
@@ -193,7 +188,6 @@ class AssessmentProvider extends ChangeNotifier {
       'recording_file_size': recordingPath != null ? await _audioService.getRecordingSize(recordingPath) : null,
     };
 
-    String? audioRecordingUrl;
     if (recordingPath != null) {
       try {
         // Perform audio analysis
@@ -201,16 +195,13 @@ class AssessmentProvider extends ChangeNotifier {
         analysisData.addAll(analysis.toJson());
         _logger.info('Audio analysis completed for exercise ${exercise.id}');
         
-        // Upload to Firebase Storage and get URL
-        audioRecordingUrl = await _storageService.uploadAudioFile(recordingPath, exercise.id.toString());
-        _logger.info('Audio upload completed for exercise ${exercise.id}: $audioRecordingUrl');
+        // Upload to Firebase Storage in background
+        _storageService.uploadAudioFileInBackground(recordingPath, exercise.id.toString());
+        _logger.info('Audio upload initiated for exercise ${exercise.id}');
         
       } catch (e) {
-        _logger.error('Audio processing failed: $e');
+        _logger.error('Audio analysis failed: $e');
         analysisData['analysis_error'] = e.toString();
-        
-        // Still try background upload even if analysis fails
-        _storageService.uploadAudioFileInBackground(recordingPath, exercise.id.toString());
       }
     }
 
@@ -220,7 +211,6 @@ class AssessmentProvider extends ChangeNotifier {
       actualDuration: actualDuration,
       wasCompleted: true,
       analysisData: analysisData,
-      audioRecordingUrl: audioRecordingUrl,
     );
 
     final updatedResults = List<ExerciseResult>.from(_currentSession!.completedExercises)
@@ -283,9 +273,6 @@ class AssessmentProvider extends ChangeNotifier {
       state: AssessmentSessionState.completed,
     );
 
-    // Persist assessment result
-    _persistAssessmentResult();
-
     notifyListeners();
   }
 
@@ -332,112 +319,6 @@ class AssessmentProvider extends ChangeNotifier {
 
   /// Check if we have an active error
   bool get hasError => _lastError != null;
-
-  /// Set user ID for assessment persistence
-  void setUserId(String userId) {
-    _userId = userId;
-    _logger.debug('User ID set for assessment provider: $userId');
-  }
-
-  /// Persist assessment result to repository
-  Future<void> _persistAssessmentResult() async {
-    if (_currentSession == null || _userId == null) {
-      _logger.warning('Cannot persist assessment: missing session or user ID');
-      return;
-    }
-    
-    try {
-      // Only persist if all exercises are completed
-      if (_currentSession!.completedExercises.length >= 4) {
-        final assessmentResult = _createAssessmentResult();
-        await _assessmentRepository.createAssessment(_userId!, assessmentResult);
-        
-        _logger.info('Assessment result persisted successfully', extra: {
-          'sessionId': assessmentResult.sessionId,
-          'skillLevel': assessmentResult.skillLevel.name,
-          'exerciseCount': assessmentResult.exerciseResults.length,
-        });
-      }
-    } catch (e) {
-      _logger.logError('persist_assessment', e, extra: {
-        'sessionId': _currentSession!.id,
-        'exerciseCount': _currentSession!.completedExercises.length,
-      });
-      // Don't throw - persistence failures shouldn't block UI flow
-    }
-  }
-
-  /// Create AssessmentResult from current session
-  AssessmentResult _createAssessmentResult() {
-    if (_currentSession == null) {
-      throw StateError('Cannot create assessment result without active session');
-    }
-
-    // Simple skill level determination based on exercise performance
-    final skillLevel = _determineSkillLevel(_currentSession!.completedExercises);
-    final analysis = _analyzeResults(_currentSession!.completedExercises);
-
-    return AssessmentResult(
-      sessionId: _currentSession!.id,
-      completedAt: DateTime.now(),
-      exerciseResults: _currentSession!.completedExercises,
-      skillLevel: skillLevel,
-      strengths: analysis['strengths'] as List<String>,
-      weaknesses: analysis['weaknesses'] as List<String>,
-      notes: analysis['notes'] as String?,
-    );
-  }
-
-  /// Determine skill level based on exercise results
-  SkillLevel _determineSkillLevel(List<ExerciseResult> results) {
-    if (results.length < 4) return SkillLevel.beginner;
-    
-    // Simple heuristic: check if most exercises were completed successfully
-    final successfulExercises = results.where((r) => r.wasCompleted).length;
-    final successRate = successfulExercises / results.length;
-    
-    if (successRate >= 0.8) return SkillLevel.advanced;
-    if (successRate >= 0.6) return SkillLevel.intermediate;
-    return SkillLevel.beginner;
-  }
-
-  /// Analyze exercise results to provide feedback
-  Map<String, dynamic> _analyzeResults(List<ExerciseResult> results) {
-    final strengths = <String>[];
-    final weaknesses = <String>[];
-    
-    // Simple analysis based on completion and timing
-    for (final result in results) {
-      if (result.wasCompleted) {
-        strengths.add('Completed ${_getExerciseName(result.exerciseId)}');
-      } else {
-        weaknesses.add('Struggled with ${_getExerciseName(result.exerciseId)}');
-      }
-    }
-    
-    if (strengths.isEmpty) {
-      strengths.add('Participated in assessment');
-    }
-    
-    if (weaknesses.isEmpty) {
-      weaknesses.add('Continue practicing fundamentals');
-    }
-    
-    return {
-      'strengths': strengths,
-      'weaknesses': weaknesses,
-      'notes': 'Assessment completed with ${results.length} exercises',
-    };
-  }
-
-  /// Get exercise name by ID
-  String _getExerciseName(int exerciseId) {
-    final exercise = InitialExercises.exercises.firstWhere(
-      (e) => e.id == exerciseId,
-      orElse: () => InitialExercises.exercises.first,
-    );
-    return exercise.title;
-  }
 
   @override
   void dispose() {

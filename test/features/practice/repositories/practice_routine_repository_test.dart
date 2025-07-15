@@ -16,7 +16,6 @@ import 'package:sax_buddy/features/auth/repositories/user_repository.dart';
   QuerySnapshot,
   QueryDocumentSnapshot,
   LoggerService,
-  WriteBatch,
 ])
 import 'practice_routine_repository_test.mocks.dart';
 
@@ -29,9 +28,7 @@ void main() {
     late MockDocumentSnapshot<Map<String, dynamic>> mockDocumentSnapshot;
     late MockQuerySnapshot<Map<String, dynamic>> mockQuerySnapshot;
     late MockQueryDocumentSnapshot<Map<String, dynamic>> mockQueryDocumentSnapshot;
-    late MockQueryDocumentSnapshot<Map<String, dynamic>> mockQueryDocumentSnapshot2;
     late MockLoggerService mockLogger;
-    late MockWriteBatch mockBatch;
 
     setUpAll(() {
       // Initialize environment for logger
@@ -48,9 +45,7 @@ ENVIRONMENT=test
       mockDocumentSnapshot = MockDocumentSnapshot<Map<String, dynamic>>();
       mockQuerySnapshot = MockQuerySnapshot<Map<String, dynamic>>();
       mockQueryDocumentSnapshot = MockQueryDocumentSnapshot<Map<String, dynamic>>();
-      mockQueryDocumentSnapshot2 = MockQueryDocumentSnapshot<Map<String, dynamic>>();
       mockLogger = MockLoggerService();
-      mockBatch = MockWriteBatch();
       
       repository = PracticeRoutineRepository(mockFirestore, mockLogger);
       
@@ -275,106 +270,6 @@ ENVIRONMENT=test
 
         // Assert
         verify(mockDocument.delete()).called(1);
-      });
-    });
-
-    group('getCurrentRoutineSet', () {
-      test('should return current routine set for user', () async {
-        // Arrange
-        const userId = 'user-456';
-        const assessmentId = 'assessment-123';
-        
-        final currentRoutine1 = PracticeRoutine(
-          id: 'routine-1',
-          userId: userId,
-          title: 'Current Routine 1',
-          description: 'Test Description',
-          targetAreas: const ['scales'],
-          difficulty: 'intermediate',
-          estimatedDuration: '20 minutes',
-          exercises: const [],
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-          isAIGenerated: true,
-          assessmentId: assessmentId,
-          isCurrent: true,
-        );
-
-        final currentRoutine2 = PracticeRoutine(
-          id: 'routine-2',
-          userId: userId,
-          title: 'Current Routine 2',
-          description: 'Test Description',
-          targetAreas: const ['arpeggios'],
-          difficulty: 'intermediate',
-          estimatedDuration: '15 minutes',
-          exercises: const [],
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-          isAIGenerated: true,
-          assessmentId: assessmentId,
-          isCurrent: true,
-        );
-
-        when(mockCollection.doc(userId)).thenReturn(mockDocument);
-        when(mockDocument.collection('routines')).thenReturn(mockCollection);
-        when(mockCollection.where('isCurrent', isEqualTo: true)).thenReturn(mockCollection);
-        when(mockCollection.get()).thenAnswer((_) async => mockQuerySnapshot);
-        when(mockQuerySnapshot.docs).thenReturn([mockQueryDocumentSnapshot, mockQueryDocumentSnapshot2]);
-        when(mockQueryDocumentSnapshot.data()).thenReturn(currentRoutine1.toJson());
-        when(mockQueryDocumentSnapshot2.data()).thenReturn(currentRoutine2.toJson());
-
-        // Act
-        final result = await repository.getCurrentRoutineSet(userId);
-
-        // Assert
-        expect(result, hasLength(2));
-        expect(result[0].id, equals('routine-1'));
-        expect(result[0].isCurrent, equals(true));
-        expect(result[1].id, equals('routine-2'));
-        expect(result[1].isCurrent, equals(true));
-        verify(mockCollection.where('isCurrent', isEqualTo: true)).called(1);
-      });
-
-      test('should return empty list when no current routines exist', () async {
-        // Arrange
-        const userId = 'user-456';
-
-        when(mockCollection.doc(userId)).thenReturn(mockDocument);
-        when(mockDocument.collection('routines')).thenReturn(mockCollection);
-        when(mockCollection.where('isCurrent', isEqualTo: true)).thenReturn(mockCollection);
-        when(mockCollection.get()).thenAnswer((_) async => mockQuerySnapshot);
-        when(mockQuerySnapshot.docs).thenReturn([]);
-
-        // Act
-        final result = await repository.getCurrentRoutineSet(userId);
-
-        // Assert
-        expect(result, isEmpty);
-      });
-    });
-
-    group('markRoutinesAsNotCurrent', () {
-      test('should mark all routines as not current for user', () async {
-        // Arrange
-        const userId = 'user-456';
-
-        when(mockCollection.doc(userId)).thenReturn(mockDocument);
-        when(mockDocument.collection('routines')).thenReturn(mockCollection);
-        when(mockCollection.where('isCurrent', isEqualTo: true)).thenReturn(mockCollection);
-        when(mockCollection.get()).thenAnswer((_) async => mockQuerySnapshot);
-        when(mockQuerySnapshot.docs).thenReturn([mockQueryDocumentSnapshot]);
-        when(mockQueryDocumentSnapshot.reference).thenReturn(mockDocument);
-        when(mockFirestore.batch()).thenReturn(mockBatch);
-        when(mockBatch.commit()).thenAnswer((_) async {});
-
-        // Act
-        await repository.markRoutinesAsNotCurrent(userId);
-
-        // Assert
-        verify(mockCollection.where('isCurrent', isEqualTo: true)).called(1);
-        verify(mockFirestore.batch()).called(1);
-        verify(mockBatch.commit()).called(1);
       });
     });
   });

@@ -84,34 +84,6 @@ class AssessmentResult {
     return true;
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'sessionId': sessionId,
-      'completedAt': completedAt.toIso8601String(),
-      'exerciseResults': exerciseResults.map((e) => e.toJson()).toList(),
-      'skillLevel': skillLevel.name,
-      'strengths': strengths,
-      'weaknesses': weaknesses,
-      'notes': notes,
-    };
-  }
-
-  factory AssessmentResult.fromJson(Map<String, dynamic> json) {
-    return AssessmentResult(
-      sessionId: json['sessionId'] as String,
-      completedAt: DateTime.parse(json['completedAt'] as String),
-      exerciseResults: (json['exerciseResults'] as List)
-          .map((e) => ExerciseResult.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      skillLevel: SkillLevel.values.firstWhere(
-        (level) => level.name == json['skillLevel'],
-      ),
-      strengths: List<String>.from(json['strengths'] as List),
-      weaknesses: List<String>.from(json['weaknesses'] as List),
-      notes: json['notes'] as String?,
-    );
-  }
-
   @override
   String toString() {
     return 'AssessmentResult(sessionId: $sessionId, skillLevel: $skillLevel, exercisesCompleted: ${exerciseResults.length}/4)';

@@ -10,7 +10,6 @@ class RoutinesProvider extends ChangeNotifier {
   final LoggerService _logger;
   final PracticeRoutineRepository _repository;
   final List<PracticeRoutine> _recentRoutines = [];
-  final List<PracticeRoutine> _currentRoutineSet = [];
   bool _isLoading = false;
   String? _error;
   String? _userId;
@@ -19,15 +18,8 @@ class RoutinesProvider extends ChangeNotifier {
   RoutinesProvider(this._logger, this._repository);
 
   List<PracticeRoutine> get recentRoutines => List.unmodifiable(_recentRoutines);
-  List<PracticeRoutine> get currentRoutineSet => List.unmodifiable(_currentRoutineSet);
   bool get isLoading => _isLoading;
   String? get error => _error;
-  
-  /// Check if there are any current routines
-  bool get hasCurrentRoutineSet => _currentRoutineSet.isNotEmpty;
-  
-  /// Get the count of current routines
-  int get currentRoutineSetCount => _currentRoutineSet.length;
 
   /// Add a new routine to the recent routines list
   void addRoutine(PracticeRoutine routine) {
@@ -296,92 +288,10 @@ class RoutinesProvider extends ChangeNotifier {
     }
   }
 
-  /// Load current routine set from repository
-  Future<void> loadCurrentRoutineSet() async {
-    if (_userId == null) {
-      _logger.warning('Cannot load current routine set: user ID not set');
-      return;
-    }
-
-    try {
-      _logger.debug('Loading current routine set from Firestore');
-      setLoading(true);
-      
-      final routines = await _repository.getCurrentRoutineSet(_userId!);
-      
-      _currentRoutineSet.clear();
-      _currentRoutineSet.addAll(routines);
-      
-      _clearError();
-      _logger.debug('Current routine set loaded successfully: ${routines.length} routines');
-    } catch (e) {
-      _logger.error('Failed to load current routine set: $e');
-      setError('Failed to load current routine set: $e');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  /// Add a new current routine set from assessment
-  Future<void> addCurrentRoutineSet(List<PracticeRoutine> routines, String assessmentId) async {
-    if (_userId == null) {
-      _logger.warning('Cannot add current routine set: user ID not set');
-      return;
-    }
-
-    try {
-      _logger.debug('Adding current routine set from assessment: $assessmentId');
-      setLoading(true);
-      
-      // First, mark all existing routines as not current
-      await _repository.markRoutinesAsNotCurrent(_userId!);
-      
-      // Update the current routine set in memory
-      _currentRoutineSet.clear();
-      _currentRoutineSet.addAll(routines);
-      
-      // Save each routine to Firestore
-      for (final routine in routines) {
-        final routineToSave = routine.copyWith(
-          userId: _userId!,
-          assessmentId: assessmentId,
-          isCurrent: true,
-          updatedAt: DateTime.now(),
-        );
-        await _repository.createRoutine(routineToSave);
-      }
-      
-      _clearError();
-      notifyListeners();
-      _logger.debug('Current routine set added successfully: ${routines.length} routines');
-    } catch (e) {
-      _logger.error('Failed to add current routine set: $e');
-      setError('Failed to add current routine set: $e');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  /// Clear current routine set
-  void clearCurrentRoutineSet() {
-    try {
-      _logger.debug('Clearing current routine set');
-      _currentRoutineSet.clear();
-      _clearError();
-      notifyListeners();
-      _logger.debug('Current routine set cleared');
-    } catch (e) {
-      _logger.error('Failed to clear current routine set: $e');
-      setError('Failed to clear current routine set: $e');
-    }
-  }
-
   /// Get service status
   Map<String, dynamic> getStatus() {
     return {
       'routineCount': _recentRoutines.length,
-      'currentRoutineSetCount': _currentRoutineSet.length,
-      'hasCurrentRoutineSet': hasCurrentRoutineSet,
       'isLoading': _isLoading,
       'hasError': _error != null,
       'error': _error,
