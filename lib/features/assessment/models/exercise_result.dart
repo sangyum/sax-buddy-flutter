@@ -4,6 +4,7 @@ class ExerciseResult {
   final Duration actualDuration;
   final bool wasCompleted;
   final Map<String, dynamic>? analysisData;
+  final String? audioRecordingUrl;
 
   const ExerciseResult({
     required this.exerciseId,
@@ -11,6 +12,7 @@ class ExerciseResult {
     required this.actualDuration,
     required this.wasCompleted,
     this.analysisData,
+    this.audioRecordingUrl,
   });
 
   ExerciseResult copyWith({
@@ -19,6 +21,7 @@ class ExerciseResult {
     Duration? actualDuration,
     bool? wasCompleted,
     Map<String, dynamic>? analysisData,
+    String? audioRecordingUrl,
   }) {
     return ExerciseResult(
       exerciseId: exerciseId ?? this.exerciseId,
@@ -26,6 +29,7 @@ class ExerciseResult {
       actualDuration: actualDuration ?? this.actualDuration,
       wasCompleted: wasCompleted ?? this.wasCompleted,
       analysisData: analysisData ?? this.analysisData,
+      audioRecordingUrl: audioRecordingUrl ?? this.audioRecordingUrl,
     );
   }
 
@@ -37,7 +41,8 @@ class ExerciseResult {
         other.completedAt == completedAt &&
         other.actualDuration == actualDuration &&
         other.wasCompleted == wasCompleted &&
-        _mapEquals(other.analysisData, analysisData);
+        _mapEquals(other.analysisData, analysisData) &&
+        other.audioRecordingUrl == audioRecordingUrl;
   }
 
   @override
@@ -48,6 +53,7 @@ class ExerciseResult {
       actualDuration,
       wasCompleted,
       analysisData,
+      audioRecordingUrl,
     );
   }
 
@@ -58,6 +64,28 @@ class ExerciseResult {
       if (!b.containsKey(key) || a[key] != b[key]) return false;
     }
     return true;
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'exerciseId': exerciseId,
+      'completedAt': completedAt.toIso8601String(),
+      'actualDuration': actualDuration.inMilliseconds,
+      'wasCompleted': wasCompleted,
+      'analysisData': analysisData,
+      if (audioRecordingUrl != null) 'audioRecordingUrl': audioRecordingUrl,
+    };
+  }
+
+  factory ExerciseResult.fromJson(Map<String, dynamic> json) {
+    return ExerciseResult(
+      exerciseId: json['exerciseId'] as int,
+      completedAt: DateTime.parse(json['completedAt'] as String),
+      actualDuration: Duration(milliseconds: json['actualDuration'] as int),
+      wasCompleted: json['wasCompleted'] as bool,
+      analysisData: json['analysisData'] as Map<String, dynamic>?,
+      audioRecordingUrl: json['audioRecordingUrl'] as String?,
+    );
   }
 
   @override

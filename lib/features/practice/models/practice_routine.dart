@@ -13,6 +13,8 @@ class PracticeRoutine {
   final DateTime createdAt;
   final DateTime updatedAt;
   final bool isAIGenerated;
+  final String? assessmentId;
+  final bool isCurrent;
 
   const PracticeRoutine({
     required this.id,
@@ -26,6 +28,8 @@ class PracticeRoutine {
     required this.createdAt,
     required this.updatedAt,
     required this.isAIGenerated,
+    this.assessmentId,
+    this.isCurrent = false,
   });
 
   factory PracticeRoutine.fromJson(Map<String, dynamic> json) {
@@ -50,6 +54,8 @@ class PracticeRoutine {
         json['updatedAt'] as String? ?? DateTime.now().toIso8601String(),
       ),
       isAIGenerated: json['isAIGenerated'] as bool? ?? false,
+      assessmentId: json['assessmentId'] as String?,
+      isCurrent: json['isCurrent'] as bool? ?? false,
     );
   }
 
@@ -66,7 +72,43 @@ class PracticeRoutine {
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       'isAIGenerated': isAIGenerated,
+      if (assessmentId != null) 'assessmentId': assessmentId,
+      'isCurrent': isCurrent,
     };
+  }
+
+  bool get isCurrentSet => isCurrent;
+
+  PracticeRoutine copyWith({
+    String? id,
+    String? userId,
+    String? title,
+    String? description,
+    List<String>? targetAreas,
+    String? difficulty,
+    String? estimatedDuration,
+    List<PracticeExercise>? exercises,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    bool? isAIGenerated,
+    String? assessmentId,
+    bool? isCurrent,
+  }) {
+    return PracticeRoutine(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      targetAreas: targetAreas ?? this.targetAreas,
+      difficulty: difficulty ?? this.difficulty,
+      estimatedDuration: estimatedDuration ?? this.estimatedDuration,
+      exercises: exercises ?? this.exercises,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      isAIGenerated: isAIGenerated ?? this.isAIGenerated,
+      assessmentId: assessmentId ?? this.assessmentId,
+      isCurrent: isCurrent ?? this.isCurrent,
+    );
   }
 
   @override

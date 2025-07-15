@@ -1,14 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mockito/mockito.dart';
+import 'package:mockito/annotations.dart';
 import 'package:sax_buddy/features/routines/providers/routines_provider.dart';
 import 'package:sax_buddy/features/practice/models/practice_routine.dart';
 import 'package:sax_buddy/features/practice/repositories/practice_routine_repository.dart';
 import 'package:sax_buddy/services/logger_service.dart';
 
-// Mock classes
-class MockLoggerService extends Mock implements LoggerService {}
-class MockPracticeRoutineRepository extends Mock implements PracticeRoutineRepository {}
+// Generate mocks for dependencies
+@GenerateMocks([LoggerService, PracticeRoutineRepository])
+import 'routines_provider_test.mocks.dart';
 
 void main() {
   group('RoutinesProvider', () {
@@ -166,6 +167,126 @@ void main() {
     test('should return null for invalid index', () {
       final routine = provider.getRoutineAt(0);
       expect(routine, isNull);
+    });
+
+    group('Current routine set functionality', () {
+      test('should load current routine set from repository', () async {
+        // Arrange
+        final currentRoutines = [
+          PracticeRoutine(
+            id: 'current-1',
+            userId: 'test-user',
+            title: 'Current Routine 1',
+            description: 'Description',
+            targetAreas: ['scales'],
+            difficulty: 'intermediate',
+            estimatedDuration: '20 minutes',
+            exercises: [],
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+            isAIGenerated: true,
+            assessmentId: 'assessment-123',
+            isCurrent: true,
+          ),
+          PracticeRoutine(
+            id: 'current-2',
+            userId: 'test-user',
+            title: 'Current Routine 2',
+            description: 'Description',
+            targetAreas: ['arpeggios'],
+            difficulty: 'intermediate',
+            estimatedDuration: '15 minutes',
+            exercises: [],
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+            isAIGenerated: true,
+            assessmentId: 'assessment-123',
+            isCurrent: true,
+          ),
+        ];
+
+        when(mockRepository.getCurrentRoutineSet('test-user'))
+            .thenAnswer((_) async => currentRoutines);
+
+        provider.setUserId('test-user');
+
+        // Act
+        await provider.loadCurrentRoutineSet();
+
+        // Assert
+        expect(provider.currentRoutineSet, hasLength(2));
+        expect(provider.currentRoutineSet.first.title, equals('Current Routine 1'));
+        expect(provider.currentRoutineSet.last.title, equals('Current Routine 2'));
+        verify(mockRepository.getCurrentRoutineSet('test-user')).called(1);
+      });
+
+      test('should handle empty current routine set', () async {
+        // Arrange
+        when(mockRepository.getCurrentRoutineSet('test-user'))
+            .thenAnswer((_) async => []);
+
+        provider.setUserId('test-user');
+
+        // Act
+        await provider.loadCurrentRoutineSet();
+
+        // Assert
+        expect(provider.currentRoutineSet, isEmpty);
+        expect(provider.hasCurrentRoutineSet, isFalse);
+      });
+
+      test('should indicate when current routine set exists', () async {
+        // Arrange
+        final currentRoutines = [mockRoutines[0]];
+        when(mockRepository.getCurrentRoutineSet('test-user'))
+            .thenAnswer((_) async => currentRoutines);
+
+        provider.setUserId('test-user');
+
+        // Act
+        await provider.loadCurrentRoutineSet();
+
+        // Assert
+        expect(provider.hasCurrentRoutineSet, isTrue);
+        expect(provider.currentRoutineSetCount, equals(1));
+      });
+
+      test('should handle repository errors when loading current routine set', () async {
+        // Arrange
+        when(mockRepository.getCurrentRoutineSet('test-user'))
+            .thenThrow(Exception('Repository error'));
+
+        provider.setUserId('test-user');
+
+        // Act
+        await provider.loadCurrentRoutineSet();
+
+        // Assert
+        expect(provider.currentRoutineSet, isEmpty);
+        expect(provider.error, contains('Failed to load current routine set'));
+      });
+
+      test('should mark previous routines as not current when adding new set', () async {
+        // Arrange
+        when(mockRepository.markRoutinesAsNotCurrent('test-user'))
+            .thenAnswer((_) async => {});
+        when(mockRepository.createRoutine(argThat(isA<PracticeRoutine>())))
+            .thenAnswer((_) async => {});
+
+        provider.setUserId('test-user');
+
+        final newRoutines = [
+          mockRoutines[0].copyWith(assessmentId: 'new-assessment', isCurrent: true),
+          mockRoutines[1].copyWith(assessmentId: 'new-assessment', isCurrent: true),
+        ];
+
+        // Act
+        await provider.addCurrentRoutineSet(newRoutines, 'new-assessment');
+
+        // Assert
+        verify(mockRepository.markRoutinesAsNotCurrent('test-user')).called(1);
+        verify(mockRepository.createRoutine(argThat(isA<PracticeRoutine>()))).called(2);
+      });
     });
   });
 }
