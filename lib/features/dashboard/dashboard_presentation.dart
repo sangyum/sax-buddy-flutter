@@ -3,6 +3,7 @@ import '../auth/models/user.dart';
 import 'widgets/welcome_section.dart';
 import 'widgets/subscription_status.dart';
 import 'widgets/quick_actions.dart';
+import 'widgets/current_routine_set.dart';
 import 'widgets/recent_activity.dart';
 
 class DashboardPresentation extends StatelessWidget {
@@ -38,6 +39,8 @@ class DashboardPresentation extends StatelessWidget {
             WelcomeSection(user: user),
             const SizedBox(height: 24),
             SubscriptionStatus(user: user),
+            const SizedBox(height: 32),
+            const CurrentRoutineSet(),
             const SizedBox(height: 32),
             const QuickActions(),
             const SizedBox(height: 32),

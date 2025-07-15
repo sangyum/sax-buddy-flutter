@@ -270,6 +270,15 @@ class MockRoutinesProvider extends _i1.Mock implements _i9.RoutinesProvider {
           as List<_i10.PracticeRoutine>);
 
   @override
+  List<_i10.PracticeRoutine> get currentRoutineSet =>
+      (super.noSuchMethod(
+            Invocation.getter(#currentRoutineSet),
+            returnValue: <_i10.PracticeRoutine>[],
+            returnValueForMissingStub: <_i10.PracticeRoutine>[],
+          )
+          as List<_i10.PracticeRoutine>);
+
+  @override
   bool get isLoading =>
       (super.noSuchMethod(
             Invocation.getter(#isLoading),
@@ -277,6 +286,24 @@ class MockRoutinesProvider extends _i1.Mock implements _i9.RoutinesProvider {
             returnValueForMissingStub: false,
           )
           as bool);
+
+  @override
+  bool get hasCurrentRoutineSet =>
+      (super.noSuchMethod(
+            Invocation.getter(#hasCurrentRoutineSet),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
+
+  @override
+  int get currentRoutineSetCount =>
+      (super.noSuchMethod(
+            Invocation.getter(#currentRoutineSetCount),
+            returnValue: 0,
+            returnValueForMissingStub: 0,
+          )
+          as int);
 
   @override
   bool get hasRoutines =>
@@ -402,6 +429,33 @@ class MockRoutinesProvider extends _i1.Mock implements _i9.RoutinesProvider {
             returnValueForMissingStub: _i5.Future<void>.value(),
           )
           as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> loadCurrentRoutineSet() =>
+      (super.noSuchMethod(
+            Invocation.method(#loadCurrentRoutineSet, []),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> addCurrentRoutineSet(
+    List<_i10.PracticeRoutine>? routines,
+    String? assessmentId,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#addCurrentRoutineSet, [routines, assessmentId]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  void clearCurrentRoutineSet() => super.noSuchMethod(
+    Invocation.method(#clearCurrentRoutineSet, []),
+    returnValueForMissingStub: null,
+  );
 
   @override
   Map<String, dynamic> getStatus() =>
@@ -633,6 +687,12 @@ class MockAssessmentProvider extends _i1.Mock
             returnValueForMissingStub: _i5.Future<void>.value(),
           )
           as _i5.Future<void>);
+
+  @override
+  void setUserId(String? userId) => super.noSuchMethod(
+    Invocation.method(#setUserId, [userId]),
+    returnValueForMissingStub: null,
+  );
 
   @override
   void dispose() => super.noSuchMethod(

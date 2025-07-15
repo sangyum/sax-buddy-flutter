@@ -7,6 +7,9 @@ import 'package:sax_buddy/services/audio_analysis_service.dart';
 import 'package:sax_buddy/services/audio_recording_service.dart';
 import 'package:sax_buddy/services/firebase_storage_service.dart';
 import 'package:sax_buddy/services/logger_service.dart';
+import 'package:sax_buddy/features/assessment/repositories/assessment_repository.dart';
+import 'package:sax_buddy/features/assessment/models/assessment_result.dart';
+import 'package:sax_buddy/features/auth/repositories/user_repository.dart';
 
 // Generate mocks for dependencies
 @GenerateMocks([
@@ -14,8 +17,9 @@ import 'package:sax_buddy/services/logger_service.dart';
   AudioAnalysisService,
   FirebaseStorageService,
   LoggerService,
+  AssessmentRepository,
 ])
-import 'assessment_provider_audio_test.mocks.dart';
+import 'assessment_provider_test.mocks.dart';
 
 void main() {
   group('AssessmentProvider', () {
@@ -24,6 +28,7 @@ void main() {
     late MockAudioAnalysisService mockAnalysisService;
     late MockFirebaseStorageService mockStorageService;
     late MockLoggerService mockLoggerService;
+    late MockAssessmentRepository mockAssessmentRepository;
 
     setUp(() {
       // Create mock services
@@ -31,6 +36,7 @@ void main() {
       mockAnalysisService = MockAudioAnalysisService();
       mockStorageService = MockFirebaseStorageService();
       mockLoggerService = MockLoggerService();
+      mockAssessmentRepository = MockAssessmentRepository();
 
       // Create provider with mocked dependencies
       provider = AssessmentProvider(
@@ -38,6 +44,7 @@ void main() {
         mockAudioService,
         mockAnalysisService,
         mockStorageService,
+        mockAssessmentRepository,
       );
 
       // Set up default mock responses
@@ -81,6 +88,9 @@ void main() {
       when(
         mockStorageService.uploadAudioFileInBackground(any, any),
       ).thenAnswer((_) async => {});
+
+      // Mock assessment repository
+      when(mockAssessmentRepository.createAssessment(any, any)).thenAnswer((_) async => {});
     });
 
     tearDown(() {
@@ -233,6 +243,84 @@ void main() {
 
         // The state might not change if not actually recording, which is fine for this test
         expect(provider.isRecording, isFalse);
+      });
+    });
+
+    group('Assessment persistence', () {
+      test('should persist assessment result when assessment completes', () async {
+        // Arrange - set user ID and start assessment
+        provider.setUserId('test-user-123');
+        await provider.startAssessment();
+        
+        // Complete all 4 exercises by simulating the flow
+        for (int i = 0; i < 4; i++) {
+          // Simulate exercise completion
+          await provider.startRecording();
+          await provider.stopRecording();
+          if (i < 3) {
+            provider.goToNextExercise();
+          }
+        }
+
+        // Act - complete assessment
+        provider.completeAssessment();
+
+        // Assert - verify assessment was persisted
+        final captured = verify(mockAssessmentRepository.createAssessment(any, captureAny)).captured;
+        expect(captured, hasLength(1));
+        
+        final persistedAssessment = captured[0] as AssessmentResult;
+        expect(persistedAssessment.sessionId, isNotEmpty);
+        expect(persistedAssessment.exerciseResults, hasLength(4));
+        expect(persistedAssessment.skillLevel, isA<SkillLevel>());
+        expect(persistedAssessment.strengths, isA<List<String>>());
+        expect(persistedAssessment.weaknesses, isA<List<String>>());
+      });
+
+      test('should not persist assessment if not completed', () async {
+        // Arrange - set user ID and start assessment but don't complete
+        provider.setUserId('test-user-123');
+        await provider.startAssessment();
+        
+        // Complete only 2 exercises
+        for (int i = 0; i < 2; i++) {
+          await provider.startRecording();
+          await provider.stopRecording();
+          if (i < 1) {
+            provider.goToNextExercise();
+          }
+        }
+
+        // Act - cancel assessment
+        provider.cancelAssessment();
+
+        // Assert - verify assessment was NOT persisted
+        verifyNever(mockAssessmentRepository.createAssessment(any, any));
+      });
+
+      test('should handle assessment persistence errors gracefully', () async {
+        // Arrange - mock repository to throw error
+        when(mockAssessmentRepository.createAssessment(any, any))
+            .thenThrow(RepositoryException('Persistence failed'));
+        
+        provider.setUserId('test-user-123');
+        await provider.startAssessment();
+        
+        // Complete all exercises
+        for (int i = 0; i < 4; i++) {
+          await provider.startRecording();
+          await provider.stopRecording();
+          if (i < 3) {
+            provider.goToNextExercise();
+          }
+        }
+
+        // Act - complete assessment (should not throw)
+        expect(() => provider.completeAssessment(), returnsNormally);
+
+        // Assert - verify persistence was attempted but handled gracefully
+        verify(mockAssessmentRepository.createAssessment(any, any)).called(1);
+        verify(mockLoggerService.logError('persist_assessment', any, extra: anyNamed('extra'))).called(1);
       });
     });
   });

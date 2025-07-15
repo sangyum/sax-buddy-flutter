@@ -8,6 +8,10 @@ import 'dart:async' as _i5;
 import 'package:firebase_storage/firebase_storage.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i6;
+import 'package:sax_buddy/features/assessment/models/assessment_result.dart'
+    as _i10;
+import 'package:sax_buddy/features/assessment/repositories/assessment_repository.dart'
+    as _i9;
 import 'package:sax_buddy/services/audio_analysis_service.dart' as _i2;
 import 'package:sax_buddy/services/audio_recording_service.dart' as _i4;
 import 'package:sax_buddy/services/firebase_storage_service.dart' as _i7;
@@ -465,4 +469,68 @@ class MockLoggerService extends _i1.Mock implements _i8.LoggerService {
     Invocation.method(#logPerformance, [operation, duration], {#extra: extra}),
     returnValueForMissingStub: null,
   );
+}
+
+/// A class which mocks [AssessmentRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockAssessmentRepository extends _i1.Mock
+    implements _i9.AssessmentRepository {
+  MockAssessmentRepository() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i5.Future<void> createAssessment(
+    String? userId,
+    _i10.AssessmentResult? assessment,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#createAssessment, [userId, assessment]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<_i10.AssessmentResult?> getAssessment(
+    String? userId,
+    String? assessmentId,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#getAssessment, [userId, assessmentId]),
+            returnValue: _i5.Future<_i10.AssessmentResult?>.value(),
+          )
+          as _i5.Future<_i10.AssessmentResult?>);
+
+  @override
+  _i5.Future<List<_i10.AssessmentResult>> getUserAssessments(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getUserAssessments, [userId]),
+            returnValue: _i5.Future<List<_i10.AssessmentResult>>.value(
+              <_i10.AssessmentResult>[],
+            ),
+          )
+          as _i5.Future<List<_i10.AssessmentResult>>);
+
+  @override
+  _i5.Future<void> updateAssessment(
+    String? userId,
+    _i10.AssessmentResult? assessment,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateAssessment, [userId, assessment]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> deleteAssessment(String? userId, String? assessmentId) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteAssessment, [userId, assessmentId]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
 }

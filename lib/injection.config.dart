@@ -19,6 +19,8 @@ import 'package:sax_buddy/features/assessment/domain/assessment_analyzer.dart'
     as _i641;
 import 'package:sax_buddy/features/assessment/providers/assessment_provider.dart'
     as _i565;
+import 'package:sax_buddy/features/assessment/repositories/assessment_repository.dart'
+    as _i448;
 import 'package:sax_buddy/features/assessment/services/audio_analysis_dataset_service.dart'
     as _i296;
 import 'package:sax_buddy/features/auth/providers/auth_provider.dart' as _i536;
@@ -67,6 +69,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i266.LoggerService>(),
       ),
     );
+    gh.factory<_i448.AssessmentRepository>(
+      () => _i448.AssessmentRepository(
+        gh<_i974.FirebaseFirestore>(),
+        gh<_i266.LoggerService>(),
+      ),
+    );
     gh.factory<_i824.RoutinesProvider>(
       () => _i824.RoutinesProvider(
         gh<_i266.LoggerService>(),
@@ -105,19 +113,20 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i296.AudioAnalysisDatasetService>(),
       ),
     );
-    gh.factory<_i339.AssessmentCompleteCubit>(
-      () => _i339.AssessmentCompleteCubit(
-        gh<_i641.AssessmentAnalyzer>(),
-        gh<_i678.PracticeGenerationService>(),
-        gh<_i266.LoggerService>(),
-      ),
-    );
     gh.factory<_i565.AssessmentProvider>(
       () => _i565.AssessmentProvider(
         gh<_i266.LoggerService>(),
         gh<_i415.AudioRecordingService>(),
         gh<_i749.AudioAnalysisService>(),
         gh<_i174.FirebaseStorageService>(),
+        gh<_i448.AssessmentRepository>(),
+      ),
+    );
+    gh.factory<_i339.AssessmentCompleteCubit>(
+      () => _i339.AssessmentCompleteCubit(
+        gh<_i641.AssessmentAnalyzer>(),
+        gh<_i678.PracticeGenerationService>(),
+        gh<_i266.LoggerService>(),
       ),
     );
     return this;

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
@@ -6,9 +7,10 @@ import 'package:sax_buddy/services/audio_recording_service.dart';
 import 'package:sax_buddy/services/audio_analysis_service.dart';
 import 'package:sax_buddy/services/firebase_storage_service.dart';
 import 'package:sax_buddy/services/logger_service.dart';
+import 'package:sax_buddy/features/assessment/repositories/assessment_repository.dart';
 
 // Generate mocks for dependencies
-@GenerateMocks([AudioRecordingService, AudioAnalysisService, FirebaseStorageService, LoggerService])
+@GenerateMocks([AudioRecordingService, AudioAnalysisService, FirebaseStorageService, LoggerService, AssessmentRepository])
 import 'assessment_provider_audio_test.mocks.dart';
 
 void main() {
@@ -19,6 +21,7 @@ void main() {
     late MockAudioAnalysisService mockAnalysisService;
     late MockFirebaseStorageService mockStorageService;
     late MockLoggerService mockLoggerService;
+    late MockAssessmentRepository mockAssessmentRepository;
 
     setUp(() {
       // Create mock services
@@ -26,6 +29,7 @@ void main() {
       mockAnalysisService = MockAudioAnalysisService();
       mockStorageService = MockFirebaseStorageService();
       mockLoggerService = MockLoggerService();
+      mockAssessmentRepository = MockAssessmentRepository();
       
       // Create provider with mocked dependencies
       provider = AssessmentProvider(
@@ -33,6 +37,7 @@ void main() {
         mockAudioService,
         mockAnalysisService,
         mockStorageService,
+        mockAssessmentRepository,
       );
       
       // Set up default mock responses
@@ -62,6 +67,9 @@ void main() {
       
       // Mock storage service
       when(mockStorageService.uploadAudioFileInBackground(any, any)).thenAnswer((_) async => {});
+      
+      // Mock assessment repository
+      when(mockAssessmentRepository.createAssessment(any, any)).thenAnswer((_) async => {});
     });
 
     tearDown(() {
@@ -149,24 +157,66 @@ void main() {
     });
 
     group('Firebase Storage Integration', () {
-      test('should upload audio files in background', () async {
+      test('should upload audio files and store URL in ExerciseResult', () async {
+        // Arrange
+        const expectedDownloadUrl = 'https://storage.googleapis.com/test-bucket/audio/exercise_1_123456.aac';
+        when(mockStorageService.uploadAudioFile(any, any))
+            .thenAnswer((_) async => expectedDownloadUrl);
+        
         await provider.startAssessment();
+        await provider.startRecording();
         
-        // Start and complete an exercise
-        provider.startCountdown();
+        // Act - Complete the recording
+        await provider.stopRecording();
         
-        // Simulate exercise completion
-        await Future.delayed(const Duration(milliseconds: 100));
-        
-        // Verify that the session was created
+        // Assert
         expect(provider.currentSession, isNotNull);
+        final completedExercises = provider.currentSession!.completedExercises;
+        expect(completedExercises, hasLength(1));
+        expect(completedExercises.first.audioRecordingUrl, equals(expectedDownloadUrl));
+        
+        verify(mockStorageService.uploadAudioFile('/path/to/recording.aac', '1')).called(1);
       });
 
-      test('should handle upload failures gracefully', () async {
-        await provider.startAssessment();
+      test('should handle upload failures gracefully and store null URL', () async {
+        // Arrange
+        when(mockStorageService.uploadAudioFile(any, any))
+            .thenThrow(Exception('Upload failed'));
         
-        // Test that upload failures don't break the assessment
+        await provider.startAssessment();
+        await provider.startRecording();
+        
+        // Act - Complete the recording despite upload failure
+        await provider.stopRecording();
+        
+        // Assert
         expect(provider.currentSession, isNotNull);
+        final completedExercises = provider.currentSession!.completedExercises;
+        expect(completedExercises, hasLength(1));
+        expect(completedExercises.first.audioRecordingUrl, isNull);
+        
+        verify(mockStorageService.uploadAudioFile('/path/to/recording.aac', '1')).called(1);
+      });
+
+      test('should fall back to background upload when synchronous upload fails', () async {
+        // Arrange
+        when(mockStorageService.uploadAudioFile(any, any))
+            .thenThrow(Exception('Sync upload failed'));
+        when(mockStorageService.uploadAudioFileInBackground(any, any))
+            .thenAnswer((_) async => {});
+        
+        await provider.startAssessment();
+        await provider.startRecording();
+        
+        // Act - Complete the recording (sync upload will fail, fallback to background)
+        await provider.stopRecording();
+        
+        // Assert - URL is null since sync upload failed
+        expect(provider.currentSession!.completedExercises.first.audioRecordingUrl, isNull);
+        
+        // Verify both sync and background upload were attempted
+        verify(mockStorageService.uploadAudioFile('/path/to/recording.aac', '1')).called(1);
+        verify(mockStorageService.uploadAudioFileInBackground('/path/to/recording.aac', '1')).called(1);
       });
     });
 
